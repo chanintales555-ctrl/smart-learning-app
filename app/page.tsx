@@ -1,33 +1,57 @@
+'use client';
 import Image from "next/image";
 
 export default function Home() {
+
+  // --- ฟังก์ชันสำหรับลงชื่อเข้าใช้งาน (ส่งข้อมูลไป Google Sheets) ---
+  const handleRegister = async () => {
+    const name = prompt("กรุณากรอกชื่อของคุณ:");
+    const email = prompt("กรุณากรอกอีเมลของคุณ:");
+
+    if (name && email) {
+      try {
+        // ส่งข้อมูลไปที่ /api/register/route.ts
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          body: JSON.stringify({ name, email }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (res.ok) {
+          alert("ยินดีต้อนรับคุณ " + name + "! ข้อมูลถูกบันทึกลง Google Sheets แล้ว");
+        } else {
+          alert("เกิดข้อผิดพลาด: ไม่สามารถบันทึกข้อมูลได้");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("ไม่สามารถเชื่อมต่อระบบได้");
+      }
+    }
+  };
+
   return (
     <main className="relative min-h-screen bg-[#0f172a] text-white font-sans overflow-hidden">
       
-      {/* --- LAYER 0: BACKGROUND (อยู่หลังสุดจริงๆ) --- */}
+      {/* --- LAYER 0: BACKGROUND --- */}
       <div className="fixed inset-0 z-0">
-        {/* รูปพื้นหลังหลัก */}
         <Image 
           src="/Gemini_Generated_Image_pnm23qpnm23qpnm2.png" 
           alt="Background"
           fill
-          className="object-cover opacity-40" // ปรับ opacity ได้ตามใจชอบ (0-100)
+          className="object-cover opacity-40"
           priority 
         />
-        {/* Overlay สีดำทับอีกชั้นเพื่อให้ตัวหนังสืออ่านง่ายและดูขรึม */}
         <div className="absolute inset-0 bg-black/50"></div>
-        
-        {/* ลายตารางกริด (Grid) เพิ่มมิติแบบแนววิทยาศาสตร์ */}
         <div 
           className="absolute inset-0 opacity-10 pointer-events-none" 
           style={{ 
-            backgroundImage: `linear-gradient(#444 1px, transparent 1px), linear-gradient(90deg, #444 1px, transparent 1px)`, 
-            backgroundSize: '40px 40px' 
+            backgroundImage: "linear-gradient(#444 1px, transparent 1px), linear-gradient(90deg, #444 1px, transparent 1px)", 
+            backgroundSize: "40px 40px" 
           }}
         ></div>
       </div>
 
-      {/* --- LAYER 1: FOREGROUND (ส่วนเนื้อหาที่ทับข้างหน้าทั้งหมด) --- */}
+      {/* --- LAYER 1: FOREGROUND --- */}
       <div className="relative z-10">
         
         {/* --- Navbar --- */}
@@ -45,29 +69,27 @@ export default function Home() {
               <span className="text-3xl font-black tracking-tighter">NJ TUTOR</span>
             </div>
             
-<div className="hidden md:flex gap-4 font-bold items-center">
-  {/* เมนู: สรุปเนื้อหา */}
-  <a href="#" className="px-4 py-2 rounded-xl border border-white/20 bg-white/5 transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] active:scale-95">
-    สรุปเนื้อหา
-  </a>
-
-  {/* เมนู: แบบทดสอบรายบท */}
-  <a href="#" className="px-4 py-2 rounded-xl border border-white/20 bg-white/5 transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] active:scale-95">
-    แบบทดสอบรายบท
-  </a>
-
-  {/* เมนู: ลงชื่อเข้าใช้งาน (ทำให้เด่นกว่าอันอื่น) */}
-  <a href="#" className="ml-2 px-6 py-2 rounded-full bg-white text-orange-600 border border-white transition-all duration-300 hover:bg-orange-50 hover:scale-110 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] active:scale-95">
-    ลงชื่อเข้าใช้งาน
-  </a>
-</div>
+            <div className="hidden md:flex gap-4 font-bold items-center">
+              <a href="#" className="px-4 py-2 rounded-xl border border-white/20 bg-white/5 transition-all duration-300 hover:bg-white/20 hover:scale-105 active:scale-95">
+                สรุปเนื้อหา
+              </a>
+              <a href="#" className="px-4 py-2 rounded-xl border border-white/20 bg-white/5 transition-all duration-300 hover:bg-white/20 hover:scale-105 active:scale-95">
+                แบบทดสอบรายบท
+              </a>
+              
+              {/* ปุ่มที่เชื่อมฟังก์ชัน handleRegister */}
+              <button 
+                onClick={handleRegister}
+                className="ml-2 px-6 py-2 rounded-full bg-white text-orange-600 border border-white transition-all duration-300 hover:bg-orange-50 hover:scale-110 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] active:scale-95"
+              >
+                ลงชื่อเข้าใช้งาน
+              </button>
+            </div>
           </div>
         </nav>
 
         {/* --- Hero Section --- */}
         <section className="max-w-7xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center min-h-[calc(100vh-112px)]">
-          
-          {/* ฝั่งข้อความคำคม */}
           <div className="md:w-1/2 z-10">
             <h2 className="text-5xl md:text-7xl font-serif text-red-500 italic mb-8 drop-shadow-lg leading-tight">
               “I have learned more from my mistakes than from my successes”
@@ -78,11 +100,8 @@ export default function Home() {
             </button>
           </div>
 
-          {/* ฝั่งรูปภาพนักวิทยาศาสตร์ */}
           <div className="md:w-1/2 flex justify-center mt-12 md:mt-0 relative">
-            {/* แสง Glow หลังรูปนักวิทย์ */}
             <div className="absolute inset-0 bg-orange-500/20 blur-[100px] rounded-full"></div>
-            
             <div className="relative w-80 h-[450px] md:w-[450px] md:h-[550px]">
               <Image 
                 src="/Sir_Humphry_Davy,_Bt_by_Thomas_Phillips.jpg" 
@@ -92,7 +111,6 @@ export default function Home() {
               />
             </div>
           </div>
-
         </section>
       </div>
     </main>
