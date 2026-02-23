@@ -34,6 +34,7 @@ export default function QuizPage() {
 // บอก TypeScript ว่า a และ b เป็น any เพื่อให้มันยอมให้เข้าถึง questionId ได้
 data.sort((a: any, b: any) => (a.questionId || "").localeCompare(b.questionId || ""));
         setQuizzes(data);
+        
       } catch (err) { console.error(err); } finally { setLoading(false); }
     };
     if (params.subject && params.chapter) fetchQuizzes();
