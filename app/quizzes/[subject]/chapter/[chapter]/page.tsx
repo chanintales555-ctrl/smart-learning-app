@@ -30,35 +30,44 @@ export default function QuizPage() {
           where("subject", "==", params.subject),
           where("chapter", "==", parseInt(params.chapter as string))
         );
+
+        // ดึงข้อมูลจาก Firebase (จุดที่เคยหายไป)
+        const querySnapshot = await getDocs(q);
+        
+        // แปลงข้อมูลและจัดการ TypeScript sorting
         const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-// บอก TypeScript ว่า a และ b เป็น any เพื่อให้มันยอมให้เข้าถึง questionId ได้
-data.sort((a: any, b: any) => (a.questionId || "").localeCompare(b.questionId || ""));
+        
+        // เรียงลำดับข้อสอบตาม questionId
+        data.sort((a: any, b: any) => (a.questionId || "").localeCompare(b.questionId || ""));
+        
         setQuizzes(data);
         
-      } catch (err) { console.error(err); } finally { setLoading(false); }
+      } catch (err) { 
+        console.error("Fetch Error:", err); 
+      } finally { 
+        setLoading(false); 
+      }
     };
+
     if (params.subject && params.chapter) fetchQuizzes();
   }, [params]);
 
-  // ฟังก์ชันกดส่งคำตอบ (จุดที่หยุดเวลาและบันทึกข้อมูล)
+  // ฟังก์ชันกดส่งคำตอบ
   const handleSubmitAnswer = async () => {
     if (!selectedOption) return;
 
-    // 1. หยุดเวลาทันทีที่กด Submit
     const timeSpent = (Date.now() - currentStartTime) / 1000;
     const currentQuiz = quizzes[currentIndex];
     const correctState = selectedOption === currentQuiz.correct;
 
-    // 2. แสดงเฉลยบนหน้าจอ
     setIsCorrect(correctState);
     setIsAnswered(true);
 
-    // 3. ส่งข้อมูลไป Google Sheets
     const singleResult = {
       questionId: currentQuiz.questionId,
       userAnswer: selectedOption,
       isCorrect: correctState,
-      timeSpent: timeSpent.toFixed(2) // เวลาที่ใช้จนถึงตอนกดปุ่มนี้
+      timeSpent: timeSpent.toFixed(2)
     };
 
     const payload = {
@@ -85,7 +94,7 @@ data.sort((a: any, b: any) => (a.questionId || "").localeCompare(b.questionId ||
       setSelectedOption(null);
       setIsAnswered(false);
       setIsCorrect(null);
-      setCurrentStartTime(Date.now()); // เริ่มนับเวลา 0 ใหม่สำหรับข้อถัดไป
+      setCurrentStartTime(Date.now());
     } else {
       alert("ทำครบทุกข้อแล้วครับ!");
       router.push('/');
@@ -93,6 +102,7 @@ data.sort((a: any, b: any) => (a.questionId || "").localeCompare(b.questionId ||
   };
 
   if (loading) return <div className="min-h-screen bg-[#050507] text-white flex items-center justify-center font-bold italic animate-pulse">LOADING...</div>;
+  if (quizzes.length === 0) return <div className="min-h-screen bg-[#050507] text-white flex items-center justify-center font-bold">ไม่พบข้อสอบในบทนี้</div>;
 
   const quiz = quizzes[currentIndex];
 
@@ -131,8 +141,8 @@ data.sort((a: any, b: any) => (a.questionId || "").localeCompare(b.questionId ||
             quiz[`option${opt}`] && (
               <button
                 key={opt}
-                disabled={isAnswered} // ล็อคปุ่มเมื่อกด Submit แล้ว
-                onClick={() => setSelectedOption(opt)} // เปลี่ยนช้อยส์ได้เรื่อยๆ ก่อน Submit
+                disabled={isAnswered}
+                onClick={() => setSelectedOption(opt)}
                 className={`group p-6 rounded-[2rem] border transition-all duration-300 text-left flex items-center gap-6 ${
                   selectedOption === opt 
                   ? 'bg-blue-600 border-blue-400 shadow-[0_0_20px_rgba(37,99,235,0.4)]' 
@@ -156,7 +166,7 @@ data.sort((a: any, b: any) => (a.questionId || "").localeCompare(b.questionId ||
         <div className="flex flex-col items-center pt-8 border-t border-white/5 gap-6">
           {isAnswered && (
             <div className={`text-4xl font-black italic uppercase tracking-tighter animate-in fade-in zoom-in duration-300 ${isCorrect ? 'text-green-500' : 'text-red-500'}`}>
-              {isCorrect ? '✅ CORRECT!' : '❌ INCORRECT'}
+              {isCorrect ? '✅ CORRECT!' : `❌ INCORRECT (Ans: ${quiz.correct})`}
             </div>
           )}
 
