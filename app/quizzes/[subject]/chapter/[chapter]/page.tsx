@@ -30,9 +30,9 @@ export default function QuizPage() {
           where("subject", "==", params.subject),
           where("chapter", "==", parseInt(params.chapter as string))
         );
-        const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        data.sort((a, b) => a.questionId.localeCompare(b.questionId));
+// บอก TypeScript ว่า a และ b เป็น any เพื่อให้มันยอมให้เข้าถึง questionId ได้
+data.sort((a: any, b: any) => (a.questionId || "").localeCompare(b.questionId || ""));
         setQuizzes(data);
       } catch (err) { console.error(err); } finally { setLoading(false); }
     };
