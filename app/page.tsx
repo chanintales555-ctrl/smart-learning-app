@@ -1,117 +1,90 @@
 'use client';
-import Image from "next/image";
+import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
 
 export default function Home() {
+  const { data: session } = useSession();
 
-  // --- ฟังก์ชันสำหรับลงชื่อเข้าใช้งาน (ส่งข้อมูลไป Google Sheets) ---
-  const handleRegister = async () => {
-    const name = prompt("กรุณากรอกชื่อของคุณ:");
-    const email = prompt("กรุณากรอกอีเมลของคุณ:");
+  if (session) {
+    return (
+      <main className="h-screen w-full bg-[#0d0d0f] text-white overflow-hidden relative flex flex-col">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/10 blur-[150px] rounded-full animate-pulse pointer-events-none"></div>
 
-    if (name && email) {
-      try {
-        // ส่งข้อมูลไปที่ /api/register/route.ts
-        const res = await fetch('/api/register', {
-          method: 'POST',
-          body: JSON.stringify({ name, email }),
-          headers: { 'Content-Type': 'application/json' },
-        });
-
-        if (res.ok) {
-          alert("ยินดีต้อนรับคุณ " + name + "! ข้อมูลถูกบันทึกลง Google Sheets แล้ว");
-        } else {
-          alert("เกิดข้อผิดพลาด: ไม่สามารถบันทึกข้อมูลได้");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("ไม่สามารถเชื่อมต่อระบบได้");
-      }
-    }
-  };
-
-  return (
-    <main className="relative min-h-screen bg-[#0f172a] text-white font-sans overflow-hidden">
-      
-      {/* --- LAYER 0: BACKGROUND --- */}
-      <div className="fixed inset-0 z-0">
-        <Image 
-          src="/Gemini_Generated_Image_pnm23qpnm23qpnm2.png" 
-          alt="Background"
-          fill
-          className="object-cover opacity-40"
-          priority 
-        />
-        <div className="absolute inset-0 bg-black/50"></div>
-        <div 
-          className="absolute inset-0 opacity-10 pointer-events-none" 
-          style={{ 
-            backgroundImage: "linear-gradient(#444 1px, transparent 1px), linear-gradient(90deg, #444 1px, transparent 1px)", 
-            backgroundSize: "40px 40px" 
-          }}
-        ></div>
-      </div>
-
-      {/* --- LAYER 1: FOREGROUND --- */}
-      <div className="relative z-10">
-        
-        {/* --- Navbar --- */}
-        <nav className="bg-gradient-to-r from-red-600 to-orange-500 p-4 shadow-2xl relative z-20">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="relative w-20 h-20">
-                <Image 
-                  src="/Gemini_Generated_Image_kofvl3kofvl3kofv-Photoroom.png" 
-                  alt="NJ Tutor Logo" 
-                  fill 
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-3xl font-black tracking-tighter">NJ TUTOR</span>
+        <header className="absolute top-0 left-0 w-full p-8 z-50 pointer-events-none">
+          {/* ฝั่งซ้าย: Logo */}
+          <div className="absolute top-8 left-10 flex items-center gap-4 pointer-events-auto">
+            <div className="w-12 h-12 flex items-center justify-center">
+              <img src="/logo.png" alt="NJ Logo" className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(249,115,22,0.4)]" />
             </div>
-            
-            <div className="hidden md:flex gap-4 font-bold items-center">
-              <a href="#" className="px-4 py-2 rounded-xl border border-white/20 bg-white/5 transition-all duration-300 hover:bg-white/20 hover:scale-105 active:scale-95">
-                สรุปเนื้อหา
-              </a>
-              <a href="#" className="px-4 py-2 rounded-xl border border-white/20 bg-white/5 transition-all duration-300 hover:bg-white/20 hover:scale-105 active:scale-95">
-                แบบทดสอบรายบท
-              </a>
+            <div className="flex flex-col">
+              <span className="text-xl font-black tracking-tighter bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent italic leading-none">NJ TUTOR</span>
+              <span className="text-[10px] text-orange-500 tracking-[0.4em] font-bold uppercase opacity-50">Academy</span>
+            </div>
+          </div>
+
+          {/* ฝั่งขวา: Menu & User */}
+          <div className="absolute top-8 right-10 flex items-center gap-4 pointer-events-auto">
+            <nav className="flex gap-2 items-center">
+              <button className="group relative px-5 py-2 rounded-xl transition-all duration-300 hover:scale-105">
+                <div className="absolute inset-0 bg-white/5 rounded-xl group-hover:bg-orange-500/10 transition-all border border-white/5 group-hover:border-orange-500/20"></div>
+                <span className="relative text-sm font-bold text-gray-400 group-hover:text-orange-400 transition-colors">Courses</span>
+              </button>
               
-              {/* ปุ่มที่เชื่อมฟังก์ชัน handleRegister */}
-              <button 
-                onClick={handleRegister}
-                className="ml-2 px-6 py-2 rounded-full bg-white text-orange-600 border border-white transition-all duration-300 hover:bg-orange-50 hover:scale-110 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] active:scale-95"
-              >
-                ลงชื่อเข้าใช้งาน
+              {/* ปุ่ม Quizzes ที่กดได้จริง */}
+              <Link href="/quizzes" className="group relative px-5 py-2 rounded-xl transition-all duration-300 hover:scale-105">
+                <div className="absolute inset-0 bg-white/5 rounded-xl group-hover:bg-orange-500/10 transition-all border border-white/5 group-hover:border-orange-500/20"></div>
+                <span className="relative text-sm font-bold text-gray-400 group-hover:text-orange-400 transition-colors">Quizzes</span>
+              </Link>
+            </nav>
+
+            <div className="flex items-center gap-4 bg-white/5 backdrop-blur-xl px-5 py-2 rounded-2xl border border-white/5 shadow-2xl">
+              <div className="text-right leading-none">
+                <p className="text-[9px] text-gray-500 uppercase font-black mb-1">Active</p>
+                <p className="text-sm font-bold text-orange-100">{session?.user?.name}</p>
+              </div>
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center font-black text-white shadow-lg border border-white/10">
+                {session?.user?.name?.charAt(0).toUpperCase()}
+              </div>
+              <button onClick={() => signOut()} className="text-[10px] font-black text-red-500/70 hover:text-red-500 transition-colors uppercase tracking-widest pl-2 border-l border-white/10">
+                Exit
               </button>
             </div>
           </div>
-        </nav>
+        </header>
 
-        {/* --- Hero Section --- */}
-        <section className="max-w-7xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center min-h-[calc(100vh-112px)]">
-          <div className="md:w-1/2 z-10">
-            <h2 className="text-5xl md:text-7xl font-serif text-red-500 italic mb-8 drop-shadow-lg leading-tight">
-              “I have learned more from my mistakes than from my successes”
-            </h2>
-            <p className="text-2xl text-gray-300 font-light">— Sir Humphry Davy</p>
-            <button className="mt-10 bg-orange-500 hover:bg-orange-600 text-white px-10 py-4 rounded-full font-black text-xl transition-all hover:scale-105 shadow-[0_10px_20px_rgba(249,115,22,0.3)]">
-              เริ่มเรียนรู้ตอนนี้
-            </button>
+        <section className="flex-1 flex flex-col md:flex-row items-center justify-center max-w-7xl mx-auto px-10 gap-20 w-full pt-10">
+          <div className="flex-1 space-y-8 z-10">
+            <h1 className="text-3xl md:text-5xl font-serif italic leading-tight text-orange-400 drop-shadow-2xl">
+              “I have learned more from my <br />
+              <span className="text-white not-italic font-sans font-black tracking-tighter uppercase text-4xl md:text-6xl">mistakes</span> <br />
+              than from my successes”
+            </h1>
           </div>
-
-          <div className="md:w-1/2 flex justify-center mt-12 md:mt-0 relative">
-            <div className="absolute inset-0 bg-orange-500/20 blur-[100px] rounded-full"></div>
-            <div className="relative w-80 h-[450px] md:w-[450px] md:h-[550px]">
-              <Image 
-                src="/Sir_Humphry_Davy,_Bt_by_Thomas_Phillips.jpg" 
-                alt="Scientist Portrait" 
-                fill 
-                className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.7)]"
-              />
+          <div className="flex-1 flex justify-center items-center relative py-10">
+            <div className="absolute inset-0 bg-orange-500/20 blur-[100px] rounded-full animate-pulse"></div>
+            <div className="relative group w-full max-w-[360px] aspect-[4/5]">
+              <div className="relative h-full bg-[#0d0d0f] rounded-[3rem] p-1.5 border border-white/10 overflow-hidden shadow-2xl shadow-orange-500/20">
+                <img src="/sir.jpg" alt="Sir Humphry Davy" className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-1000" />
+              </div>
             </div>
           </div>
         </section>
+      </main>
+    );
+  }
+
+  return (
+    <main className="h-screen w-full bg-[#0a0a0c] flex items-center justify-center text-white relative overflow-hidden">
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-orange-500/10 blur-[120px] rounded-full animate-pulse"></div>
+      <div className="z-10 text-center space-y-12 px-6">
+        <div className="flex flex-col items-center gap-6">
+          <img src="/logo.png" alt="NJ Logo" className="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-[0_0_30px_rgba(249,115,22,0.5)]" />
+          <h1 className="text-6xl md:text-9xl font-black tracking-tighter bg-gradient-to-b from-white to-gray-700 bg-clip-text text-transparent italic leading-none">NJ TUTOR</h1>
+        </div>
+        <div className="flex flex-col md:flex-row gap-6 justify-center">
+          <Link href="/login" className="px-20 py-5 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl font-black tracking-widest hover:scale-105 transition-all">SIGN IN</Link>
+          <Link href="/register" className="px-20 py-5 border border-white/10 rounded-2xl font-black tracking-widest text-gray-400 hover:bg-white/5 transition-all">REGISTER</Link>
+        </div>
       </div>
     </main>
   );
