@@ -26,29 +26,44 @@ export default function QuizPage() {
   const userEmail = session?.user?.email || "GUEST";
   
   const [currentStartTime, setCurrentStartTime] = useState(Date.now());
-  const SHEETS_URL = "https://script.google.com/macros/s/AKfycbyIODPty4xBGWygDDHs2HXiThMMYbSZO9w5HFun0thIKNtNelOsxpoX6GrYlQEBRGHf/exec"; 
 
   useEffect(() => {
     const fetchQuizzes = async () => {
-      try {
-        const q = query(
-          collection(db, "quizzes"),
-          where("subject", "==", params.subject),
-          where("chapter", "==", parseInt(params.chapter as string))
-        );
-        const querySnapshot = await getDocs(q);
-        const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        data.sort((a: any, b: any) => (a.questionId || "").localeCompare(b.questionId || ""));
-        setQuizzes(data);
-      } catch (err) { 
-        console.error("Fetch Error:", err); 
-      } finally { 
-        setLoading(false); 
+      // --- DEBUG LOGS START ---
+      console.log("Attempting to fetch quizzes with params:", params);
+      if (params.subject && params.chapter) {
+        const parsedChapter = parseInt(params.chapter as string);
+        console.log(`Querying Firestore for subject: "${params.subject}" and chapter: ${parsedChapter} (type: ${typeof parsedChapter})`);
+        
+        try {
+          const q = query(
+            collection(db, "quizzes"),
+            where("subject", "==", params.subject),
+            where("chapter", "==", parsedChapter)
+          );
+          const querySnapshot = await getDocs(q);
+          const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          
+          console.log(`Firestore returned ${data.length} documents.`);
+          if (data.length > 0) {
+            console.log("First document data:", data[0]);
+          }
+
+          data.sort((a: any, b: any) => (a.questionId || "").localeCompare(b.questionId || ""));
+          setQuizzes(data);
+        } catch (err) { 
+          console.error("Fetch Error:", err); 
+        } finally { 
+          setLoading(false); 
+        }
+      } else {
+        setLoading(false);
       }
+      // --- DEBUG LOGS END ---
     };
 
-    if (params.subject && params.chapter) fetchQuizzes();
-  }, [params.subject, params.chapter]);
+    fetchQuizzes();
+  }, [params]);
 
   const handleSubmitAnswer = async () => {
     if (!selectedOption) return;
@@ -60,12 +75,11 @@ export default function QuizPage() {
     setIsCorrect(correctState);
     setIsAnswered(true);
 
+    // The payload now only contains data the API route needs.
+    // The server will add the user details from the session.
     const payload = {
-      // 3. ส่งชื่อจาก Session ไปที่ Sheets (ช่อง Owner จะกลายเป็น "ttt" ทันที)
-      userId: userName, 
       subject: params.subject,
       chapter: params.chapter,
-      attemptId: `ATT-${userEmail.split('@')[0]}-${Date.now()}`, 
       results: [{
         questionId: currentQuiz.questionId,
         userAnswer: selectedOption,
@@ -75,13 +89,21 @@ export default function QuizPage() {
     };
 
     try {
-      fetch(SHEETS_URL, {
+      const response = await fetch('/api/submit-answer', {
         method: 'POST',
-        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-    } catch (err) { console.error("Sheet Error:", err); }
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to submit answer:", errorData.error);
+      } else {
+        console.log("Answer submitted successfully.");
+      }
+    } catch (err) { 
+      console.error("API Error:", err); 
+    }
   };
 
   const handleNext = () => {
