@@ -12,7 +12,6 @@ export default function CosmicCanvas({ scrollProgress }: CosmicCanvasProps) {
   const scrollRef = useRef<number>(scrollProgress);
   const mouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  // Keep scroll progress updated in ref for requestAnimationFrame loop
   useEffect(() => {
     scrollRef.current = scrollProgress;
   }, [scrollProgress]);
@@ -23,23 +22,22 @@ export default function CosmicCanvas({ scrollProgress }: CosmicCanvasProps) {
 
     // 1. SCENE & CAMERA SETUP
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x05050a, 0.008);
+    scene.fog = new THREE.FogExp2(0x040408, 0.007);
 
     const camera = new THREE.PerspectiveCamera(
-      60,
+      58,
       window.innerWidth / window.innerHeight,
       0.1,
-      1000
+      1200
     );
-    camera.position.set(0, 2, 42);
+    camera.position.set(0, 3, 44);
 
-    // Current & Target vectors for buttery smooth LERP
-    const currentCamPos = new THREE.Vector3(0, 2, 42);
-    const targetCamPos = new THREE.Vector3(0, 2, 42);
+    const currentCamPos = new THREE.Vector3(0, 3, 44);
+    const targetCamPos = new THREE.Vector3(0, 3, 44);
     const currentLookAt = new THREE.Vector3(0, 0, 0);
     const targetLookAt = new THREE.Vector3(0, 0, 0);
 
-    // 2. RENDERER SETUP
+    // 2. RENDERER
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       powerPreference: 'high-performance',
@@ -48,56 +46,62 @@ export default function CosmicCanvas({ scrollProgress }: CosmicCanvasProps) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.35;
     container.appendChild(renderer.domElement);
 
     // 3. LIGHTING
-    const ambientLight = new THREE.AmbientLight(0x0f172a, 1.8);
+    const ambientLight = new THREE.AmbientLight(0x0f172a, 2.0);
     scene.add(ambientLight);
 
-    const physicsPointLight = new THREE.PointLight(0x38bdf8, 5, 50, 1.2);
-    physicsPointLight.position.set(22, -2, -15);
-    scene.add(physicsPointLight);
+    const physicsLight = new THREE.PointLight(0x00f0ff, 6, 60, 1.2);
+    physicsLight.position.set(24, 0, -20);
+    scene.add(physicsLight);
 
-    const chemistryPointLight = new THREE.PointLight(0x10b981, 5, 50, 1.2);
-    chemistryPointLight.position.set(-24, -3, -50);
-    scene.add(chemistryPointLight);
+    const chemistryLight = new THREE.PointLight(0x10b981, 6, 60, 1.2);
+    chemistryLight.position.set(-28, -2, -55);
+    scene.add(chemistryLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    keyLight.position.set(10, 30, 20);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    keyLight.position.set(15, 35, 25);
     scene.add(keyLight);
 
-    // 4. PROCEDURAL STARFIELD & NEBULA PARTICLES
-    const starCount = 3500;
+    // 4. SPHERICAL CELESTIAL DOME & SPIRAL GALAXY (Natural spherical distribution, NO BOX!)
+    const starCount = 4500;
     const starGeo = new THREE.BufferGeometry();
     const starPositions = new Float32Array(starCount * 3);
     const starColors = new Float32Array(starCount * 3);
 
-    const palette = [
+    const starPalette = [
       new THREE.Color(0x38bdf8), // Cyan
-      new THREE.Color(0x60a5fa), // Blue
-      new THREE.Color(0xf59e0b), // Amber
-      new THREE.Color(0xffffff), // Pure white
-      new THREE.Color(0xa855f7), // Violet
+      new THREE.Color(0x818cf8), // Indigo
+      new THREE.Color(0xfbbf24), // Warm Gold
+      new THREE.Color(0xffffff), // Pure White
+      new THREE.Color(0x34d399), // Emerald
+      new THREE.Color(0xf43f5e), // Plasma Pink
     ];
 
     for (let i = 0; i < starCount; i++) {
       const i3 = i * 3;
-      starPositions[i3] = (Math.random() - 0.5) * 400;
-      starPositions[i3 + 1] = (Math.random() - 0.5) * 400;
-      starPositions[i3 + 2] = (Math.random() - 0.5) * 400;
+      // Spherical distribution with logarithmic radial depth
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const radius = 90 + Math.pow(Math.random(), 0.6) * 350;
 
-      const col = palette[Math.floor(Math.random() * palette.length)];
-      starColors[i3] = col.r;
-      starColors[i3 + 1] = col.g;
-      starColors[i3 + 2] = col.b;
+      starPositions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+      starPositions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      starPositions[i3 + 2] = radius * Math.cos(phi);
+
+      const color = starPalette[Math.floor(Math.random() * starPalette.length)];
+      starColors[i3] = color.r;
+      starColors[i3 + 1] = color.g;
+      starColors[i3 + 2] = color.b;
     }
 
     starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
     starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
 
     const starMat = new THREE.PointsMaterial({
-      size: 0.9,
+      size: 1.1,
       vertexColors: true,
       transparent: true,
       opacity: 0.85,
@@ -106,159 +110,311 @@ export default function CosmicCanvas({ scrollProgress }: CosmicCanvasProps) {
     const starField = new THREE.Points(starGeo, starMat);
     scene.add(starField);
 
-    // 5. 🪐 PHYSICS PLANET: THE QUANTUM SINGULARITY (at 22, -2, -15)
+    // Cosmic Dust Plane (Galactic Horizon)
+    const dustCount = 800;
+    const dustGeo = new THREE.BufferGeometry();
+    const dustPos = new Float32Array(dustCount * 3);
+    for (let i = 0; i < dustCount; i++) {
+      const i3 = i * 3;
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 30 + Math.random() * 180;
+      dustPos[i3] = Math.cos(angle) * dist;
+      dustPos[i3 + 1] = (Math.random() - 0.5) * 20; // Flattened disk
+      dustPos[i3 + 2] = Math.sin(angle) * dist;
+    }
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+    const dustMat = new THREE.PointsMaterial({
+      color: 0x38bdf8,
+      size: 1.8,
+      transparent: true,
+      opacity: 0.35,
+      blending: THREE.AdditiveBlending,
+    });
+    const galacticDisk = new THREE.Points(dustGeo, dustMat);
+    scene.add(galacticDisk);
+
+    // =========================================================================
+    // 5. 🪐 PHYSICS REALM: WARPED SPACETIME & RELATIVISTIC SINGULARITY (at 24, 0, -20)
+    // =========================================================================
     const physicsGroup = new THREE.Group();
-    physicsGroup.position.set(22, -2, -15);
+    physicsGroup.position.set(24, 0, -20);
     scene.add(physicsGroup);
 
-    // Physics Core (Pulsing Energy Sphere)
-    const physCoreGeo = new THREE.SphereGeometry(4.2, 32, 32);
-    const physCoreMat = new THREE.MeshStandardMaterial({
-      color: 0x0284c7,
-      emissive: 0x0369a1,
-      emissiveIntensity: 0.8,
-      roughness: 0.2,
-      metalness: 0.8,
-    });
-    const physCore = new THREE.Mesh(physCoreGeo, physCoreMat);
-    physicsGroup.add(physCore);
+    // A. EINSTEIN'S WARPED SPACETIME GRID (General Relativity Gravity Well)
+    const gridSegments = 40;
+    const gridGeo = new THREE.PlaneGeometry(55, 55, gridSegments, gridSegments);
+    gridGeo.rotateX(-Math.PI / 2);
+    // Deform grid vertices downward into a gravitational funnel
+    const gridPosAttr = gridGeo.attributes.position;
+    for (let i = 0; i < gridPosAttr.count; i++) {
+      const vx = gridPosAttr.getX(i);
+      const vz = gridPosAttr.getZ(i);
+      const dist = Math.sqrt(vx * vx + vz * vz);
+      const depth = -12.0 / (1.0 + dist * 0.28); // Gravitational well function
+      gridPosAttr.setY(i, depth - 4.5);
+    }
+    gridGeo.computeVertexNormals();
 
-    // Physics Wireframe Lattice Shell
-    const physWireGeo = new THREE.SphereGeometry(4.5, 20, 20);
-    const physWireMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
+    const gridMat = new THREE.MeshBasicMaterial({
+      color: 0x00f0ff,
       wireframe: true,
+      transparent: true,
+      opacity: 0.28,
+    });
+    const spacetimeGrid = new THREE.Mesh(gridGeo, gridMat);
+    physicsGroup.add(spacetimeGrid);
+
+    // B. BLACK HOLE PHOTON SPHERE & EVENT HORIZON (The Singularity Core)
+    const singularityGeo = new THREE.SphereGeometry(3.6, 32, 32);
+    const singularityMat = new THREE.MeshBasicMaterial({
+      color: 0x020617, // Pure gravitational abyss
+    });
+    const singularity = new THREE.Mesh(singularityGeo, singularityMat);
+    physicsGroup.add(singularity);
+
+    // Blinding Photon Sphere Glow Shell
+    const photonShellGeo = new THREE.SphereGeometry(4.0, 32, 32);
+    const photonShellMat = new THREE.MeshStandardMaterial({
+      color: 0x00f0ff,
+      emissive: 0x00f0ff,
+      emissiveIntensity: 1.5,
       transparent: true,
       opacity: 0.45,
+      wireframe: true,
     });
-    const physWire = new THREE.Mesh(physWireGeo, physWireMat);
-    physicsGroup.add(physWire);
+    const photonShell = new THREE.Mesh(photonShellGeo, photonShellMat);
+    physicsGroup.add(photonShell);
 
-    // Tri-Axial Gyroscopic Bohr Rings
-    const createRing = (radius: number, tube: number, color: number, rotX: number, rotY: number) => {
-      const ringGeo = new THREE.TorusGeometry(radius, tube, 16, 120);
-      const ringMat = new THREE.MeshStandardMaterial({
-        color,
-        emissive: color,
-        emissiveIntensity: 0.6,
-        roughness: 0.3,
-        metalness: 0.9,
-      });
-      const ring = new THREE.Mesh(ringGeo, ringMat);
-      ring.rotation.x = rotX;
-      ring.rotation.y = rotY;
-      return ring;
-    };
+    // C. RELATIVISTIC ACCRETION DISK (Keplerian Plasma Swirl)
+    const diskParticleCount = 2200;
+    const diskGeo = new THREE.BufferGeometry();
+    const diskPositions = new Float32Array(diskParticleCount * 3);
+    const diskColors = new Float32Array(diskParticleCount * 3);
+    const diskRadii = new Float32Array(diskParticleCount);
+    const diskAngles = new Float32Array(diskParticleCount);
+    const diskSpeeds = new Float32Array(diskParticleCount);
 
-    const ring1 = createRing(8.2, 0.12, 0x38bdf8, Math.PI / 4, 0);
-    const ring2 = createRing(10.2, 0.1, 0x60a5fa, -Math.PI / 3, Math.PI / 6);
-    const ring3 = createRing(12.2, 0.08, 0xf59e0b, Math.PI / 2.2, -Math.PI / 4);
-    physicsGroup.add(ring1);
-    physicsGroup.add(ring2);
-    physicsGroup.add(ring3);
+    const plasmaHot = new THREE.Color(0xffffff); // Core energy
+    const plasmaCyan = new THREE.Color(0x00f0ff);
+    const plasmaElectric = new THREE.Color(0x3b82f6);
+    const plasmaOrange = new THREE.Color(0xf97316);
 
-    // Orbiting Quantum Electrons (Particle stream)
-    const electronCount = 48;
-    const electronGeo = new THREE.BufferGeometry();
-    const electronPositions = new Float32Array(electronCount * 3);
-    for (let i = 0; i < electronCount; i++) {
+    for (let i = 0; i < diskParticleCount; i++) {
+      const r = 4.8 + Math.pow(Math.random(), 1.6) * 14.5;
+      const angle = Math.random() * Math.PI * 2;
+      diskRadii[i] = r;
+      diskAngles[i] = angle;
+      // Keplerian velocity: inner particles orbit much faster than outer particles (v ~ 1/sqrt(r))
+      diskSpeeds[i] = 4.2 / Math.sqrt(r);
+
       const i3 = i * 3;
-      electronPositions[i3] = 0;
-      electronPositions[i3 + 1] = 0;
-      electronPositions[i3 + 2] = 0;
+      diskPositions[i3] = Math.cos(angle) * r;
+      diskPositions[i3 + 1] = (Math.random() - 0.5) * (0.2 + (r - 4.8) * 0.08); // Disk thickness
+      diskPositions[i3 + 2] = Math.sin(angle) * r;
+
+      // Color gradation from blinding white-hot to plasma orange
+      const ratio = (r - 4.8) / 14.5;
+      let pColor = new THREE.Color();
+      if (ratio < 0.2) pColor.lerpColors(plasmaHot, plasmaCyan, ratio / 0.2);
+      else if (ratio < 0.6) pColor.lerpColors(plasmaCyan, plasmaElectric, (ratio - 0.2) / 0.4);
+      else pColor.lerpColors(plasmaElectric, plasmaOrange, (ratio - 0.6) / 0.4);
+
+      diskColors[i3] = pColor.r;
+      diskColors[i3 + 1] = pColor.g;
+      diskColors[i3 + 2] = pColor.b;
     }
-    electronGeo.setAttribute('position', new THREE.BufferAttribute(electronPositions, 3));
-    const electronMat = new THREE.PointsMaterial({
-      color: 0x38bdf8,
-      size: 1.5,
-      blending: THREE.AdditiveBlending,
+
+    diskGeo.setAttribute('position', new THREE.BufferAttribute(diskPositions, 3));
+    diskGeo.setAttribute('color', new THREE.BufferAttribute(diskColors, 3));
+
+    const diskMat = new THREE.PointsMaterial({
+      size: 1.4,
+      vertexColors: true,
       transparent: true,
       opacity: 0.9,
+      blending: THREE.AdditiveBlending,
     });
-    const electronParticles = new THREE.Points(electronGeo, electronMat);
-    physicsGroup.add(electronParticles);
+    const accretionDisk = new THREE.Points(diskGeo, diskMat);
+    accretionDisk.rotation.x = Math.PI * 0.12; // Tilted accretion disk
+    physicsGroup.add(accretionDisk);
 
-    // 6. 🧪 CHEMISTRY PLANET: THE MOLECULAR CRYSTAL (at -24, -3, -50)
+    // D. RELATIVISTIC POLAR JETS (Astrophysical Plasma Beam)
+    const jetGeo = new THREE.CylinderGeometry(0.2, 2.5, 30, 16, 1, true);
+    const jetMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.35,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+    });
+    const northJet = new THREE.Mesh(jetGeo, jetMat);
+    northJet.position.y = 15;
+    physicsGroup.add(northJet);
+
+    const southJet = northJet.clone();
+    southJet.rotation.z = Math.PI;
+    southJet.position.y = -15;
+    physicsGroup.add(southJet);
+
+    // Magnetic Dipole Field Lines (Looping from North Pole to South Pole)
+    const dipoleGroup = new THREE.Group();
+    const lineCount = 8;
+    for (let k = 0; k < lineCount; k++) {
+      const curve = new THREE.EllipseCurve(
+        0, 0,
+        9.5, 14.0,
+        0, 2 * Math.PI,
+        false,
+        0
+      );
+      const points = curve.getPoints(50);
+      const lGeo = new THREE.BufferGeometry().setFromPoints(
+        points.map(p => new THREE.Vector3(p.x, p.y, 0))
+      );
+      const lMat = new THREE.LineBasicMaterial({
+        color: 0x00f0ff,
+        transparent: true,
+        opacity: 0.25,
+      });
+      const dipoleLine = new THREE.Line(lGeo, lMat);
+      dipoleLine.rotation.y = (k / lineCount) * Math.PI;
+      dipoleGroup.add(dipoleLine);
+    }
+    physicsGroup.add(dipoleGroup);
+
+    // =========================================================================
+    // 6. 🧪 CHEMISTRY REALM: MACROMOLECULAR DNA HELIX & QUANTUM ORBITALS (at -28, -2, -55)
+    // =========================================================================
     const chemistryGroup = new THREE.Group();
-    chemistryGroup.position.set(-24, -3, -50);
+    chemistryGroup.position.set(-28, -2, -55);
     scene.add(chemistryGroup);
 
-    // Chemistry Faceted Crystal Core
-    const chemCoreGeo = new THREE.IcosahedronGeometry(4.8, 1);
-    const chemCoreMat = new THREE.MeshStandardMaterial({
-      color: 0x059669,
-      emissive: 0x047857,
-      emissiveIntensity: 0.7,
-      flatShading: true,
-      roughness: 0.25,
-      metalness: 0.5,
+    // A. DNA DOUBLE HELIX STRUCTURE (Realistic Organic Molecular Biology)
+    const helixGroup = new THREE.Group();
+    chemistryGroup.add(helixGroup);
+
+    const basePairCount = 28;
+    const helixHeight = 32;
+    const helixRadius = 5.2;
+    const helixTwist = 3.5; // full turns
+
+    const sugarMat1 = new THREE.MeshStandardMaterial({
+      color: 0x10b981,
+      emissive: 0x059669,
+      emissiveIntensity: 0.8,
+      roughness: 0.3,
+      metalness: 0.6,
     });
-    const chemCore = new THREE.Mesh(chemCoreGeo, chemCoreMat);
-    chemistryGroup.add(chemCore);
-
-    // Outer Crystal Cage
-    const chemCageGeo = new THREE.IcosahedronGeometry(5.4, 1);
-    const chemCageMat = new THREE.MeshBasicMaterial({
-      color: 0x34d399,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.5,
+    const sugarMat2 = new THREE.MeshStandardMaterial({
+      color: 0x06b6d4,
+      emissive: 0x0891b2,
+      emissiveIntensity: 0.8,
+      roughness: 0.3,
+      metalness: 0.6,
     });
-    const chemCage = new THREE.Mesh(chemCageGeo, chemCageMat);
-    chemistryGroup.add(chemCage);
+    const bondMat = new THREE.MeshStandardMaterial({
+      color: 0x475569,
+      roughness: 0.4,
+      metalness: 0.8,
+    });
 
-    // Orbiting Molecular Lattice Structure
-    const moleculeLattice = new THREE.Group();
-    chemistryGroup.add(moleculeLattice);
+    const baseColors = [0x10b981, 0xa855f7, 0xf59e0b, 0xf43f5e]; // A, T, C, G
+    const nodeGeo = new THREE.SphereGeometry(0.7, 16, 16);
+    const rungCylGeo = new THREE.CylinderGeometry(0.12, 0.12, helixRadius * 2, 8);
+    rungCylGeo.rotateZ(Math.PI / 2);
 
-    const atomColors = [0x10b981, 0xa855f7, 0xf97316, 0x38bdf8];
-    const atomCount = 12;
-    const atomRadius = 9.5;
-    const atomMeshes: THREE.Mesh[] = [];
+    for (let i = 0; i < basePairCount; i++) {
+      const progressRatio = i / (basePairCount - 1);
+      const y = (progressRatio - 0.5) * helixHeight;
+      const angle = progressRatio * Math.PI * 2 * helixTwist;
 
-    for (let i = 0; i < atomCount; i++) {
-      const angle = (i / atomCount) * Math.PI * 2;
-      const x = Math.cos(angle) * atomRadius;
-      const z = Math.sin(angle) * atomRadius;
-      const y = Math.sin(i * 1.5) * 2.5;
+      // Strand 1 Node
+      const x1 = Math.cos(angle) * helixRadius;
+      const z1 = Math.sin(angle) * helixRadius;
+      const node1 = new THREE.Mesh(nodeGeo, sugarMat1);
+      node1.position.set(x1, y, z1);
+      helixGroup.add(node1);
 
-      const aGeo = new THREE.SphereGeometry(0.75, 16, 16);
-      const aMat = new THREE.MeshStandardMaterial({
-        color: atomColors[i % atomColors.length],
-        emissive: atomColors[i % atomColors.length],
-        emissiveIntensity: 0.5,
-        roughness: 0.3,
-        metalness: 0.7,
+      // Strand 2 Node (180 degrees opposite)
+      const x2 = Math.cos(angle + Math.PI) * helixRadius;
+      const z2 = Math.sin(angle + Math.PI) * helixRadius;
+      const node2 = new THREE.Mesh(nodeGeo, sugarMat2);
+      node2.position.set(x2, y, z2);
+      helixGroup.add(node2);
+
+      // Connecting Base-Pair Hydrogen Bond Rod
+      const rungMat = new THREE.MeshStandardMaterial({
+        color: baseColors[i % baseColors.length],
+        emissive: baseColors[i % baseColors.length],
+        emissiveIntensity: 0.6,
+        roughness: 0.2,
       });
-      const atom = new THREE.Mesh(aGeo, aMat);
-      atom.position.set(x, y, z);
-      moleculeLattice.add(atom);
-      atomMeshes.push(atom);
+      const rung = new THREE.Mesh(rungCylGeo, rungMat);
+      rung.position.set(0, y, 0);
+      rung.rotation.y = -angle;
+      helixGroup.add(rung);
     }
 
-    // Reaction Mist Particles around Chemistry Planet
-    const mistCount = 400;
+    // B. QUANTUM ELECTRON ORBITAL PROBABILITY CLOUDS (p-Orbital Dumbbells)
+    const orbitalCloudCount = 1400;
+    const orbitalGeo = new THREE.BufferGeometry();
+    const orbitalPositions = new Float32Array(orbitalCloudCount * 3);
+    const orbitalColors = new Float32Array(orbitalCloudCount * 3);
+
+    for (let i = 0; i < orbitalCloudCount; i++) {
+      const i3 = i * 3;
+      // Quantum p-orbital mathematical probability distribution |Y_1^0|^2 ~ cos^2(theta)
+      const u = Math.random();
+      const theta = Math.acos(2 * Math.random() - 1);
+      const phi = Math.random() * Math.PI * 2;
+      const probRadius = 8.5 * Math.pow(Math.abs(Math.cos(theta)), 0.8) + Math.random() * 2.5;
+
+      orbitalPositions[i3] = probRadius * Math.sin(theta) * Math.cos(phi);
+      orbitalPositions[i3 + 1] = probRadius * Math.cos(theta);
+      orbitalPositions[i3 + 2] = probRadius * Math.sin(theta) * Math.sin(phi);
+
+      const isNorthLobe = Math.cos(theta) > 0;
+      const col = isNorthLobe ? new THREE.Color(0x10b981) : new THREE.Color(0xa855f7);
+      orbitalColors[i3] = col.r;
+      orbitalColors[i3 + 1] = col.g;
+      orbitalColors[i3 + 2] = col.b;
+    }
+
+    orbitalGeo.setAttribute('position', new THREE.BufferAttribute(orbitalPositions, 3));
+    orbitalGeo.setAttribute('color', new THREE.BufferAttribute(orbitalColors, 3));
+
+    const orbitalMat = new THREE.PointsMaterial({
+      size: 1.3,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.65,
+      blending: THREE.AdditiveBlending,
+    });
+    const quantumOrbitalClouds = new THREE.Points(orbitalGeo, orbitalMat);
+    chemistryGroup.add(quantumOrbitalClouds);
+
+    // C. EXPANDING REACTION MIST (Chemical Catalysis Aura)
+    const mistCount = 600;
     const mistGeo = new THREE.BufferGeometry();
     const mistPositions = new Float32Array(mistCount * 3);
     for (let i = 0; i < mistCount; i++) {
       const i3 = i * 3;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      const r = 6.0 + Math.random() * 8.0;
-      mistPositions[i3] = r * Math.sin(phi) * Math.cos(theta);
-      mistPositions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      mistPositions[i3 + 2] = r * Math.cos(phi);
+      const angle = Math.random() * Math.PI * 2;
+      const r = 4.0 + Math.random() * 12.0;
+      mistPositions[i3] = Math.cos(angle) * r;
+      mistPositions[i3 + 1] = (Math.random() - 0.5) * 24.0;
+      mistPositions[i3 + 2] = Math.sin(angle) * r;
     }
     mistGeo.setAttribute('position', new THREE.BufferAttribute(mistPositions, 3));
     const mistMat = new THREE.PointsMaterial({
       color: 0x34d399,
-      size: 0.8,
+      size: 1.0,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.5,
       blending: THREE.AdditiveBlending,
     });
-    const mistParticles = new THREE.Points(mistGeo, mistMat);
-    chemistryGroup.add(mistParticles);
+    const chemicalMist = new THREE.Points(mistGeo, mistMat);
+    chemistryGroup.add(chemicalMist);
 
     // 7. MOUSE LISTENER FOR PARALLAX
     const handleMouseMove = (e: MouseEvent) => {
@@ -275,140 +431,168 @@ export default function CosmicCanvas({ scrollProgress }: CosmicCanvasProps) {
     };
     window.addEventListener('resize', handleResize);
 
-    // 9. ANIMATION & RENDER LOOP
+    // 9. ANIMATION & CAMERA FLIGHT CHOREOGRAPHY
     let animationFrameId: number;
-    let clock = new THREE.Clock();
+    const clock = new THREE.Clock();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
       const progress = scrollRef.current; // 0.0 to 1.0
 
-      // A. Planet Self-Rotations
-      physicsGroup.rotation.y = elapsed * 0.15;
-      ring1.rotation.z = elapsed * 0.5;
-      ring2.rotation.x = elapsed * 0.4;
-      ring3.rotation.y = elapsed * 0.35;
-      physWire.rotation.y = -elapsed * 0.2;
-
-      // Quantum Electrons Orbiting
-      const posAttr = electronParticles.geometry.attributes.position as THREE.BufferAttribute;
-      for (let i = 0; i < electronCount; i++) {
-        const speed = 1.2 + (i % 3) * 0.4;
-        const angle = elapsed * speed + (i / electronCount) * Math.PI * 2;
-        const r = 8.5 + (i % 4) * 1.2;
-        const inclination = (i % 3) * 0.6;
-        posAttr.setXYZ(
-          i,
-          Math.cos(angle) * r,
-          Math.sin(angle * 2) * Math.sin(inclination) * 3,
-          Math.sin(angle) * r * Math.cos(inclination)
-        );
+      // A. Physics Relativistic Accretion Disk Physics Rotation
+      const posAttr = accretionDisk.geometry.attributes.position as THREE.BufferAttribute;
+      for (let i = 0; i < diskParticleCount; i++) {
+        diskAngles[i] += diskSpeeds[i] * 0.02;
+        const r = diskRadii[i];
+        const a = diskAngles[i];
+        posAttr.setX(i, Math.cos(a) * r);
+        posAttr.setZ(i, Math.sin(a) * r);
       }
       posAttr.needsUpdate = true;
 
-      // Chemistry Planet Rotation & Molecular Lattice
-      chemistryGroup.rotation.y = -elapsed * 0.12;
-      chemCore.rotation.x = elapsed * 0.2;
-      chemCore.rotation.y = elapsed * 0.3;
-      chemCage.rotation.x = -elapsed * 0.15;
-      moleculeLattice.rotation.y = elapsed * 0.4;
-      mistParticles.rotation.y = -elapsed * 0.1;
+      // Singularity Shells & Dipole Rotation
+      photonShell.rotation.y = elapsed * 0.4;
+      dipoleGroup.rotation.y = elapsed * 0.15;
+      northJet.rotation.y = elapsed * 0.8;
+      southJet.rotation.y = -elapsed * 0.8;
 
-      // Starfield subtle drift
-      starField.rotation.y = elapsed * 0.015;
+      // Spacetime Grid Gentle Gravitational Ripple
+      const gridAttr = spacetimeGrid.geometry.attributes.position as THREE.BufferAttribute;
+      for (let i = 0; i < gridAttr.count; i++) {
+        const vx = gridAttr.getX(i);
+        const vz = gridAttr.getZ(i);
+        const dist = Math.sqrt(vx * vx + vz * vz);
+        const depth = -12.0 / (1.0 + dist * 0.28);
+        const ripple = Math.sin(dist * 0.6 - elapsed * 2.5) * 0.35 * Math.exp(-dist * 0.08);
+        gridAttr.setY(i, depth - 4.5 + ripple);
+      }
+      gridAttr.needsUpdate = true;
 
-      // B. CAMERA FLIGHT CHOREOGRAPHY (Keyframed along scroll progress)
+      // B. Chemistry DNA Helix & Quantum Orbitals Rotation
+      helixGroup.rotation.y = elapsed * 0.25;
+      quantumOrbitalClouds.rotation.y = -elapsed * 0.18;
+      quantumOrbitalClouds.rotation.z = Math.sin(elapsed * 0.5) * 0.2;
+      chemicalMist.rotation.y = elapsed * 0.12;
+
+      // Slow Celestial Horizon Drift
+      starField.rotation.y = elapsed * 0.008;
+      galacticDisk.rotation.y = elapsed * 0.012;
+
+      // C. CINEMATIC CAMERA FLIGHT (High-G Banking, Dynamic Perspectives & Warp Swoops)
+      // 0.00 - 0.22: Deep Space Launch (Majestic wide perspective)
+      // 0.25 - 0.52: Physics Low-Angle Warp (Swooping through warped spacetime & accretion disk)
+      // 0.55 - 0.82: Chemistry Orbital Spiral (Whipping across galaxy into DNA double helix)
+      // 0.85 - 1.00: Mission Control (Panoramic vantage point overlooking cosmos)
+
+      let targetBankAngle = 0; // Camera roll (banking)
+
       if (progress < 0.25) {
-        // Stage 1: Hero
+        // Stage 1: Deep Space Launch
         const t = progress / 0.25;
         targetCamPos.set(
-          THREE.MathUtils.lerp(0, 8, t),
-          THREE.MathUtils.lerp(2, 1, t),
-          THREE.MathUtils.lerp(42, 28, t)
+          THREE.MathUtils.lerp(0, 10, t),
+          THREE.MathUtils.lerp(3, 1, t),
+          THREE.MathUtils.lerp(44, 26, t)
         );
         targetLookAt.set(
-          THREE.MathUtils.lerp(0, 10, t),
+          THREE.MathUtils.lerp(0, 14, t),
           THREE.MathUtils.lerp(0, -1, t),
-          THREE.MathUtils.lerp(0, -5, t)
+          THREE.MathUtils.lerp(0, -8, t)
         );
+        targetBankAngle = t * 0.05;
       } else if (progress < 0.55) {
-        // Stage 2: Zoom & Orbit into Physics Planet (22, -2, -15)
+        // Stage 2: Approach Physics (Low-angle camera swooping up from warped spacetime grid through the glowing accretion disk)
         const t = (progress - 0.25) / 0.3;
         targetCamPos.set(
-          THREE.MathUtils.lerp(8, 17, t),
-          THREE.MathUtils.lerp(1, 1.5, t),
-          THREE.MathUtils.lerp(28, 2, t)
+          THREE.MathUtils.lerp(10, 19, t),
+          THREE.MathUtils.lerp(1, -2.5, t), // Low-angle perspective looking up at the singularity!
+          THREE.MathUtils.lerp(26, -5, t)
         );
         targetLookAt.set(
-          THREE.MathUtils.lerp(10, 22, t),
-          THREE.MathUtils.lerp(-1, -2, t),
-          THREE.MathUtils.lerp(-5, -15, t)
+          THREE.MathUtils.lerp(14, 24, t),
+          THREE.MathUtils.lerp(-1, 0, t),
+          THREE.MathUtils.lerp(-8, -20, t)
         );
+        targetBankAngle = Math.sin(t * Math.PI) * 0.15; // Banking into the gravitational curve
       } else if (progress < 0.85) {
-        // Stage 3: Sweep across the cosmos to Chemistry Planet (-24, -3, -50)
+        // Stage 3: Hyperspace Slingshot to Chemistry (Swooping orbital arc across the galaxy into DNA helix)
         const t = (progress - 0.55) / 0.3;
         targetCamPos.set(
-          THREE.MathUtils.lerp(17, -16, t),
-          THREE.MathUtils.lerp(1.5, -0.5, t),
-          THREE.MathUtils.lerp(2, -35, t)
+          THREE.MathUtils.lerp(19, -20, t),
+          THREE.MathUtils.lerp(-2.5, 3.5, t),
+          THREE.MathUtils.lerp(-5, -42, t)
         );
         targetLookAt.set(
-          THREE.MathUtils.lerp(22, -24, t),
-          THREE.MathUtils.lerp(-2, -3, t),
-          THREE.MathUtils.lerp(-15, -50, t)
+          THREE.MathUtils.lerp(24, -28, t),
+          THREE.MathUtils.lerp(0, -2, t),
+          THREE.MathUtils.lerp(-20, -55, t)
         );
+        targetBankAngle = -Math.sin(t * Math.PI) * 0.18; // Banking opposite direction during orbital whip
       } else {
-        // Stage 4: Nexus Overview
+        // Stage 4: Mission Control Overhead Panorama
         const t = (progress - 0.85) / 0.15;
         targetCamPos.set(
-          THREE.MathUtils.lerp(-16, 0, t),
-          THREE.MathUtils.lerp(-0.5, 24, t),
-          THREE.MathUtils.lerp(-35, -10, t)
+          THREE.MathUtils.lerp(-20, 0, t),
+          THREE.MathUtils.lerp(3.5, 32, t),
+          THREE.MathUtils.lerp(-42, -8, t)
         );
         targetLookAt.set(
-          THREE.MathUtils.lerp(-24, 0, t),
-          THREE.MathUtils.lerp(-3, -5, t),
-          THREE.MathUtils.lerp(-50, -32, t)
+          THREE.MathUtils.lerp(-28, 0, t),
+          THREE.MathUtils.lerp(-2, -8, t),
+          THREE.MathUtils.lerp(-55, -35, t)
         );
+        targetBankAngle = 0;
       }
 
-      // Smooth interpolation for cinematic inertia
-      const lerpSpeed = 0.055;
+      // Smooth inertia interpolation
+      const lerpSpeed = 0.06;
       currentCamPos.lerp(targetCamPos, lerpSpeed);
       currentLookAt.lerp(targetLookAt, lerpSpeed);
 
-      // Add gentle mouse parallax to camera position
-      camera.position.x = currentCamPos.x + mouseRef.current.x * 0.8;
-      camera.position.y = currentCamPos.y + mouseRef.current.y * 0.8;
+      // Apply mouse parallax with damping
+      camera.position.x = currentCamPos.x + mouseRef.current.x * 1.2;
+      camera.position.y = currentCamPos.y + mouseRef.current.y * 1.2;
       camera.position.z = currentCamPos.z;
 
       camera.lookAt(currentLookAt);
+
+      // Camera Banking (Roll angle)
+      camera.rotation.z += targetBankAngle;
 
       renderer.render(scene, camera);
     };
 
     animate();
 
-    // 10. CLEANUP ON UNMOUNT
+    // 10. CLEANUP
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
 
-      // Dispose geometries & materials
+      // Dispose resources
       starGeo.dispose();
       starMat.dispose();
-      physCoreGeo.dispose();
-      physCoreMat.dispose();
-      physWireGeo.dispose();
-      physWireMat.dispose();
-      ring1.geometry.dispose();
-      (ring1.material as THREE.Material).dispose();
-      chemCoreGeo.dispose();
-      chemCoreMat.dispose();
-      chemCageGeo.dispose();
-      chemCageMat.dispose();
+      dustGeo.dispose();
+      dustMat.dispose();
+      gridGeo.dispose();
+      gridMat.dispose();
+      singularityGeo.dispose();
+      singularityMat.dispose();
+      photonShellGeo.dispose();
+      photonShellMat.dispose();
+      diskGeo.dispose();
+      diskMat.dispose();
+      jetGeo.dispose();
+      jetMat.dispose();
+      nodeGeo.dispose();
+      rungCylGeo.dispose();
+      sugarMat1.dispose();
+      sugarMat2.dispose();
+      bondMat.dispose();
+      orbitalGeo.dispose();
+      orbitalMat.dispose();
       mistGeo.dispose();
       mistMat.dispose();
 

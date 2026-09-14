@@ -169,8 +169,8 @@ export default function Home() {
       <div className="fixed left-8 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-center gap-6">
         {[
           { label: 'Deep Space', progress: 0.05, icon: Compass },
-          { label: 'Physics Planet', progress: 0.38, icon: Atom },
-          { label: 'Chemistry Planet', progress: 0.70, icon: FlaskConical },
+          { label: 'Spacetime & Physics', progress: 0.38, icon: Atom },
+          { label: 'Molecules & Chemistry', progress: 0.70, icon: FlaskConical },
           { label: 'Mission Control', progress: 0.95, icon: Sparkles },
         ].map((item, idx) => {
           const Icon = item.icon;
@@ -215,7 +215,7 @@ export default function Home() {
           {/* Subtle Pill Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 backdrop-blur-xl text-cyan-400 text-xs font-semibold tracking-wider uppercase">
             <Sparkles className="w-3.5 h-3.5 animate-pulse text-cyan-400" />
-            <span>Interactive 3D Cosmic Learning · เรียนฟรี 100%</span>
+            <span>Procedural 3D Cosmic Learning · เรียนฟรี 100%</span>
           </div>
 
           {/* Epic Main Headline */}
@@ -258,7 +258,7 @@ export default function Home() {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 2: 🪐 PHYSICS PLANET (Scroll 25% - 55%) */}
+      {/* SECTION 2: 🪐 PHYSICS REALM (Scroll 25% - 55%) */}
       {/* ========================================================================= */}
       <section className="h-screen w-full flex items-center justify-start px-6 md:px-24 relative z-10">
         <div className="max-w-xl bg-black/40 backdrop-blur-2xl border border-cyan-500/30 p-8 md:p-10 rounded-[2.5rem] shadow-[0_0_50px_rgba(14,165,233,0.15)] relative group hover:border-cyan-500/50 transition-all duration-500">
@@ -269,7 +269,7 @@ export default function Home() {
             {/* Header Badge */}
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 text-xs font-black tracking-widest uppercase">
               <Atom className="w-4 h-4 text-cyan-400 animate-spin" style={{ animationDuration: '8s' }} />
-              <span>Planet 01 · The Quantum Singularity</span>
+              <span>Spacetime Gravity Well · Relativistic Singularity</span>
             </div>
 
             {/* Title & Concept */}
@@ -278,7 +278,7 @@ export default function Home() {
                 PHYSICS <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">A-LEVEL</span>
               </h2>
               <p className="text-gray-300 text-sm leading-relaxed">
-                เดินทางสู่แก่นพลังงานแห่งควอนตัม ศึกษาธรรมชาติของแรง การเคลื่อนที่ คลื่น แสง เสียง ตลอดจนฟิสิกส์นิวเคลียร์และอนุภาค พร้อมคลังข้อสอบและแบบฝึกหัดเข้มข้น 19 บทเต็ม
+                ดำดิ่งสู่กรวยกาล-อวกาศที่บิดเบี้ยว (Warped Spacetime) และจานพลาสมาสะสมมวล (Accretion Disk) พร้อมลำอนุภาคพวยพุ่ง Relativistic Jets ศึกษาธรรมชาติของแรง การเคลื่อนที่ คลื่น แสง เสียง ตลอดจนฟิสิกส์นิวเคลียร์และอนุภาค 19 บทเต็ม
               </p>
             </div>
 
@@ -324,7 +324,7 @@ export default function Home() {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 3: 🧪 CHEMISTRY PLANET (Scroll 55% - 85%) */}
+      {/* SECTION 3: 🧪 CHEMISTRY REALM (Scroll 55% - 85%) */}
       {/* ========================================================================= */}
       <section className="h-screen w-full flex items-center justify-end px-6 md:px-24 relative z-10">
         <div className="max-w-xl bg-black/40 backdrop-blur-2xl border border-emerald-500/30 p-8 md:p-10 rounded-[2.5rem] shadow-[0_0_50px_rgba(16,185,129,0.15)] relative group hover:border-emerald-500/50 transition-all duration-500">
@@ -335,7 +335,7 @@ export default function Home() {
             {/* Header Badge */}
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-xs font-black tracking-widest uppercase">
               <FlaskConical className="w-4 h-4 text-emerald-400" />
-              <span>Planet 02 · The Molecular Crystal</span>
+              <span>DNA Double Helix · Quantum Electron Orbitals</span>
             </div>
 
             {/* Title & Concept */}
@@ -344,7 +344,7 @@ export default function Home() {
                 CHEMISTRY <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">A-LEVEL</span>
               </h2>
               <p className="text-gray-300 text-sm leading-relaxed">
-                สำรวจโครงสร้างผลึกระดับอะตอมและพันธะโมเลกุล เจาะลึกตารางธาตุ ปริมาณสัมพันธ์ สมดุลเคมี กรด-เบส และเคมีอินทรีย์ ครอบคลุมหลักสูตรจัดเต็ม 13 บทเรียน
+                หมุนวนสู่โครงสร้างเกลียวคู่ดีเอ็นเอ (DNA Double Helix) และกลุ่มหมอกความน่าจะเป็นของอิเล็กตรอน (Quantum Orbitals) เจาะลึกตารางธาตุ พันธะเคมี ปริมาณสัมพันธ์ สมดุล กรด-เบส และเคมีอินทรีย์ ครอบคลุม 13 บทเรียน
               </p>
             </div>
 
