@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import Lenis from 'lenis';
 import { 
@@ -25,9 +26,18 @@ const CosmicCanvas = dynamic(() => import('@/components/canvas/CosmicCanvas'), {
 });
 
 export default function Home() {
+  const router = useRouter();
   const { data: session } = useSession();
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isWarping, setIsWarping] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleWarpToChemistry = () => {
+    setIsWarping(true);
+    setTimeout(() => {
+      router.push('/course/chemistry');
+    }, 650);
+  };
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -76,7 +86,26 @@ export default function Home() {
   return (
     <div ref={containerRef} className="relative bg-[#030306] text-white min-h-[400vh] selection:bg-cyan-500/20 selection:text-cyan-200">
       {/* 3D WebGL Background Scene */}
-      <CosmicCanvas scrollProgress={scrollProgress} />
+      <CosmicCanvas scrollProgress={scrollProgress} isWarping={isWarping} />
+
+      {/* Cinematic Hyperspace Warp Overlay */}
+      <div
+        className={`fixed inset-0 z-50 pointer-events-none transition-all duration-700 ease-in flex items-center justify-center ${
+          isWarping 
+            ? 'opacity-100 bg-emerald-950/20 backdrop-blur-xl scale-105' 
+            : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className={`w-96 h-96 rounded-full bg-emerald-400/30 blur-[120px] transition-all duration-700 ${
+          isWarping ? 'scale-[8] opacity-100' : 'scale-0 opacity-0'
+        }`} />
+        <div className="relative text-center space-y-3 animate-pulse">
+          <span className="text-xs sm:text-sm font-mono uppercase tracking-[0.4em] text-emerald-300 drop-shadow-[0_0_15px_rgba(52,211,153,0.8)]">
+            WARPING TO CHEMISTRY CURRICULUM
+          </span>
+          <div className="w-56 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent mx-auto" />
+        </div>
+      </div>
 
       {/* Top Hairline Progress */}
       <div className="fixed top-0 left-0 w-full h-[2px] z-50 bg-white/[0.06]">
@@ -348,20 +377,21 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Action Buttons (Larger) */}
+            {/* Action Buttons (Dual Track: Course Lessons with Warp & Quizzes) */}
             <div className="flex flex-col sm:flex-row items-center gap-3.5 pt-2">
+              <button
+                onClick={handleWarpToChemistry}
+                className="w-full sm:w-auto px-8 py-4.5 rounded-full bg-emerald-400 hover:bg-emerald-300 text-black font-bold text-sm sm:text-base tracking-wider uppercase transition-all flex items-center justify-center gap-2.5 hover:scale-[1.03] shadow-[0_0_30px_rgba(52,211,153,0.4)] cursor-pointer"
+              >
+                <FlaskConical className="w-4 h-4" />
+                <span>เข้าสู่บทเรียน (เนื้อหา 13 บท)</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
               <Link
                 href="/quizzes/chemistry"
                 className="w-full sm:w-auto px-8 py-4.5 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-sm sm:text-base tracking-wider uppercase transition-all flex items-center justify-center gap-2.5 hover:scale-[1.02] shadow-[0_0_25px_rgba(255,255,255,0.2)]"
               >
-                <span>Take Chemistry Quiz</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/course"
-                className="w-full sm:w-auto px-8 py-4.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.12] text-white/80 hover:text-white font-semibold text-sm sm:text-base tracking-wider uppercase transition-all flex items-center justify-center"
-              >
-                All Courses
+                <span>ทำ Chemistry Quiz</span>
               </Link>
             </div>
           </div>
@@ -406,20 +436,36 @@ export default function Home() {
             </Link>
 
             {/* Chemistry Card */}
-            <Link
-              href="/quizzes/chemistry"
-              className="p-8 rounded-3xl bg-black/40 backdrop-blur-2xl border border-white/[0.1] hover:border-emerald-500/50 transition-all hover:-translate-y-1.5 group text-left space-y-4 shadow-xl"
+            <div
+              className="p-8 rounded-3xl bg-black/40 backdrop-blur-2xl border border-white/[0.1] hover:border-emerald-500/50 transition-all hover:-translate-y-1.5 group text-left space-y-4 shadow-xl flex flex-col justify-between"
             >
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/[0.1] border border-emerald-500/25 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
-                <FlaskConical className="w-6 h-6" />
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/[0.1] border border-emerald-500/25 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
+                  <FlaskConical className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white group-hover:text-emerald-300 transition-colors">
+                  Chemistry A-Level
+                </h3>
+                <p className="text-sm text-white/50 leading-relaxed">
+                  เนื้อหา 13 บทเรียนและแบบทดสอบเจาะลึก ครอบคลุมปฏิกิริยาเคมีและสารอินทรีย์
+                </p>
               </div>
-              <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white group-hover:text-emerald-300 transition-colors">
-                Chemistry A-Level
-              </h3>
-              <p className="text-sm text-white/50 leading-relaxed">
-                แบบทดสอบ 13 บทเรียน ครอบคลุมปฏิกิริยาเคมีและสารอินทรีย์
-              </p>
-            </Link>
+              <div className="pt-2 flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleWarpToChemistry}
+                  className="px-4 py-2 rounded-full bg-emerald-400 hover:bg-emerald-300 text-black font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:scale-[1.02]"
+                >
+                  <span>บทเรียน 3D</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+                <Link
+                  href="/quizzes/chemistry"
+                  className="px-4 py-2 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white/80 hover:text-white font-semibold text-xs uppercase tracking-wider transition-all"
+                >
+                  Quizzes
+                </Link>
+              </div>
+            </div>
 
             {/* Course Hub Card */}
             <Link

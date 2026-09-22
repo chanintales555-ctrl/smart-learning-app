@@ -5,6 +5,7 @@ import * as THREE from 'three';
 
 interface CosmicCanvasProps {
   scrollProgress: number;
+  isWarping?: boolean;
 }
 
 // Generate soft bokeh texture for celestial stars
@@ -26,15 +27,20 @@ function createBokehTexture(size: number = 64): THREE.Texture {
   return tex;
 }
 
-export default function CosmicCanvas({ scrollProgress }: CosmicCanvasProps) {
+export default function CosmicCanvas({ scrollProgress, isWarping = false }: CosmicCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<number>(scrollProgress);
+  const warpingRef = useRef<boolean>(isWarping);
   const mouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const smoothMouse = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   useEffect(() => {
     scrollRef.current = scrollProgress;
   }, [scrollProgress]);
+
+  useEffect(() => {
+    warpingRef.current = isWarping;
+  }, [isWarping]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -526,12 +532,23 @@ export default function CosmicCanvas({ scrollProgress }: CosmicCanvasProps) {
         );
       }
 
-      // Smooth camera interpolation
-      currentCamPos.lerp(targetCamPos, 0.05);
-      currentLookAt.lerp(targetLookAt, 0.05);
+      // Check if hyper-speed warp transition is active
+      if (warpingRef.current) {
+        // Accelerate camera directly plunging into the emerald crystal (-26, 0, -48)
+        targetCamPos.set(-26, 0, -47.2);
+        targetLookAt.set(-26, 0, -52);
+        currentCamPos.lerp(targetCamPos, 0.12);
+        currentLookAt.lerp(targetLookAt, 0.12);
+        camera.fov = THREE.MathUtils.lerp(camera.fov, 80, 0.08);
+        camera.updateProjectionMatrix();
+      } else {
+        // Smooth camera interpolation
+        currentCamPos.lerp(targetCamPos, 0.05);
+        currentLookAt.lerp(targetLookAt, 0.05);
+      }
 
-      camera.position.x = currentCamPos.x + smoothMouse.current.x * 0.9;
-      camera.position.y = currentCamPos.y + smoothMouse.current.y * 0.7;
+      camera.position.x = currentCamPos.x + smoothMouse.current.x * (warpingRef.current ? 0.1 : 0.9);
+      camera.position.y = currentCamPos.y + smoothMouse.current.y * (warpingRef.current ? 0.1 : 0.7);
       camera.position.z = currentCamPos.z;
       camera.lookAt(currentLookAt);
 
