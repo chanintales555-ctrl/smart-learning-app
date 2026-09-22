@@ -1,0 +1,336 @@
+/* ==========================================================================
+   Clean Academic Slate Design System & Custom Animations
+   Author: Jeff (เจฟ)
+   Topic: Chemical Kinetics (อัตราการเกิดปฏิกิริยาเคมี)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap');
+
+:root {
+  --primary-blue: #2563eb;
+  --primary-indigo: #4f46e5;
+  --accent-teal: #0d9488;
+  --accent-amber: #d97706;
+  --accent-rose: #e11d48;
+  --slate-bg: #f8fafc;
+  --slate-card: #ffffff;
+  --slate-border: #e2e8f0;
+  --slate-text: #0f172a;
+  --slate-muted: #64748b;
+}
+
+body {
+  font-family: 'Sarabun', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--slate-bg);
+  color: var(--slate-text);
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+}
+
+/* Headings with modern crisp feel */
+h1, h2, h3, h4, .font-heading {
+  font-family: 'Chakra Petch', 'Sarabun', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+code, pre, .font-mono {
+  font-family: 'Fira Code', monospace;
+}
+
+/* Clean Academic Slate Glassmorphism */
+.academic-card {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.academic-card:hover {
+  border-color: rgba(148, 163, 184, 0.6);
+  box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+}
+
+/* Blueprint Flowchart Styles */
+.blueprint-container {
+  position: relative;
+}
+
+.blueprint-node {
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.blueprint-node.node-hidden {
+  display: none;
+  opacity: 0;
+  transform: translateY(15px) scale(0.98);
+}
+
+.blueprint-node.node-revealed {
+  display: block;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  animation: nodeSprout 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes nodeSprout {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Pulse animation for active step */
+@keyframes nodePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(37, 99, 235, 0);
+  }
+}
+
+.blueprint-node.node-active {
+  border-color: #2563eb;
+  animation: nodePulse 2s infinite;
+}
+
+/* Sprouting connector arrow */
+.connector-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.connector-arrow .arrow-line {
+  width: 2px;
+  height: 20px;
+  background: #cbd5e1;
+  transition: background-color 0.3s ease;
+}
+
+.connector-arrow .arrow-head {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #cbd5e1;
+  transition: border-top-color 0.3s ease;
+}
+
+.connector-arrow.arrow-active .arrow-line {
+  background: #2563eb;
+}
+
+.connector-arrow.arrow-active .arrow-head {
+  border-top-color: #2563eb;
+}
+
+/* 3D Canvas Container */
+.three-viewport-box {
+  background: radial-gradient(circle at center, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+/* Subtle grid overlay for scientific precision */
+.grid-bg-academic {
+  background-size: 28px 28px;
+  background-image: 
+    linear-gradient(to right, rgba(226, 232, 240, 0.6) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(226, 232, 240, 0.6) 1px, transparent 1px);
+}
+
+/* KaTeX tweaks for crisp readability
+   NOTE: color must inherit so math stays readable on BOTH light cards
+   and dark panels (golden-ratio banner, blueprint steps, solution box). */
+.katex {
+  font-size: 1.05em;
+  color: inherit;
+}
+
+.katex-display {
+  margin: 0.5em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25em 0;
+}
+
+/* Scrolly Slide Indicator */
+.slide-nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.slide-nav-dot.active {
+  height: 28px;
+  border-radius: 14px;
+  background: #2563eb;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.35);
+}
+
+/* Tab button */
+.tab-btn {
+  transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================================
+   PRESENTATION MODE
+   ============================================================ */
+html.presenting body > header {
+  display: none !important;
+}
+
+html.presenting main section[id^="slide-"] {
+  min-height: 100vh;
+  scroll-margin-top: 0 !important;
+}
+
+html.presenting main section.scrolly-slide {
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
+}
+
+html.presenting #slide-dots {
+  z-index: 60;
+}
+
+#present-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 10px 8px 16px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.88);
+  color: #f8fafc;
+  font-size: 12px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.35);
+}
+
+#present-bar #present-counter {
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+#present-bar #present-hint {
+  opacity: 0.75;
+}
+
+#present-bar button#present-exit {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(248, 250, 252, 0.15);
+  color: #f8fafc;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#present-bar button#present-exit:hover {
+  background: rgba(248, 250, 252, 0.3);
+}
+
+/* ============================================================
+   Exam Viewer (Slide 7) — Quick Number Strip & Scroll Area
+   ============================================================ */
+.exam-num-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+  flex: 0 0 auto;
+}
+
+.exam-num-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.15);
+}
+
+.exam-num-btn.answered {
+  border-color: transparent;
+}
+
+.exam-num-btn.current {
+  font-weight: 800;
+}
+
+.exam-num-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+#exam-viewer-card {
+  scroll-behavior: smooth;
+}
+
+#exam-viewer-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+#exam-viewer-card::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+#exam-viewer-card::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>อัตราการเกิดปฏิกิริยาเคมี (Chemical Kinetics) | 3D Interactive Masterclass</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af'
+            },
+            slate: {
+              850: '#152033',
+              900: '#0f172a',
+              950: '#020617'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- KaTeX for Math & Chemical Formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Three.js & OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- Top Fixed Reading Progress Bar -->
+  <div class="fixed top-0 left-0 w-full h-1.5 bg-slate-200 z-50">
+    <div id="top-progress-bar" class="h-full bg-gradient-to-r from-blue-600 to-indigo-600 w-0 transition-all duration-300"></div>
+  </div>
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 lg:px-8 py-3.5 transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/course/chemistry" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition border border-slate-200 shadow-sm" title="กลับสู่หน้าเลือกบทเรียนเคมี">
+          <span>←</span> <span class="hidden sm:inline">คอร์สเคมี</span>
+        </a>
+        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold font-heading text-lg shadow-md shadow-blue-500/20">
+          CK
+        </div>
+        <div>
+          <div class="text-sm font-bold text-slate-900 font-heading leading-tight flex items-center gap-2">
+            <span>อัตราการเกิดปฏิกิริยาเคมี</span>
+            <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">Chemical Kinetics</span>
+          </div>
+          <div class="text-[11px] text-slate-500" id="current-slide-label">1. อัตราการเปลี่ยนแปลงสาร</div>
+        </div>
+      </div>
+
+      <!-- Quick Nav Links -->
+      <nav class="hidden md:flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+        <a href="#slide-1" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">1. ความหมาย</a>
+        <a href="#slide-2" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">2. ชนิด & Blueprint</a>
+        <a href="#slide-3" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">3. ทฤษฎีการชน (3D)</a>
+        <a href="#slide-4" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">4. กราฟพลังงาน (3D)</a>
+        <a href="#slide-5" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">5. ปัจจัย (3D Lab)</a>
+        <a href="#slide-6" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">6. กฎอัตรา</a>
+        <a href="#slide-7" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-bold hover:bg-blue-100 transition">คลังข้อสอบ 23 ข้อ</a>
+        <button id="present-btn" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white font-bold hover:bg-slate-700 transition flex items-center gap-1.5" title="โหมดนำเสนอ: เต็มจอ เลื่อนทีละสไลด์ (Esc เพื่อออก)">
+          ▶ นำเสนอ
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Right Floating Slide Navigator Dots -->
+  <aside class="fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden xl:flex flex-col items-center gap-2.5 p-2 bg-white/80 backdrop-blur-md rounded-full border border-slate-200 shadow-sm" id="slide-dots">
+    <!-- Populated dynamically by app.js -->
+  </aside>
+
+  <!-- Main Scrollytelling Container -->
+  <main class="w-full">
+
+    <!-- ====================================================================
+         SLIDE 1: อัตราการเปลี่ยนแปลงสารคืออะไร (Definition & Principles)
+         ==================================================================== -->
+    <section id="slide-1" class="scrolly-slide min-h-screen py-16 px-4 lg:px-8 max-w-7xl mx-auto flex flex-col justify-center">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        <!-- Left: Academic Narrative -->
+        <div class="lg:col-span-6 space-y-5">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs font-bold text-blue-700 uppercase tracking-wider">
+            <span>บทนำ & นิยามพื้นฐาน</span>
+          </div>
+
+          <h1 class="text-3xl lg:text-4xl font-extrabold text-slate-900 font-heading tracking-tight leading-snug">
+            1. อัตราการเปลี่ยนแปลงปริมาณสาร<br>
+            <span class="text-blue-600">(Rate of Change of Chemical Substances)</span>
+          </h1>
+
+          <p class="text-sm text-slate-600 leading-relaxed">
+            ในทางเคมี <strong>อัตราการเปลี่ยนแปลงปริมาณสาร</strong> หมายถึง การวัดการเพิ่มขึ้นของสารผลิตภัณฑ์ หรือการลดลงของสารตั้งต้น ต่อหนึ่งหน่วยเวลา เมื่อปฏิกิริยาเคมีดำเนินไป
+          </p>
+
+          <!-- Key Principles Card -->
+          <div class="academic-card rounded-2xl p-5 space-y-4">
+            <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2 font-heading">
+              <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+              หลักการและเครื่องหมายทางคณิตศาสตร์
+            </h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="font-bold text-rose-600 mb-1 flex items-center justify-between">
+                  <span>สารตั้งต้น (Reactants)</span>
+                  <span class="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-mono">- ลดลง</span>
+                </div>
+                <div class="text-slate-600">ปริมาณสารลดลงเรื่อยๆ จึงใส่เครื่องหมายลบข้างหน้าสูตร เพื่อให้อัตรามีค่าเป็นบวกเสมอ</div>
+                <div class="mt-2 font-mono text-[11px] text-slate-800 bg-white p-1.5 rounded border border-slate-200">
+                  $$r_{\text{A}} = -\frac{\Delta [\text{A}]}{\Delta t}$$
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="font-bold text-emerald-600 mb-1 flex items-center justify-between">
+                  <span>ผลิตภัณฑ์ (Products)</span>
+                  <span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono">+ เพิ่มขึ้น</span>
+                </div>
+                <div class="text-slate-600">ปริมาณสารเพิ่มขึ้นเรื่อยๆ จากศูนย์ จึงใช้เครื่องหมายบวกโดยธรรมชาติ</div>
+                <div class="mt-2 font-mono text-[11px] text-slate-800 bg-white p-1.5 rounded border border-slate-200">
+                  $$r_{\text{C}} = +\frac{\Delta [\text{C}]}{\Delta t}$$
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Units Card -->
+          <div class="p-4 rounded-xl bg-white border border-slate-200 text-xs flex flex-wrap items-center justify-between gap-3">
+            <span class="font-bold text-slate-700">หน่วยวัดมาตรฐานในข้อสอบ:</span>
+            <div class="flex flex-wrap gap-2 font-mono text-[11px]">
+              <span class="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-slate-800">$\text{mol}\cdot\text{dm}^{-3}\cdot\text{s}^{-1}$ ($\text{M/s}$)</span>
+              <span class="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-slate-800">$\text{cm}^3/\text{s}$ (แก๊ส)</span>
+              <span class="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-slate-800">$\text{g/min}$ (ของแข็ง)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Dynamic Visual Chart (Reactants decay vs Products formation) -->
+        <div class="lg:col-span-6">
+          <div class="academic-card rounded-2xl p-6 relative overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-600 font-heading">
+                แผนภาพการเปลี่ยนแปลงความเข้มข้นเทียบกับเวลา
+              </h2>
+              <span class="text-[11px] text-blue-600 font-mono font-bold">2A → B + 2C</span>
+            </div>
+
+            <!-- SVG Scientific Graph -->
+            <div class="relative w-full aspect-[4/3] bg-slate-50/50 rounded-xl border border-slate-200 p-4 flex flex-col justify-between">
+              <svg viewBox="0 0 400 260" class="w-full h-full overflow-visible">
+                <!-- Grid Lines -->
+                <line x1="50" y1="210" x2="380" y2="210" stroke="#cbd5e1" stroke-width="1.5" />
+                <line x1="50" y1="30" x2="50" y2="210" stroke="#cbd5e1" stroke-width="1.5" />
+                
+                <line x1="50" y1="150" x2="380" y2="150" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4" />
+                <line x1="50" y1="90" x2="380" y2="90" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4" />
+
+                <!-- Axis Labels (plain italic, not KaTeX — KaTeX inside SVG <text> renders as raw code) -->
+                <text x="380" y="225" font-size="11" fill="#64748b" text-anchor="end" font-family="Sarabun">เวลา (<tspan font-style="italic">t</tspan>)</text>
+                <text x="45" y="25" font-size="11" fill="#64748b" text-anchor="start" font-family="Sarabun">ความเข้มข้น (<tspan font-style="italic">mol/dm³</tspan>)</text>
+
+                <!-- Reactant Curve (A decays from 1.0 to 0.1) -->
+                <path d="M 50,50 Q 150,180 370,195" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" />
+                <circle cx="50" cy="50" r="4" fill="#ef4444" />
+                <text x="130" y="100" font-size="11" font-weight="bold" fill="#ef4444" font-family="Sarabun">สารตั้งต้น [A] ลดลง</text>
+
+                <!-- Product Curve (C increases from 0 to 0.9) -->
+                <path d="M 50,210 Q 140,80 370,65" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" />
+                <circle cx="370" cy="65" r="4" fill="#2563eb" />
+                <text x="220" y="55" font-size="11" font-weight="bold" fill="#2563eb" font-family="Sarabun">ผลิตภัณฑ์ [C] เพิ่มขึ้น</text>
+
+                <!-- Tangent Line Highlight (Instantaneous Rate) — slope ≈ curve's local
+                     slope at the touch point (110,110): tangent actually touches the
+                     descending reactant curve -->
+                <line x1="70" y1="80" x2="150" y2="140" stroke="#d97706" stroke-width="2" stroke-dasharray="3,3" />
+                <circle cx="110" cy="110" r="5" fill="#d97706" />
+                <text x="75" y="172" font-size="9" font-weight="bold" fill="#d97706" font-family="Sarabun">เส้นสัมผัส (Tangent):</text>
+                <text x="75" y="186" font-size="9" font-weight="bold" fill="#d97706" font-family="Sarabun">ความชัน = อัตรา ณ จุดนั้น</text>
+              </svg>
+
+              <!-- Annotations below graph -->
+              <div class="mt-2 grid grid-cols-3 gap-2 text-center text-[11px] text-slate-500 pt-2 border-t border-slate-200">
+                <div><span class="font-bold text-slate-800">ช่วงเริ่มต้น ($t \approx 0$):</span> สารชนกันถี่ อัตราสูงที่สุด</div>
+                <div><span class="font-bold text-slate-800">ช่วงกลาง:</span> สารตั้งต้นเจือจาง อัตราลดลงเรื่อยๆ</div>
+                <div><span class="font-bold text-slate-800">ช่วงปลาย:</span> เส้นกราฟราบเรียบ อัตราเข้าใกล้ 0</div>
+              </div>
+            </div>
+
+            <!-- Scientific Takeaway -->
+            <div class="mt-4 p-3.5 bg-blue-50/60 rounded-xl border border-blue-200 text-xs text-blue-900 leading-relaxed">
+              <strong>ข้อสังเกตสำคัญในห้องสอบ:</strong> อัตราการเกิดปฏิกิริยาเคมีส่วนใหญ่ <strong>ไม่คงที่</strong> ตลอดการทดลอง แต่จะมีค่า <em>สูงสุดในตอนเริ่มต้น</em> และค่อยๆ <em>ลดลงอย่างต่อเนื่อง</em> ตามความเข้มข้นของสารตั้งต้นที่ลดลง
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SLIDE 2: อัตราการเกิดปฏิกิริยา & Blueprint Flowchart Hub
+         ==================================================================== -->
+    <section id="slide-2" class="scrolly-slide min-h-screen py-16 px-4 lg:px-8 max-w-7xl mx-auto flex flex-col justify-center">
+      <div class="space-y-6">
+        
+        <!-- Header -->
+        <div class="text-center max-w-3xl mx-auto space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs font-bold text-blue-700 uppercase tracking-wider">
+            <span>พิมพ์เขียวเจาะลึกข้อสอบจริง</span>
+          </div>
+          <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-900 font-heading">
+            2. อัตราการเกิดปฏิกิริยา & Blueprint Flowchart แก้โจทย์ทุกรูปแบบ
+          </h2>
+          <p class="text-xs lg:text-sm text-slate-600">
+            จำแนกชนิดของอัตรา (เฉลี่ย, ช่วงเวลา, ณ วินาทีที่กำหนด) พร้อมผังวิธีแก้โจทย์แบบเป็นบล็อกงอกทีละสเต็ป และข้อสอบจริงครบทุกกระบวนท่า
+          </p>
+        </div>
+
+        <!-- 3 Types of Reaction Rate Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="academic-card rounded-2xl p-4 border-l-4 border-l-blue-600">
+            <div class="text-xs font-bold text-blue-600 uppercase font-heading mb-1">1. อัตราเฉลี่ยทั้งปฏิกิริยา</div>
+            <h3 class="text-sm font-bold text-slate-900 mb-1">Overall Average Rate</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">วัดตั้งแต่เริ่มต้น ($t=0$) จนถึงจุดที่ปฏิกิริยาสิ้นสุดลง (สารผลิตภัณฑ์คงที่)</p>
+            <div class="mt-2 text-[11px] font-mono text-slate-800 bg-slate-50 p-1.5 rounded border border-slate-200">
+              $$r_{\text{avg}} = \frac{\Delta [\text{สาร}]_{\text{ทั้งหมด}}}{t_{\text{สิ้นสุด}} - 0}$$
+            </div>
+          </div>
+
+          <div class="academic-card rounded-2xl p-4 border-l-4 border-l-teal-600">
+            <div class="text-xs font-bold text-teal-600 uppercase font-heading mb-1">2. อัตราในช่วงเวลาใดเวลาหนึ่ง</div>
+            <h3 class="text-sm font-bold text-slate-900 mb-1">Interval Rate</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">วัดในช่วงเวลาเฉพาะที่โจทย์ระบุ เช่น ช่วงวินาทีที่ 10 ถึง 30</p>
+            <div class="mt-2 text-[11px] font-mono text-slate-800 bg-slate-50 p-1.5 rounded border border-slate-200">
+              $$r_{t_1 \rightarrow t_2} = \frac{|[\text{สาร}]_{t_2} - [\text{สาร}]_{t_1}|}{t_2 - t_1}$$
+            </div>
+          </div>
+
+          <div class="academic-card rounded-2xl p-4 border-l-4 border-l-amber-600">
+            <div class="text-xs font-bold text-amber-600 uppercase font-heading mb-1">3. อัตรา ณ วินาทีใดวินาทีหนึ่ง</div>
+            <h3 class="text-sm font-bold text-slate-900 mb-1">Instantaneous Rate</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">อัตราที่ขณะเวลาใดเวลาหนึ่ง คำนวณจาก <strong>ความชัน (Slope) ของเส้นสัมผัสกราฟ</strong></p>
+            <div class="mt-2 text-[11px] font-mono text-slate-800 bg-slate-50 p-1.5 rounded border border-slate-200">
+              $$r_t = |\text{Slope ของเส้นสัมผัสที่จุด } t|$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Golden Ratio Relation Banner -->
+        <div class="academic-card rounded-2xl p-4 bg-gradient-to-r from-blue-900 to-indigo-950 text-white flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-blue-300">ความสัมพันธ์ทองคำ (Golden Ratio)</span>
+            <h3 class="text-sm font-bold font-heading text-white mt-0.5">การเชื่อมโยงอัตราของสารทุกตัวตามสัมประสิทธิ์สมการเคมี</h3>
+            <p class="text-xs text-slate-300">สำหรับสมการเคมี: $a\text{A} + b\text{B} \rightarrow c\text{C} + d\text{D}$</p>
+          </div>
+          <div class="p-3 bg-white/95 rounded-xl border border-white/20 text-xs font-mono text-slate-900 shrink-0 max-w-full [&_.katex]:text-[10px]">
+            $$r = -\frac{1}{a}r_{\text{A}} = -\frac{1}{b}r_{\text{B}} = +\frac{1}{c}r_{\text{C}} = +\frac{1}{d}r_{\text{D}}$$
+          </div>
+        </div>
+
+        <!-- ===== Interactive Straddling Table: เทคนิคช่วงเวลาคร่อม ===== -->
+        <div class="academic-card rounded-2xl p-6 space-y-4" id="straddle-widget">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 rounded-full px-3 py-1 border border-amber-300">เทคนิคเฉพาะของอาจารย์ — Straddling Interval Method</span>
+              <h3 class="text-lg font-bold text-slate-900 font-heading mt-2">หาอัตรา ณ วินาทีที่กำหนด จากตารางทดลอง Zn + HCl (ในห้องสอบไม่มีกราฟให้ลาก!)</h3>
+              <p class="text-xs text-slate-600 mt-1">คลิกเลือก "วินาทีที่ต้องการหาอัตรา" — ระบบจะไฮไลต์<strong>ช่วงเวลาที่คร่อม</strong>วินาทีนั้นพอดี พร้อมคำนวณ Δสาร/Δt แบบ Real-time</p>
+            </div>
+            <span class="text-[11px] text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">ชีท น. 4-7, 19</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <div class="lg:col-span-7">
+              <div class="text-xs text-slate-600 mb-2 font-semibold">ปฏิกิริยา Zn(s) + 2HCl(aq) → ZnCl₂(aq) + H₂(g) — วัดปริมาตรแก๊ส H₂:</div>
+              <table class="w-full text-xs text-center border-collapse" id="straddle-table">
+                <thead>
+                  <tr class="bg-slate-100">
+                    <th class="border border-slate-200 px-2 py-1.5 font-bold">เวลา t (s)</th>
+                    <th class="border border-slate-200 px-2 py-1.5 font-bold">V<sub>H₂</sub> (cm³)</th>
+                  </tr>
+                </thead>
+                <tbody><!-- rendered by app.js --></tbody>
+              </table>
+              <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                <span class="text-slate-500 font-semibold">เลือกวินาทีที่ต้องการหาอัตรา (t₀):</span>
+                <div id="straddle-target-btns" class="flex flex-wrap gap-1.5"></div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-5 space-y-2.5">
+              <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs">
+                <div class="font-bold text-blue-800 mb-1">ขั้นที่ 1 — เลือกช่วงเวลา "คร่อม" t₀</div>
+                <div id="straddle-step1" class="font-mono text-[11px] text-blue-900">— คลิกวินาทีด้านซ้าย —</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                <div class="font-bold text-slate-800 mb-1">ขั้นที่ 2 — ผลต่างปริมาณสาร</div>
+                <div id="straddle-step2" class="font-mono text-[11px] text-slate-900">—</div>
+              </div>
+              <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs">
+                <div class="font-bold text-emerald-800 mb-1">ขั้นที่ 3 — อัตรา ณ วินาทีที่ t₀</div>
+                <div id="straddle-step3" class="font-mono text-[11px] text-emerald-900 font-bold">—</div>
+              </div>
+              <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900">
+                💡 <strong>Exam Tip:</strong> <span id="straddle-tip">หาวินาทีที่ 15 ต้องใช้ช่วง 9–19 คร่อมพอดี — ห้ามใช้ช่วงที่ไม่คร่อม t₀ เด็ดขาด!</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== การหาสมการเคมีจากตาราง + กับดักตัวเร่ง ===== -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div class="lg:col-span-7 academic-card rounded-2xl p-6 space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-base font-bold text-slate-900 font-heading">แกะสมการเคมีจากตารางการทดลอง</h3>
+              <span class="text-[11px] text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">ชีท น. 22-23</span>
+            </div>
+            <p class="text-xs text-slate-600">คลิกที่หัวคอลัมน์สารแต่ละตัวเพื่อวิเคราะห์ว่า <strong class="text-rose-600">ลด</strong> / <strong class="text-emerald-600">เพิ่ม</strong> / <strong class="text-amber-600">คงที่</strong> — แล้วดูสมการที่แกะได้ด้านล่าง</p>
+            <table class="w-full text-xs text-center border-collapse" id="eqsolve-table">
+              <thead><tr class="bg-slate-100" id="eqsolve-head"><th class="border border-slate-200 px-2 py-1.5 font-bold">เวลา (s)</th></tr></thead>
+              <tbody id="eqsolve-body"></tbody>
+            </table>
+            <div id="eqsolve-analysis" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]"></div>
+            <div id="eqsolve-conclusion" class="p-3.5 rounded-xl bg-slate-900 text-slate-100 text-xs leading-relaxed"></div>
+          </div>
+
+          <div class="lg:col-span-5 space-y-3">
+            <div class="rounded-2xl p-5 bg-gradient-to-br from-rose-900 to-rose-950 text-white space-y-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-rose-300">⚠️ กับดักคะแนนของครูดอกจัน</span>
+              <h3 class="text-sm font-bold font-heading">"สารที่ไม่เพิ่มไม่ลด = ตัวเร่งปฏิกิริยา — ห้ามใส่ในสมการเคมี!"</h3>
+              <p class="text-xs text-rose-100 leading-relaxed">เมื่อแกะตารางเจอสารที่ค่าคงที่ทุกช่วงเวลา (เช่น สาร C) แปลว่ามันคือตัวเร่งที่ไม่ถูกบริโภค นักเรียนส่วนใหญ่พลาดใส่ลงไปในสมการ ทำให้เสียคะแนนทั้งข้อ</p>
+              <div class="p-2.5 bg-white/10 rounded-lg font-mono text-[11px] text-center">ตัวเร่งเขียนคร่อมลูกศรเท่านั้น<br><span class="text-amber-300 font-bold">2A + 3B ──C──▶ D</span></div>
+            </div>
+            <div class="rounded-2xl p-4 bg-white border border-slate-200 text-xs space-y-1.5">
+              <div class="font-bold text-slate-800">หลักการแกะสมการ 3 ข้อ:</div>
+              <div class="text-slate-600">1. สาร<strong class="text-rose-600">ลด</strong> = สารตั้งต้น (ฝั่งซ้ายของลูกศร)</div>
+              <div class="text-slate-600">2. สาร<strong class="text-emerald-600">เพิ่ม</strong> = ผลิตภัณฑ์ (ฝั่งขวาของลูกศร)</div>
+              <div class="text-slate-600">3. ปริมาณที่เปลี่ยนแปลงต่อเวลา ∝ <strong>สัมประสิทธิ์โมล</strong> (หารด้วยค่าน้อยสุด ให้ได้ตัวเลขเต็ม)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Blueprint Hub Tabs -->
+        <div class="space-y-4 pt-2">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-900 font-heading flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+              เลือกดูพิมพ์เขียววิธีทำโจทย์ (Blueprint Tabs):
+            </h3>
+            <span class="text-xs text-slate-500">คลิกเพื่อเปลี่ยนรูปแบบโจทย์</span>
+          </div>
+
+          <div id="t2-blueprint-tabs" class="flex flex-wrap gap-2">
+            <!-- Rendered by app.js -->
+          </div>
+
+          <!-- Dynamic Flowchart Sprouting Canvas & Exam Box -->
+          <div id="t2-blueprint-content" class="min-h-[480px]">
+            <!-- Rendered dynamically by app.js -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SLIDE 3: ทฤษฎีที่เกี่ยวข้องกับปฏิกิริยา (3D Collision Simulation)
+         ==================================================================== -->
+    <section id="slide-3" class="scrolly-slide min-h-screen py-16 px-4 lg:px-8 max-w-7xl mx-auto flex flex-col justify-center">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        <!-- Left: Theories Explanation (5 Cols) -->
+        <div class="lg:col-span-5 space-y-5">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs font-bold text-blue-700 uppercase tracking-wider">
+            <span>3D Interactive Molecular Simulation</span>
+          </div>
+
+          <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-900 font-heading leading-snug">
+            3. ทฤษฎีที่เกี่ยวข้องกับปฏิกิริยาเคมี<br>
+            <span class="text-blue-600">Collision & Activated Complex Theory</span>
+          </h2>
+
+          <p class="text-xs lg:text-sm text-slate-600 leading-relaxed">
+            ปฏิกิริยาเคมีจะเกิดขึ้นได้หรือไม่ อธิบายได้ด้วย 2 ทฤษฎีทางวิทยาศาสตร์ระดับโมเลกุล:
+          </p>
+
+          <div class="space-y-3">
+            <!-- Theory 1 -->
+            <div class="academic-card rounded-xl p-4 border-l-4 border-l-blue-600 text-xs space-y-1.5">
+              <h3 class="font-bold text-slate-900 text-sm font-heading">1. ทฤษฎีการชน (Collision Theory)</h3>
+              <p class="text-slate-600 leading-relaxed">
+                โมเลกุลของสารตั้งต้นต้องวิ่งเข้ามา <strong>"ชนกันจริง"</strong> และต้องบรรลุเงื่อนไข 2 ประการ:
+              </p>
+              <ul class="list-disc list-inside text-slate-700 font-medium space-y-0.5 pt-1">
+                <li><strong>ทิศทางการชนต้องเหมาะสม (Orientation):</strong> อะตอมที่จะสร้างพันธะใหม่ต้องหันเข้าหากัน</li>
+                <li><strong>พลังงานจลน์ต้องเพียงพอ ($E \ge E_a$):</strong> ชนแรงพอที่จะทำลายพันธะเดิม</li>
+              </ul>
+            </div>
+
+            <!-- Theory 2 -->
+            <div class="academic-card rounded-xl p-4 border-l-4 border-l-amber-500 text-xs space-y-1.5">
+              <h3 class="font-bold text-slate-900 text-sm font-heading">2. สารเชิงซ้อนกัมมันต์ (Activated Complex)</h3>
+              <p class="text-slate-600 leading-relaxed">
+                ในจังหวะที่ชนกัน จะเกิดสถานะทรานซิชัน (Transition State) ที่มีสารกึ่งสำเร็จรูปชื่อ <strong>"สารเชิงซ้อนกัมมันต์"</strong> ซึ่งพันธะเดิมกำลังยืดขาด และพันธะใหม่กำลังเริ่มก่อตัว มีพลังงานสูงสุดและไม่เสถียรมาก ก่อนจะสลายเป็นผลิตภัณฑ์
+              </p>
+            </div>
+          </div>
+
+          <!-- Sandbox Instruction Box -->
+          <div class="p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-600 flex items-center gap-2">
+            <span class="text-base">🖱️</span>
+            <span>สามารถคลิกและลากที่ฉาก 3D ด้านขวาเพื่อหมุนดูโมเลกุลรอบทิศทาง 360 องศาได้ตลอดเวลา</span>
+          </div>
+        </div>
+
+        <!-- Right: 3D Interactive WebGL Collision Chamber (7 Cols) -->
+        <div class="lg:col-span-7">
+          <div class="academic-card rounded-2xl p-6 relative">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 mb-4">
+              <div>
+                <span class="text-xs font-bold text-slate-800 font-heading uppercase">แบบจำลอง 3D การชนระดับโมเลกุล</span>
+                <div class="text-[11px] text-slate-500">ปฏิกิริยา: $A_2\text{ (น้ำเงิน)} + B_2\text{ (แดง)} \rightarrow 2AB$</div>
+              </div>
+              <button id="collision-restart-btn" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition">
+                <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                <span>เริ่มจำลองใหม่</span>
+              </button>
+            </div>
+
+            <!-- Mode Selector Switcher -->
+            <div class="grid grid-cols-3 gap-2 mb-3">
+              <button class="tab-btn active text-xs font-semibold py-2 px-2.5 rounded-xl border border-slate-200 text-center truncate" data-collision-mode="success">
+                ✓ ชนสำเร็จ ($E \ge E_a$)
+              </button>
+              <button class="tab-btn text-xs font-semibold py-2 px-2.5 rounded-xl border border-slate-200 text-center truncate" data-collision-mode="wrong-orient">
+                ✗ ชนผิดทิศทาง
+              </button>
+              <button class="tab-btn text-xs font-semibold py-2 px-2.5 rounded-xl border border-slate-200 text-center truncate" data-collision-mode="low-energy">
+                ✗ พลังงานต่ำเกินไป
+              </button>
+            </div>
+
+            <!-- 3D Canvas Viewport Box -->
+            <div id="three-collision-container" class="three-viewport-box w-full h-[360px]">
+              <!-- WebGL Canvas injected by three-scenes.js -->
+            </div>
+
+            <!-- Real-time Status Description -->
+            <div id="collision-mode-desc" class="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 leading-relaxed">
+              <span class="text-emerald-700 font-bold">✓ การชนสำเร็จ:</span> ทิศทางเหมาะสม (ชนตรงกัน) และพลังงานจลน์ $\ge E_a$ — พันธะเดิมยืดออกจนขาด เกิดสารเชิงซ้อนกัมมันต์ แล้วสลายพร้อมสลับคู่เกิดเป็นผลิตภัณฑ์ใหม่ <strong>2 AB (น้ำเงิน-แดง)</strong> แยกจากกัน!
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SLIDE 4: พลังงานกับการดำเนินไปของปฏิกิริยา (Reaction Energy Profile)
+         ==================================================================== -->
+    <section id="slide-4" class="scrolly-slide min-h-screen py-16 px-4 lg:px-8 max-w-7xl mx-auto flex flex-col justify-center">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        <!-- Left: Mathematical Energy Analysis (5 Cols) -->
+        <div class="lg:col-span-5 space-y-5">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs font-bold text-blue-700 uppercase tracking-wider">
+            <span>Potential Energy Profile</span>
+          </div>
+
+          <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-900 font-heading leading-snug">
+            4. พลังงานกับการดำเนินไปของปฏิกิริยา<br>
+            <span class="text-blue-600">Reaction Energy Profile & Ea</span>
+          </h2>
+
+          <p class="text-xs lg:text-sm text-slate-600 leading-relaxed">
+            แผนภาพพลังงานศักย์แสดงการเปลี่ยนแปลงพลังงานตั้งแต่สารตั้งต้น ข้าม <strong>ภูเขาก่อกัมมันต์ ($E_a$)</strong> จนกลายเป็นผลิตภัณฑ์
+          </p>
+
+          <!-- Core Formulas Card -->
+          <div class="academic-card rounded-2xl p-5 space-y-3 text-xs">
+            <h3 class="font-bold text-slate-900 font-heading text-sm">สูตรแกะรอยข้อสอบกราฟพลังงาน:</h3>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+              <div class="font-bold text-slate-800">1. พลังงานก่อกัมมันต์ ($E_a$):</div>
+              <div class="font-mono text-[11px] text-blue-700">$$E_{a,\text{ไปข้างหน้า}} = E_{\text{Transition State}} - E_{\text{สารตั้งต้น}}$$</div>
+              <div class="font-mono text-[11px] text-indigo-700">$$E_{a,\text{ย้อนกลับ}} = E_{\text{Transition State}} - E_{\text{ผลิตภัณฑ์}}$$</div>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+              <div class="font-bold text-slate-800">2. การเปลี่ยนแปลงเอนทัลปี ($\Delta H$):</div>
+              <div class="font-mono text-[11px] text-slate-900">$$\Delta H = E_{\text{ผลิตภัณฑ์}} - E_{\text{สารตั้งต้น}} = E_{a,\text{ไป}} - E_{a,\text{ย้อน}}$$</div>
+              <div class="text-[11px] text-slate-500 pt-0.5">• $\Delta H < 0$: คายความร้อน (Exothermic) | • $\Delta H > 0$: ดูดความร้อน (Endothermic)</div>
+            </div>
+          </div>
+
+          <!-- Dynamic Analysis Info Box -->
+          <div id="energy-analysis-info" class="p-4 bg-white rounded-2xl border border-slate-200 academic-card">
+            <!-- Populated dynamically by app.js -->
+          </div>
+        </div>
+
+        <!-- Right: 3D Curve & Rolling Particle Simulator (7 Cols) -->
+        <div class="lg:col-span-7">
+          <div class="academic-card rounded-2xl p-6 relative">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 mb-4">
+              <div>
+                <span class="text-xs font-bold text-slate-800 font-heading uppercase">3D Potential Energy Landscape</span>
+                <div class="text-[11px] text-slate-600 font-semibold">ตัวอย่างปฏิกิริยา: <span class="text-blue-700">A₂ + B₂ ⇌ 2AB</span> — เล่นเป็น 2 STEP: ขึ้นสู่จุดยอด (สารเชิงซ้อน) แล้วข้ามยอดเกิดผลิตภัณฑ์</div>
+              </div>
+              
+              <!-- Mode Buttons -->
+              <div class="flex items-center gap-2">
+                <button id="energy-exo-btn" class="tab-btn active text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200">
+                  คายความร้อน (Exo)
+                </button>
+                <button id="energy-endo-btn" class="tab-btn text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200">
+                  ดูดความร้อน (Endo)
+                </button>
+              </div>
+            </div>
+
+            <!-- Controls Toolbar -->
+            <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 mb-3 text-xs">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-slate-500 font-semibold">ทิศทาง:</span>
+                <div class="flex items-center gap-1 p-0.5 bg-white rounded-lg border border-slate-200">
+                  <button id="energy-dir-fwd" class="tab-btn active text-[11px] font-semibold px-2.5 py-1 rounded-md">→ ไปข้างหน้า (A₂+B₂ → 2AB)</button>
+                  <button id="energy-dir-rev" class="tab-btn text-[11px] font-semibold px-2.5 py-1 rounded-md">← ย้อนกลับ (2AB → A₂+B₂)</button>
+                </div>
+                <button id="energy-step1-btn" class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">▶ STEP 1: ขึ้นสู่จุดยอด</button>
+                <button id="energy-step2-btn" class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition">▶ STEP 2: ข้ามยอดเกิดผลิตภัณฑ์</button>
+                <button id="energy-restart-btn" class="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-600 hover:bg-slate-100 transition">↺ เริ่มใหม่</button>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 mb-3 text-xs">
+              <label class="flex items-center gap-2 cursor-pointer font-semibold text-slate-700">
+                <input type="checkbox" id="energy-catalyst-toggle" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500">
+                <span>เติมตัวเร่งปฏิกิริยา (ลดความสูง $E_a$)</span>
+              </label>
+
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500">พลังงานจลน์อนุภาค:</span>
+                <select id="energy-particle-level" class="bg-white border border-slate-300 text-slate-700 text-xs rounded-lg px-2 py-1">
+                  <option value="sufficient">พลังงานเพียงพอ (ข้ามยอดเขา)</option>
+                  <option value="insufficient">พลังงานไม่พอ (กลิ้งย้อนกลับ)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 3D Canvas Viewport -->
+            <div id="three-energy-container" class="three-viewport-box w-full h-[360px]">
+              <!-- WebGL Canvas injected by three-scenes.js -->
+            </div>
+
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-600 px-1">
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> เส้นทางปกติ</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> มีตัวเร่ง</span>
+              <span class="flex items-center gap-1"><span class="inline-block w-4 h-0.5 bg-red-600"></span> <strong class="text-red-600">Ea ไปข้างหน้า</strong> = ยอดเขา − สารตั้งต้น</span>
+              <span class="flex items-center gap-1"><span class="inline-block w-4 h-0.5 bg-violet-600"></span> <strong class="text-violet-600">Ea ย้อนกลับ</strong> = ยอดเขา − ผลิตภัณฑ์</span>
+              <span class="flex items-center gap-1"><span class="inline-block w-4 h-0.5 bg-emerald-500"></span> <strong class="text-emerald-600">ΔH</strong> = ผลิตภัณฑ์ − สารตั้งต้น (บอกคาย/ดูดความร้อน)</span>
+            </div>
+
+            <!-- ===== Multi-step Mechanism Diagram (3 ยอดเขา) ===== -->
+            <div id="multistep-widget" class="mt-5 academic-card rounded-2xl p-5 space-y-2"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SLIDE 5: ปัจจัยที่มีผลต่ออัตราการเกิดปฏิกิริยา (3D Lab Simulation)
+         ==================================================================== -->
+    <section id="slide-5" class="scrolly-slide min-h-screen py-16 px-4 lg:px-8 max-w-7xl mx-auto flex flex-col justify-center">
+      <div class="space-y-6">
+        
+        <!-- Title & Subtitle -->
+        <div class="text-center max-w-3xl mx-auto space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs font-bold text-blue-700 uppercase tracking-wider">
+            <span>3D Interactive Lab Sandbox</span>
+          </div>
+          <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-900 font-heading">
+            5. ปัจจัยที่มีผลต่ออัตราการเกิดปฏิกิริยาเคมี
+          </h2>
+          <p class="text-xs lg:text-sm text-slate-600">
+            ทดลองปรับเปลี่ยนปัจจัยทั้ง 4 ประการแบบ Real-time และสังเกตพฤติกรรมการเคลื่อนที่และการชนของอนุภาคในกล่องทดลอง 3D
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <!-- Left: 4 Factors Control Panel (5 Cols) -->
+          <div class="lg:col-span-5 space-y-4">
+            
+            <!-- Factor 1: Concentration -->
+            <div class="academic-card rounded-2xl p-4 space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center">1</span>
+                  <h3 class="font-bold text-slate-900 text-xs font-heading">ความเข้มข้นของสาร (Concentration)</h3>
+                </div>
+                <span id="factor-conc-val" class="font-mono text-xs font-bold text-blue-600">40 อนุภาค</span>
+              </div>
+              <p class="text-[11px] text-slate-500">เพิ่มจำนวนอนุภาคต่อหน่วยปริมาตร ทำให้โอกาสในการชนกันถี่ขึ้น (Collision Frequency เพิ่ม)</p>
+              <input type="range" id="factor-conc-slider" min="15" max="100" value="40" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+            </div>
+
+            <!-- Factor 2: Temperature -->
+            <div class="academic-card rounded-2xl p-4 space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center justify-center">2</span>
+                  <h3 class="font-bold text-slate-900 text-xs font-heading">อุณหภูมิ (Temperature)</h3>
+                </div>
+                <span id="factor-temp-val" class="font-mono text-xs font-bold text-rose-600">25 °C</span>
+              </div>
+              <p class="text-[11px] text-slate-500">เพิ่มพลังงานจลน์เฉลี่ย อนุภาควิ่งเร็วขึ้น และมีสัดส่วนอนุภาคที่มีพลังงาน $\ge E_a$ เพิ่มขึ้นอย่างมาก (Maxwell-Boltzmann)</p>
+              <input type="range" id="factor-temp-slider" min="0.4" max="2.6" step="0.1" value="1.0" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-rose-600">
+            </div>
+
+            <!-- Factor 3: Surface Area -->
+            <div class="academic-card rounded-2xl p-4 space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-teal-600 text-white font-bold text-xs flex items-center justify-center">3</span>
+                <h3 class="font-bold text-slate-900 text-xs font-heading">พื้นที่ผิวสัมผัส (Surface Area)</h3>
+              </div>
+              <p class="text-[11px] text-slate-500">สำหรับสารตั้งต้นที่มีสถานะของแข็ง การบดละเอียดจะเปิดพื้นผิวให้อนุภาคอื่นเข้าชนได้ทั่วถึง</p>
+              <div class="grid grid-cols-3 gap-2 pt-1">
+                <button class="tab-btn active text-xs font-semibold py-1.5 rounded-lg border border-slate-200" data-surface-mode="none">
+                  ไม่มีของแข็ง
+                </button>
+                <button class="tab-btn text-xs font-semibold py-1.5 rounded-lg border border-slate-200" data-surface-mode="chunk">
+                  ก้อนชิ้นใหญ่
+                </button>
+                <button class="tab-btn text-xs font-semibold py-1.5 rounded-lg border border-slate-200" data-surface-mode="powder">
+                  ผงละเอียด
+                </button>
+              </div>
+            </div>
+
+            <!-- Factor 4: Catalyst -->
+            <div class="academic-card rounded-2xl p-4 space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">4</span>
+                  <h3 class="font-bold text-slate-900 text-xs font-heading">ตัวเร่งปฏิกิริยา (Catalyst)</h3>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="factor-catalyst-check" class="sr-only peer">
+                  <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                </label>
+              </div>
+              <p class="text-[11px] text-slate-500">ให้กลไกใหม่ที่มีค่า $E_a$ ต่ำลง ปฏิกิริยาจึงเกิดเร็วขึ้นมาก โดยตัวเร่งจะได้กลับคืนมามวลและสมบัติเดิมเมื่อสิ้นสุดปฏิกิริยา</p>
+            </div>
+
+          </div>
+
+          <!-- Right: 3D Viewport Chamber (7 Cols) -->
+          <div class="lg:col-span-7">
+            <div class="academic-card rounded-2xl p-6 relative">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                <span class="text-xs font-bold text-slate-800 font-heading uppercase">
+                  3D Microscopic Reaction Chamber
+                </span>
+                <span class="text-[11px] text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
+                  Interactive Kinetic Sandbox
+                </span>
+              </div>
+
+              <!-- 3D Canvas Box -->
+              <div id="three-factors-container" class="three-viewport-box w-full h-[400px]">
+                <!-- WebGL Canvas injected by three-scenes.js -->
+              </div>
+
+              <!-- Summary Table -->
+              <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[11px]">
+                <div class="p-2 rounded-lg bg-slate-50 border border-slate-200">
+                  <div class="font-bold text-slate-700">[ความเข้มข้น] ↑</div>
+                  <div class="text-slate-500">ชนถี่ขึ้น</div>
+                </div>
+                <div class="p-2 rounded-lg bg-slate-50 border border-slate-200">
+                  <div class="font-bold text-slate-700">อุณหภูมิ ↑</div>
+                  <div class="text-slate-500">ชนแรงเกิน $E_a$</div>
+                </div>
+                <div class="p-2 rounded-lg bg-slate-50 border border-slate-200">
+                  <div class="font-bold text-slate-700">พื้นที่ผิว ↑</div>
+                  <div class="text-slate-500">จุดสัมผัสเพิ่ม</div>
+                </div>
+                <div class="p-2 rounded-lg bg-slate-50 border border-slate-200">
+                  <div class="font-bold text-slate-700">ตัวเร่ง (Catalyst)</div>
+                  <div class="text-emerald-600 font-bold">$E_a$ ลดต่ำลง</div>
+                </div>
+              </div>
+
+              <!-- ===== Kinetic Curves: บดผง vs เพิ่มมวล (ชีท น. 30) ===== -->
+              <div id="powder-widget" class="mt-5 academic-card rounded-2xl p-5 space-y-2"></div>
+
+              <!-- ===== Widget: หาปริมาณที่หายไป X, Y, Z จากอัตราส่วนสัมประสิทธิ์ ===== -->
+              <div class="mt-5 academic-card rounded-2xl p-5 space-y-3" id="xyz-widget">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-violet-800 bg-violet-100 rounded-full px-3 py-1 border border-violet-300">แนวโจทย์หาตัวแปรในตาราง (ชีท น. 15-18)</span>
+                    <h3 class="text-base font-bold text-slate-900 font-heading mt-1.5">หาค่า X, Y, Z ที่หายไป ด้วยสัดส่วนสัมประสิทธิ์โมล</h3>
+                  </div>
+                  <button id="xyz-new-btn" class="text-xs font-bold text-violet-800 bg-violet-100 hover:bg-violet-200 rounded-lg px-3 py-1.5 border border-violet-300 transition">🎲 โจทย์ชุดใหม่</button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                  <div class="lg:col-span-5">
+                    <div class="text-xs text-slate-600 mb-1.5">โจทย์กำหนดสมการ:</div>
+                    <div id="xyz-equation" class="p-2.5 rounded-lg bg-slate-900 text-slate-100 font-mono text-sm text-center"></div>
+                    <div class="text-xs text-slate-600 mt-2 mb-1.5">ตารางข้อมูล (บางช่องเป็น X, Y, Z):</div>
+                    <table class="w-full text-xs text-center border-collapse" id="xyz-table">
+                      <thead><tr class="bg-slate-100" id="xyz-head"></tr></thead>
+                      <tbody id="xyz-body"></tbody>
+                    </table>
+                  </div>
+                  <div class="lg:col-span-7 space-y-2">
+                    <div id="xyz-inputs" class="flex flex-wrap gap-2 text-xs"></div>
+                    <div id="xyz-feedback" class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 min-h-[42px]">กรอกคำตอบแล้วกดตรวจ</div>
+                    <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 text-[11px] text-blue-900">
+                      <strong>หลักคิด:</strong> ภายในช่วงเวลาเดียวกัน <span class="font-mono">(1/a)Rᴀ = (1/b)Rʙ</span> → เปลี่ยนแปลงต่อเวลาของแต่ละสาร ∝ สัมประสิทธิ์ในสมการ<br>
+                      <span id="xyz-hint-line"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SLIDE 6: กฎอัตรา (Rate Law) & Blueprint Hub อันดับและค่าคงที่ k
+         ==================================================================== -->
+    <section id="slide-6" class="scrolly-slide min-h-screen py-16 px-4 lg:px-8 max-w-7xl mx-auto flex flex-col justify-center">
+      <div class="space-y-6">
+        
+        <!-- Header -->
+        <div class="text-center max-w-3xl mx-auto space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs font-bold text-blue-700 uppercase tracking-wider">
+            <span>หัวใจของจลนพลศาสตร์เคมี</span>
+          </div>
+          <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-900 font-heading">
+            6. กฎอัตรา (Rate Law), อันดับปฏิกิริยา & ค่าคงที่อัตรา ($k$)
+          </h2>
+          <p class="text-xs lg:text-sm text-slate-600">
+            สูตรความสัมพันธ์ $r = k[\text{A}]^x[\text{B}]^y$, วิธีหาอันดับ $x, y$, การคำนวณและวิเคราะห์หน่วยของ $k$, และกลไกหลายขั้นตอน RDS
+          </p>
+        </div>
+
+        <!-- ===== Widget: กฎอัตรา 3 สาร + ทำนายอัตราสภาวะใหม่ (ชีท น. 39-41) ===== -->
+        <div class="academic-card rounded-2xl p-5 space-y-3" id="rate3-widget">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-800 bg-cyan-100 rounded-full px-3 py-1 border border-cyan-300">สเต็ปคู่: หากฎอัตรา → ทำนายอัตราใหม่ (ชีท น. 39-41)</span>
+              <h3 class="text-base font-bold text-slate-900 font-heading mt-1.5">กฎอัตรา 3 สารตั้งต้น: A + B + C → D</h3>
+            </div>
+            <button id="rate3-new-btn" class="text-xs font-bold text-cyan-800 bg-cyan-100 hover:bg-cyan-200 rounded-lg px-3 py-1.5 border border-cyan-300 transition">🎲 โจทย์ชุดใหม่</button>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <div class="lg:col-span-7">
+              <table class="w-full text-xs text-center border-collapse" id="rate3-table">
+                <thead><tr class="bg-slate-100" id="rate3-head"></tr></thead>
+                <tbody id="rate3-body"></tbody>
+              </table>
+              <div class="text-[11px] text-slate-500 mt-1.5">เทคนิค: เทียบคู่ที่ [สารอื่น] คงที่ — พบสารที่ไม่มีผลต่ออัตรา = <strong>อันดับ 0</strong></div>
+            </div>
+            <div class="lg:col-span-5 space-y-2">
+              <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs">
+                <div class="font-bold text-blue-800 mb-1">สเต็ปที่ 1 — กฎอัตราที่แกะได้</div>
+                <div id="rate3-law" class="font-mono text-[12px] text-blue-900 font-bold">—</div>
+              </div>
+              <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs">
+                <div class="font-bold text-emerald-800 mb-1">สเต็ปที่ 2 — ทำนายอัตราสภาวะใหม่</div>
+                <div id="rate3-predict" class="font-mono text-[11px] text-emerald-900">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formula Highlight Banner -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="academic-card rounded-2xl p-4 border-t-4 border-t-blue-600">
+            <span class="text-[11px] font-bold uppercase text-blue-600 font-heading">1. สมการกฎอัตรา</span>
+            <div class="text-xs text-slate-600 mt-1">แสดงความสัมพันธ์ระหว่างอัตรากับความเข้มข้น</div>
+            <div class="my-2 p-2 bg-slate-50 rounded-lg text-xs font-mono text-center border border-slate-200">
+              $$r = k[\text{A}]^x[\text{B}]^y$$
+            </div>
+            <div class="text-[11px] text-amber-700 bg-amber-50 p-1.5 rounded border border-amber-200">
+              ⚠️ $x, y$ ต้องได้จากการทดลองเท่านั้น!
+            </div>
+          </div>
+
+          <div class="academic-card rounded-2xl p-4 border-t-4 border-t-indigo-600">
+            <span class="text-[11px] font-bold uppercase text-indigo-600 font-heading">2. สูตรลัดหน่วยของค่าคงที่ k</span>
+            <div class="text-xs text-slate-600 mt-1">ขึ้นอยู่กับอันดับรวมของปฏิกิริยา ($n = x + y$)</div>
+            <div class="my-2 p-2 bg-slate-50 rounded-lg text-xs font-mono text-center border border-slate-200">
+              $$\text{หน่วยของ } k = \text{M}^{1-n} \cdot \text{s}^{-1}$$
+            </div>
+            <div class="text-[11px] text-slate-600">
+              $n=0 \rightarrow \text{M/s}$ | $n=1 \rightarrow \text{s}^{-1}$ | $n=2 \rightarrow \text{M}^{-1}\text{s}^{-1}$
+            </div>
+          </div>
+
+          <div class="academic-card rounded-2xl p-4 border-t-4 border-t-teal-600">
+            <span class="text-[11px] font-bold uppercase text-teal-600 font-heading">3. สมการอาร์เรเนียส (Arrhenius)</span>
+            <div class="text-xs text-slate-600 mt-1">ค่า $k$ เปลี่ยนตามอุณหภูมิและตัวเร่งเท่านั้น</div>
+            <div class="my-2 p-2 bg-slate-50 rounded-lg text-xs font-mono text-center border border-slate-200">
+              $$k = A e^{-\frac{E_a}{RT}}$$
+            </div>
+            <div class="text-[11px] text-slate-600">
+              เปลี่ยนความเข้มข้น $\rightarrow$ $k$ เท่าเดิมเสมอ!
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Blueprint Hub Tabs -->
+        <div class="space-y-4 pt-2">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-900 font-heading flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+              เลือกดูพิมพ์เขียววิธีแก้โจทย์กฎอัตรา (Blueprint Tabs):
+            </h3>
+            <span class="text-xs text-slate-500">คลิกเพื่อเปลี่ยนรูปแบบโจทย์</span>
+          </div>
+
+          <div id="t6-blueprint-tabs" class="flex flex-wrap gap-2">
+            <!-- Rendered by app.js -->
+          </div>
+
+          <!-- Dynamic Flowchart Sprouting Canvas & Exam Box -->
+          <div id="t6-blueprint-content" class="min-h-[480px]">
+            <!-- Rendered dynamically by app.js -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SLIDE 7: คลังข้อสอบจริง 20 ข้อ (Real Exam Practice Explorer)
+         ==================================================================== -->
+    <section id="slide-7" class="scrolly-slide min-h-screen py-16 px-4 lg:px-8 max-w-7xl mx-auto flex flex-col justify-center">
+      <div class="space-y-6">
+        
+        <!-- Header -->
+        <div class="text-center max-w-3xl mx-auto space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-700 uppercase tracking-wider">
+            <span>คลังข้อสอบจริงพร้อมเฉลยละเอียด</span>
+          </div>
+          <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-900 font-heading">
+            7. คลังข้อสอบจริง <span id="exam-total-static">23</span> ข้อ (A-Level, 9 วิชาสามัญ, PAT 2, สอวน.)
+          </h2>
+          <p class="text-xs lg:text-sm text-slate-600">
+            กรอบเดียว เลื่อนดูทีละข้อ — คลิกเลือกคำตอบเพื่อตรวจผลทันที พร้อมเฉลยละเอียด ใช้ปุ่มลูกศร ← → เปลี่ยนข้อได้
+          </p>
+        </div>
+
+        <!-- Top Control Bar: Filters + Quick Number Selector -->
+        <div class="academic-card rounded-2xl p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-bold text-slate-700 mr-1">ตัวกรอง:</span>
+              <button class="tab-btn active text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200" data-exam-filter="all">
+                ทั้งหมด
+              </button>
+              <button class="tab-btn text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200" data-exam-filter="ปัจจัย">
+                ปัจจัย
+              </button>
+              <button class="tab-btn text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200" data-exam-filter="กฎอัตรา">
+                กฎอัตรา
+              </button>
+              <button class="tab-btn text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200" data-exam-filter="พลังงาน">
+                พลังงาน & Ea
+              </button>
+              <button class="tab-btn text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200" data-exam-filter="สัมประสิทธิ์">
+                สัมประสิทธิ์
+              </button>
+            </div>
+            <span id="exam-total-count" class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200">
+              พบ 20 จาก 20 ข้อ
+            </span>
+          </div>
+
+          <!-- Quick Number Selector -->
+          <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100">
+            <span class="text-xs font-bold text-slate-700 mr-1">ไปที่ข้อ:</span>
+            <div id="exam-number-strip" class="flex flex-wrap gap-1.5"></div>
+            <span class="ml-auto text-[11px] text-slate-500 flex items-center gap-2">
+              <span class="inline-flex items-center gap-1"><span class="exam-num-dot answered bg-emerald-500"></span> ตอบแล้ว</span>
+              <span class="inline-flex items-center gap-1"><span class="exam-num-dot answered bg-rose-500"></span> ตอบผิด</span>
+              <span class="inline-flex items-center gap-1"><span class="exam-num-dot current bg-blue-600"></span> กำลังดู</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Single Question Card Container -->
+        <div id="exam-viewer-card" class="academic-card rounded-2xl p-5 md:p-6 min-h-[460px] max-h-[680px] overflow-y-auto">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <div class="academic-card rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 sticky bottom-2 z-30 shadow-lg border-slate-300">
+          <button id="exam-prev-btn" class="text-xs font-bold px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition flex items-center gap-1.5">
+            ◀ ข้อก่อนหน้า
+          </button>
+          <div class="text-center text-xs">
+            <span id="exam-position-label" class="font-bold text-slate-800">ข้อ 1 จาก 20 ข้อ</span>
+            <span class="mx-2 text-slate-300">|</span>
+            <span class="text-slate-500">คะแนนสะสม:</span>
+            <span id="exam-score-label" class="font-bold text-emerald-600">0</span>
+          </div>
+          <button id="exam-next-btn" class="text-xs font-bold px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 transition flex items-center gap-1.5">
+            ข้อถัดไป ▶
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Clean Academic Slate Footer -->
+  <footer class="bg-white border-t border-slate-200 py-10 px-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto space-y-2">
+      <div class="font-bold text-slate-800 font-heading">
+        สื่อการเรียนรู้จลนพลศาสตร์เคมี (Chemical Kinetics Interactive Scrollytelling)
+      </div>
+      <p>ออกแบบและพัฒนาตามหลักสูตรเคมี ม.ปลาย สสวท. และข้อสอบเข้ามหาวิทยาลัยชั้นนำของประเทศไทย โดย Jeff (เจฟ)</p>
+      <div class="pt-2 text-[11px] text-slate-400">
+        HTML5 • Three.js • GSAP ScrollTrigger • Tailwind CSS • KaTeX Engine
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/exam-data.js"></script>
+  <script src="js/blueprint-samples.js"></script>
+  <script src="js/three-scenes.js"></script>
+  <script src="js/widgets.js"></script>
+  <script src="js/present.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

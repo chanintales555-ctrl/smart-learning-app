@@ -295,9 +295,17 @@ export default function ChemistryCoursePage() {
               <div className="space-y-6 relative z-10">
                 {/* Header Badge */}
                 <div className="flex items-center justify-between gap-4">
-                  <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-emerald-500/[0.1] border border-emerald-500/30 text-emerald-400 text-xs font-mono tracking-wider uppercase">
-                    <FlaskConical className="w-3.5 h-3.5" />
-                    <span>CHAPTER {String(idx + 1).padStart(2, '0')} · {chapter.cluster}</span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-emerald-500/[0.1] border border-emerald-500/30 text-emerald-400 text-xs font-mono tracking-wider uppercase">
+                      <FlaskConical className="w-3.5 h-3.5" />
+                      <span>CHAPTER {String(idx + 1).padStart(2, '0')} · {chapter.cluster}</span>
+                    </div>
+                    {chapter.id === '8' && (
+                      <span className="px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 text-[10px] font-bold border border-emerald-400/40 uppercase tracking-wider animate-pulse flex items-center gap-1.5">
+                        <Sparkles className="w-3 h-3 text-emerald-300" />
+                        <span>เนื้อหา 3D พร้อมเรียนแล้ว</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Telemetry label for 3D model */}
@@ -324,20 +332,43 @@ export default function ChemistryCoursePage() {
 
                 {/* Status & Action Buttons */}
                 <div className="pt-2 flex flex-col sm:flex-row items-center gap-3.5">
-                  {/* Direct Quiz Button */}
-                  <Link
-                    href={`/quizzes/chemistry/chapter/${chapter.id}`}
-                    className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 hover:scale-[1.02] shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-                  >
-                    <span>ทำข้อสอบบทนี้</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  {chapter.id === '8' ? (
+                    <>
+                      {/* Active Lesson Button for Chapter 8 */}
+                      <Link
+                        href="/lessons/chemistry/kinetics/index.html"
+                        className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-emerald-400 hover:bg-emerald-300 text-black font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 hover:scale-[1.03] shadow-[0_0_25px_rgba(52,211,153,0.5)]"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        <span>เข้าเรียนเนื้อหา 3D Interactive</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                      {/* Direct Quiz Button */}
+                      <Link
+                        href={`/quizzes/chemistry/chapter/${chapter.id}`}
+                        className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.15] text-white font-semibold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                      >
+                        <span>ทำข้อสอบบทนี้</span>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      {/* Direct Quiz Button */}
+                      <Link
+                        href={`/quizzes/chemistry/chapter/${chapter.id}`}
+                        className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 hover:scale-[1.02] shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                      >
+                        <span>ทำข้อสอบบทนี้</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
 
-                  {/* Coming Soon Lesson Badge */}
-                  <div className="w-full sm:w-auto px-5 py-3 rounded-full bg-white/[0.04] border border-white/[0.1] text-white/60 text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2">
-                    <Clock className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>เนื้อหาบทเรียนกำลังจัดทำ</span>
-                  </div>
+                      {/* Coming Soon Lesson Badge */}
+                      <div className="w-full sm:w-auto px-5 py-3 rounded-full bg-white/[0.04] border border-white/[0.1] text-white/60 text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2">
+                        <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>เนื้อหาบทเรียนกำลังจัดทำ</span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
