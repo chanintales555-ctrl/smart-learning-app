@@ -157,159 +157,285 @@ function renderBlueprintDetail(topicKey, blueprint) {
   // Blueprint สไลด์ 2 มี sampleExams 5 ข้อของตัวเอง — สไลด์ 6 ยังใช้ข้อสอบจริงเชื่อมโยง
   const hasSamples = Array.isArray(blueprint.sampleExams) && blueprint.sampleExams.length > 0;
   const linkedExam = examQuestions.find(q => q.id === blueprint.sampleExamId) || examQuestions[0];
+  const answeredSet = {};
+  // Worked example: t2 มีข้อมูลเฉพาะแนว / t6 สร้างอัตโนมัติจาก steps + เฉลยข้อสอบจริง
+  const we = blueprint.workedExample || {
+    question: linkedExam.question,
+    setup: 'จัดข้อมูลจากโจทย์ให้ครบทุกชุด แล้วระบุให้ชัดว่าโจทย์ถามหาอะไร',
+    work: blueprint.steps.map(st => `<strong>${st.title}.</strong> ${st.detail}`),
+    answer: linkedExam.explanation
+  };
 
   container.innerHTML = `
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      <!-- Left: Step-by-Step Sprouting Flowchart Tree (7 Cols) -->
-      <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-5">
-          <div>
-            <span class="badge-academic bg-blue-50 text-blue-700 border border-blue-200 mb-1.5">${blueprint.badge}</span>
-            <h3 class="text-lg font-bold text-slate-900 font-heading">${blueprint.title}</h3>
-            <p class="text-xs text-slate-500 mt-0.5">${blueprint.desc}</p>
-          </div>
-          <button id="${topicKey}-sprout-all-btn" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition flex items-center gap-1.5">
-            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            <span>คลี่แสดงครบทุก Step</span>
-          </button>
+      <!-- Left: Step pager (single-frame) -->
+      <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <div class="border-b border-slate-100 pb-4 mb-4">
+          <span class="badge-academic bg-blue-50 text-blue-700 border border-blue-200 mb-1.5">${blueprint.badge}</span>
+          <h3 class="text-lg font-bold text-slate-900 font-heading leading-snug">${blueprint.title}</h3>
+          <p class="text-xs text-slate-500 mt-1 leading-relaxed">${blueprint.desc}</p>
         </div>
 
-        <!-- Node Pipeline -->
-        <div id="${topicKey}-nodes-pipeline" class="blueprint-container space-y-3">
-          ${blueprint.steps.map((step, idx) => `
-            <div class="blueprint-node ${idx === 0 ? 'node-revealed node-active' : 'node-hidden'}" data-step-idx="${idx}">
-              <div class="p-4 rounded-xl border-2 ${idx === 0 ? 'border-blue-500 bg-blue-50/20' : 'border-slate-200 bg-slate-50/50'} relative transition-all">
-                <div class="flex items-center gap-3 mb-2">
-                  <span class="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
-                    ${step.stepNum}
-                  </span>
-                  <h4 class="font-bold text-slate-900 text-sm font-heading">${step.title}</h4>
-                </div>
-                <div class="text-xs text-slate-600 leading-relaxed pl-10">${step.detail}</div>
-                
-                ${step.formula ? `
-                  <div class="my-2.5 ml-10 p-2.5 bg-slate-900 text-white rounded-lg font-mono text-center text-xs overflow-x-auto">
-                    $$${step.formula}$$
-                  </div>
-                ` : ''}
+        <!-- Single-frame Step Stage: เลื่อนหน้าในกรอบเดิม ไม่งอกยาว -->
+        <div id="${topicKey}-stage" class="bp-stage"></div>
 
-                <div class="ml-10 mt-2 p-2 bg-amber-50 rounded-lg border border-amber-200/80 text-[11px] text-amber-900 flex items-start gap-1.5">
-                  <span class="font-bold text-amber-700">💡 Exam Tip:</span>
-                  <span>${step.tip}</span>
-                </div>
-              </div>
-
-              ${idx < blueprint.steps.length - 1 ? `
-                <div class="connector-arrow ${idx === 0 ? 'arrow-active' : ''}">
-                  <div class="arrow-line"></div>
-                  <div class="arrow-head"></div>
-                </div>
-              ` : ''}
+        <div class="mt-4 pt-4 border-t border-slate-100">
+          <div class="flex items-center justify-between gap-3">
+            <button id="${topicKey}-stage-prev" class="bp-nav-btn px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 bg-white hover:bg-slate-50 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              <span>ถอยหลัง</span>
+            </button>
+            <div class="text-xs text-slate-500">
+              Step <span id="${topicKey}-stage-counter" class="font-bold text-blue-600">1 / ${blueprint.steps.length}</span>
             </div>
-          `).join('')}
+            <button id="${topicKey}-stage-next" class="bp-nav-btn px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 flex items-center gap-1.5">
+              <span>สเต็ปถัดไป</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+          </div>
+          <div id="${topicKey}-stage-dots" class="bp-stage-dots flex items-center justify-center gap-1.5 mt-3"></div>
         </div>
 
-        <!-- Sprout Action Bar -->
-        <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
-          <div class="text-xs text-slate-500">
-            สถานะ Flow: <span id="${topicKey}-step-counter" class="font-semibold text-blue-600">สเต็ป 1 / ${blueprint.steps.length}</span>
-          </div>
-          <button id="${topicKey}-next-step-btn" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 flex items-center gap-1.5 transition">
-            <span>งอกสเต็ปถัดไป</span>
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-          </button>
-        </div>
+                
+
+
       </div>
 
-      <!-- Right: Sample Exam Cases with Sub-Tabs (5 Cols) -->
-      <div class="lg:col-span-5 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 border border-slate-700 shadow-lg" id="${topicKey}-exam-panel">
+      <!-- Right: ตัวอย่างโจทย์ ไล่บรรทัดวิธีทำตาม Step (ซิงก์กับตัวเลขจริง) -->
+      <div class="lg:col-span-7 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 border border-slate-700 shadow-lg flex flex-col">
         <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
           <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            ${hasSamples ? 'ชุดโจทย์ตัวอย่าง 5 ระดับ (ง่าย → แข่งขัน)' : `กรณีศึกษาข้อสอบจริง (ข้อที่ ${linkedExam.id})`}
+            ตัวอย่างโจทย์ — บรรทัดวิธีทำจะปรากฏทีละบรรทัดตาม Step ฝั่งซ้าย
           </span>
-          <span class="text-[11px] text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">
-            ${hasSamples ? 'ไต่ระดับความยาก' : linkedExam.source}
-          </span>
+          <span class="text-[11px] text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">${we.tag || 'โจทย์ตัวอย่างของแนวนี้'}</span>
         </div>
-        ${hasSamples ? `<div id="${topicKey}-sample-tabs"></div><div id="${topicKey}-sample-body"></div>` : `
-        <!-- Question text -->
-        <div class="text-xs leading-relaxed text-slate-200 mb-4 whitespace-pre-line">${linkedExam.question}</div>
-        <!-- Options list -->
-        <div class="space-y-1.5 mb-4 text-xs">
-          ${linkedExam.options.map((opt, i) => `
-            <div class="p-2 rounded-lg border ${i === linkedExam.correctAnswer ? 'border-emerald-500/60 bg-emerald-500/10 text-emerald-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-300'} flex items-start gap-2">
-              <span class="font-bold font-mono text-[11px] ${i === linkedExam.correctAnswer ? 'text-emerald-400' : 'text-slate-400'}">${i + 1}.</span>
-              <span>${opt}</span>
-              ${i === linkedExam.correctAnswer ? '<span class="ml-auto text-[10px] font-bold text-emerald-400">เฉลย</span>' : ''}
+        <div class="text-xs leading-relaxed text-slate-100 mb-3 whitespace-pre-line rounded-xl bg-slate-800/60 border border-slate-700 p-3">${we.question}</div>
+        ${we.visual ? `<div id="${topicKey}-we-visual"></div>` : ''}
+        <div class="text-[11px] text-slate-400 mb-2"><span class="font-bold text-amber-300">จัดข้อมูล:</span> ${we.setup}</div>
+        <div id="${topicKey}-work-lines" class="space-y-2 flex-1">
+          ${we.work.map((line, i) => `
+            <div class="work-line" data-work-idx="${i}">
+              <span class="wl-num">${i + 1}</span>
+              <span>${line}</span>
             </div>
           `).join('')}
+          <div class="work-line work-final" data-work-idx="${Math.max(we.work.length - 1, 0)}">
+            <span class="wl-num">✓</span>
+            <span><strong>คำตอบ:</strong> ${we.answer}</span>
+          </div>
         </div>
-        <!-- Blueprint Solution Box -->
-        <div class="p-3.5 bg-slate-800/90 rounded-xl border border-slate-700 text-xs">
-          <div class="font-bold text-blue-400 mb-1.5 flex items-center gap-1"><span>⚡ การแกะรอยด้วย Blueprint:</span></div>
-          <div class="text-slate-300 text-[11px] leading-relaxed">${linkedExam.explanation}</div>
-        </div>`}
+        <div class="mt-3 text-[11px] text-slate-500 italic" id="${topicKey}-work-hint">กด "สเต็ปถัดไป" ฝั่งซ้าย — บรรทัดวิธีทำจะเพิ่มขึ้นมาตาม Step จนครบ</div>
       </div>
     </div>
+
+    ${hasSamples ? `
+    <!-- ชุดโจทย์ ข้อ 1-5: ตอบก่อน ค่อยเฉลย -->
+    <div class="mt-6 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 mb-4">
+        <h4 class="text-sm font-bold text-slate-900 font-heading flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          ฝึกทำเอง — ชุดโจทย์ 5 ข้อ (ง่าย → ข้อสอบแข่งขัน) • เลือกคำตอบก่อน แล้วเฉลยจะปรากฏ
+        </h4>
+        <div class="flex flex-wrap gap-1.5" id="${topicKey}-sample-tabs"></div>
+      </div>
+      <div id="${topicKey}-sample-body" class="text-slate-900"></div>
+    </div>` : ''}
   `;
 
   // Render KaTeX for newly created blueprint nodes
   renderAllMath(container);
 
-  // Setup Step Sprouter Logic
+  // ---- Stage Pager: ภาพเดียว เลื่อนหน้าในกรอบเดิม + ซิงก์บรรทัดวิธีทำฝั่งขวา ----
   let currentStepIdx = 0;
   const totalSteps = blueprint.steps.length;
-  const nodes = container.querySelectorAll('.blueprint-node');
-  const arrows = container.querySelectorAll('.connector-arrow');
-  const counter = document.getElementById(`${topicKey}-step-counter`);
-  const nextBtn = document.getElementById(`${topicKey}-next-step-btn`);
-  const sproutAllBtn = document.getElementById(`${topicKey}-sprout-all-btn`);
+  const stage = document.getElementById(`${topicKey}-stage`);
+  const counter = document.getElementById(`${topicKey}-stage-counter`);
+  const prevBtn = document.getElementById(`${topicKey}-stage-prev`);
+  const nextBtn = document.getElementById(`${topicKey}-stage-next`);
+  const dotsBox = document.getElementById(`${topicKey}-stage-dots`);
+  const workLines = container.querySelectorAll('.work-line');
+  const workHint = document.getElementById(`${topicKey}-work-hint`);
+  const visualBox = document.getElementById(`${topicKey}-we-visual`);
 
-  function updateStepsView() {
-    nodes.forEach((n, idx) => {
-      if (idx <= currentStepIdx) {
-        n.classList.remove('node-hidden');
-        n.classList.add('node-revealed');
-        n.classList.toggle('node-active', idx === currentStepIdx);
-      } else {
-        n.classList.remove('node-revealed', 'node-active');
-        n.classList.add('node-hidden');
-      }
+  // ---- Renderer ของสิ่งที่มาพร้อมโจทย์: ตารางที่ไฮไลต์ตาม Step / กราฟที่วาดทีละชั้น ----
+  function renderVisual(vis, idx) {
+    if (!visualBox) return;
+    if (!vis || vis.type !== 'table') { visualBox.innerHTML = ''; return; }
+
+    const atLast = (idx >= totalSteps);
+    const hl = new Set((vis.highlight && ((atLast && vis.highlight.final) || vis.highlight[idx])) || []);
+    let html = '<div class="we-visual"><table class="we-table">';
+    html += '<thead><tr>' + vis.head.map(h => `<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+    vis.rows.forEach((row, r) => {
+      html += '<tr>';
+      row.forEach((cell, c) => {
+        const id = `${r}-${c}`;
+        const cls = [
+          hl.has(id) ? 'hl' : '',
+          (vis.mark || []).includes(id) ? 'target' : '',
+          (vis.unknownCells || []).includes(id) ? 'unknown' : '',
+          vis.colClass && vis.colClass[c] && c > 0 ? vis.colClass[c] : ''
+        ].filter(Boolean).join(' ');
+        html += `<td class="${cls}">${cell}</td>`;
+      });
+      html += '</tr>';
     });
-
-    arrows.forEach((arr, idx) => {
-      arr.classList.toggle('arrow-active', idx < currentStepIdx);
-    });
-
-    if (counter) {
-      counter.textContent = `สเต็ป ${currentStepIdx + 1} / ${totalSteps}`;
-    }
-
-    if (nextBtn) {
-      if (currentStepIdx >= totalSteps - 1) {
-        nextBtn.innerHTML = `<span>วนกลับสเต็ป 1</span><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>`;
-      } else {
-        nextBtn.innerHTML = `<span>งอกสเต็ปถัดไป</span><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>`;
-      }
-    }
+    html += '</tbody></table>';
+    const badge = vis.badges ? ((atLast && vis.badges.final) || vis.badges[idx]) : null;
+    if (badge) html += `<div class="we-badge">${badge}</div>`;
+    html += '</div>';
+    visualBox.innerHTML = html;
   }
 
-  nextBtn.addEventListener('click', () => {
-    if (currentStepIdx < totalSteps - 1) {
-      currentStepIdx++;
-    } else {
-      currentStepIdx = 0;
+  function renderGraph(vis, idx) {
+    if (!visualBox) return;
+    if (!vis || vis.type !== 'graph') { visualBox.innerHTML = ''; return; }
+
+    const W = 420, H = 280, padL = 48, padB = 34, padT = 16, padR = 14;
+    const pw = W - padL - padR, ph = H - padT - padB;
+    const xOf = t => padL + (t / vis.xmax) * pw;
+    const yOf = v => padT + (1 - v / vis.ymax) * ph;
+
+    const active = new Set(vis.layers[idx] || vis.layers[1]);
+    const curvePts = vis.curve.map(p => `${xOf(p[0]).toFixed(1)},${yOf(p[1]).toFixed(1)}`).join(' ');
+    const [tx1, ty1, tx2, ty2] = vis.tangent;
+    const triY = yOf(ty1), triX2 = xOf(tx2), triX1 = xOf(tx1);
+
+    // จุดสัมผัสบนเส้นโค้ง + เส้นสัมผัส (วาดจากจุดสัมผัสออกสองทิศ)
+    const touchPt = vis.curve.find(p => p[0] === vis.tangentPoint);
+    const tX = xOf(vis.tangentPoint);
+    const tY = yOf(vis.touchY !== undefined ? vis.touchY : (touchPt ? touchPt[1] : ty1));
+    const ax1 = xOf(tx1), ay1 = yOf(ty1), ax2 = xOf(tx2), ay2 = yOf(ty2);
+    const lenL = Math.hypot(tX - ax1, tY - ay1).toFixed(1);
+    const lenR = Math.hypot(ax2 - tX, ay2 - tY).toFixed(1);
+
+    let svg = `<svg viewBox="0 0 ${W} ${H}" class="we-graph">`;
+    svg += `<g class="g-layer" style="opacity:${active.has('grid') ? 1 : 0}">`;
+    for (let v = 0; v <= vis.ymax + 1e-9; v += 0.1) {
+      const y = yOf(v).toFixed(1);
+      svg += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>`;
+      if (Math.round(v * 10) % 2 === 0) svg += `<text x="${padL - 6}" y="${Number(y) + 3}" font-size="9" fill="#64748b" text-anchor="end">${v.toFixed(1)}</text>`;
     }
-    updateStepsView();
-  });
+    for (let t = 0; t <= vis.xmax; t += 4) {
+      const x = xOf(t).toFixed(1);
+      svg += `<line x1="${x}" y1="${padT}" x2="${x}" y2="${H - padB}" stroke="#f1f5f9" stroke-width="1"/>`;
+      if (t % 8 === 0) svg += `<text x="${x}" y="${H - padB + 13}" font-size="9" fill="#64748b" text-anchor="middle">${t}</text>`;
+    }
+    svg += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - padB}" stroke="#334155" stroke-width="1.5"/>`;
+    svg += `<line x1="${padL}" y1="${H - padB}" x2="${W - padR}" y2="${H - padB}" stroke="#334155" stroke-width="1.5"/>`;
+    svg += `<text x="${W - padR - 4}" y="${H - padB + 26}" font-size="10" fill="#334155" text-anchor="end">${vis.xlabel}</text>`;
+    svg += `<text x="10" y="${padT + 4}" font-size="10" fill="#334155">${vis.ylabel}</text>`;
+    svg += '</g>';
 
-  sproutAllBtn.addEventListener('click', () => {
-    currentStepIdx = totalSteps - 1;
-    updateStepsView();
-  });
+    svg += `<g class="g-layer" style="opacity:${active.has('curve') ? 1 : 0}">`;
+    svg += `<polyline points="${curvePts}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>`;
+    svg += '</g>';
 
-  // ---- Sub-Tabs: สลับดูโจทย์ตัวอย่าง 5 ข้อ (ง่าย → แข่งขัน) ----
+    // ชั้นจุดสัมผัส: crosshair ประ + จุดวงแหวนบนเส้นโค้ง
+    svg += `<g class="g-layer" style="opacity:${active.has('touch') ? 1 : 0}">`;
+    svg += `<line x1="${tX}" y1="${tY}" x2="${tX}" y2="${H - padB}" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="4 3"/>`;
+    svg += `<line x1="${padL}" y1="${tY}" x2="${tX}" y2="${tY}" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="4 3"/>`;
+    svg += `<text x="${tX}" y="${H - padB + 13}" font-size="9.5" fill="#b45309" font-weight="bold" text-anchor="middle">t = ${vis.tangentPoint} s</text>`;
+    svg += `<text x="${padL - 6}" y="${tY + 3}" font-size="9.5" fill="#b45309" font-weight="bold" text-anchor="end">${vis.touchY.toFixed(2)}</text>`;
+    svg += `<circle class="touch-dot" cx="${tX}" cy="${tY}" r="5.5" fill="#f59e0b" stroke="#fff" stroke-width="2"/>`;
+    svg += `<text x="${tX + 8}" y="${tY - 9}" font-size="9.5" fill="#b45309" font-weight="bold">จุดสัมผัส (${vis.tangentPoint}, ${vis.touchY.toFixed(2)})</text>`;
+    svg += '</g>';
+
+    // ชั้นเส้นสัมผัส: อนิเมชัน "หมุนไม้บรรทัด" — เส้นตรงปักหมุดที่จุดสัมผัส
+    // หมุนจากมุมเอียง (ทะลุโค้ง 2 จุด = แดง) ไปจบที่มุมแตะโค้งจุดเดียวพอดี (ส้ม)
+    // จากนั้นจุด 2 จุดบนเส้นตรง (จุดตัดแกน) + ป้ายพิกัดค่อยปรากฏท้ายสุด เพื่อเอาไปคิดความชัน
+    svg += `<g class="g-layer" style="opacity:${active.has('tangent') ? 1 : 0}">`;
+    svg += `<g class="ruler-group" style="transform-origin:${tX}px ${tY}px">`;
+    svg += `<line class="ruler" x1="${ax1}" y1="${ay1}" x2="${ax2}" y2="${ay2}" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>`;
+    svg += `<circle class="ruler-pivot" cx="${tX}" cy="${tY}" r="3.5" fill="#b45309"/>`;
+    svg += `</g>`;
+    svg += `<text class="cut-label" x="${(padL + W - padR) / 2}" y="${padT + 22}" font-size="10.5" fill="#dc2626" font-weight="bold" text-anchor="middle">✗ ตัดผ่านเส้นโค้ง — ไม่ใช่เส้นสัมผัส</text>`;
+    svg += `<text class="ok-label" x="${(padL + W - padR) / 2}" y="${padT + 22}" font-size="10.5" fill="#047857" font-weight="bold" text-anchor="middle">✓ แตะโค้งจุดเดียวพอดี = เส้นสัมผัส (Tangent)</text>`;
+    svg += `<g class="t-labels">`;
+    svg += `<circle cx="${ax1}" cy="${ay1}" r="4.5" fill="#d97706"/><circle cx="${ax2}" cy="${ay2}" r="4.5" fill="#d97706"/>`;
+    svg += `<text x="${ax1 + 7}" y="${ay1 - 7}" font-size="9.5" fill="#b45309" font-weight="bold">(${tx1}, ${ty1.toFixed(2)})</text>`;
+    svg += `<text x="${ax2 - 7}" y="${ay2 - 8}" font-size="9.5" fill="#b45309" font-weight="bold" text-anchor="end">(${tx2}, ${ty2.toFixed(2)})</text>`;
+    svg += `<text x="${tX + 10}" y="${tY + 48}" font-size="9" fill="#92400e" font-weight="bold">เลือก 2 จุด "บนเส้นตรง" (จุดตัดแกนพอดี) เพื่อคิดความชัน</text>`;
+    svg += `</g>`;
+    svg += '</g>';
+
+    svg += `<g class="g-layer" style="opacity:${active.has('triangle') ? 1 : 0}">`;
+    svg += `<polygon points="${triX1},${triY} ${triX2},${triY} ${triX2},${yOf(ty2)}" fill="rgba(16,185,129,.12)" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5 3"/>`;
+    svg += `<line x1="${(triX1 + triX2) / 2}" y1="${triY}" x2="${(triX1 + triX2) / 2}" y2="${yOf(ty2)}" stroke="#10b981" stroke-width="1.5" marker-start="url(#we-arrow)" marker-end="url(#we-arrow)"/>`;
+    svg += `<text x="${(triX1 + triX2) / 2 + 6}" y="${(triY + yOf(ty2)) / 2}" font-size="9.5" fill="#047857" font-weight="bold">Δy = 0.60 M</text>`;
+    svg += `<line x1="${triX1}" y1="${triY + 12}" x2="${triX2}" y2="${triY + 12}" stroke="#10b981" stroke-width="1.5" marker-start="url(#we-arrow)" marker-end="url(#we-arrow)"/>`;
+    svg += `<text x="${(triX1 + triX2) / 2}" y="${triY + 25}" font-size="9.5" fill="#047857" font-weight="bold" text-anchor="middle">Δx = 40 s</text>`;
+    svg += '</g>';
+    svg += `<defs><marker id="we-arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#10b981"/></marker></defs>`;
+    svg += '</svg>';
+
+    const badge = vis.badges ? vis.badges[idx] : null;
+    if (badge) svg += `<div class="we-badge">${badge}</div>`;
+    visualBox.innerHTML = svg;
+  }
+
+  function updateVisual(idx) {
+    const vis = we.visual;
+    if (!vis) return;
+    if (vis.type === 'table') renderVisual(vis, idx + 1);
+    if (vis.type === 'graph') renderGraph(vis, idx + 1);
+  }
+
+// หมายเหตุ: updateVisual ถูกเรียกจาก renderStage ทุกครั้งที่กดสเต็ป — SVG ถูกสร้างใหม่
+// ทำให้อนิเมชันเส้นสัมผัส (drawStroke) เล่นซ้ำทุกครั้งที่เข้าสเต็ปนั้น
+
+  function renderStage(idx) {
+    const step = blueprint.steps[idx];
+    stage.innerHTML = `
+      <div class="bp-stage-card rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="w-8 h-8 rounded-xl bg-blue-600 text-white font-bold text-sm flex items-center justify-center shadow-sm shrink-0">${step.stepNum}</span>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600">Step ${step.stepNum} จาก ${totalSteps}</span>
+        </div>
+        <h4 class="font-bold text-slate-900 text-sm font-heading mb-2">${step.title}</h4>
+        <div class="text-xs text-slate-600 leading-relaxed">${step.detail}</div>
+        ${step.formula ? `
+          <div class="my-3 p-3 bg-slate-900 text-white rounded-xl font-mono text-center text-xs overflow-x-auto">$$${step.formula}$$</div>
+        ` : ''}
+        <div class="mt-3 p-2.5 bg-amber-50 rounded-lg border border-amber-200/80 text-[11px] text-amber-900 flex items-start gap-1.5">
+          <span class="font-bold text-amber-700 shrink-0">💡 Exam Tip:</span>
+          <span>${step.tip}</span>
+        </div>
+      </div>
+    `;
+
+    counter.textContent = `${idx + 1} / ${totalSteps}`;
+    prevBtn.disabled = (idx === 0);
+    nextBtn.disabled = (idx === totalSteps - 1);
+
+    updateVisual(idx);
+
+    dotsBox.innerHTML = blueprint.steps.map((_, i) =>
+      `<span class="stage-dot ${i === idx ? 'active' : (i < idx ? 'done' : '')}"></span>`
+    ).join('');
+
+    workLines.forEach((el) => {
+      el.classList.toggle('shown', Number(el.dataset.workIdx) <= idx);
+    });
+    if (workHint) {
+      workHint.textContent = (idx >= totalSteps - 1)
+        ? 'ครบทุก Step แล้ว — ตัวอย่างนี้แก้จบพอดี ✅ (ลองย้อนกลับดูได้ หรือลงไปฝึกชุดโจทย์ด้านล่างต่อ)'
+        : `กด "สเต็ปถัดไป" เพื่อดูบรรทัดวิธีทำ ขั้นที่ ${idx + 2} (ตาม Step ${idx + 2} ฝั่งซ้าย)`;
+    }
+
+    renderAllMath(stage);
+  }
+
+  prevBtn.addEventListener('click', () => {
+    if (currentStepIdx > 0) { currentStepIdx--; renderStage(currentStepIdx); }
+  });
+  nextBtn.addEventListener('click', () => {
+    if (currentStepIdx < totalSteps - 1) { currentStepIdx++; renderStage(currentStepIdx); }
+  });
+  renderStage(0);
+
+  // ---- Sub-Tabs ชุดโจทย์ 5 ข้อ: ตอบก่อน ค่อยเฉลย (เขียว/แดง + ล็อก) ----
   if (hasSamples) {
     const tabsBox = document.getElementById(`${topicKey}-sample-tabs`);
     const bodyBox = document.getElementById(`${topicKey}-sample-body`);
@@ -320,43 +446,61 @@ function renderBlueprintDetail(topicKey, blueprint) {
         b.classList.toggle('bg-blue-600', i === idx);
         b.classList.toggle('border-blue-600', i === idx);
         b.classList.toggle('text-white', i === idx);
-        b.classList.toggle('bg-slate-800', i !== idx);
-        b.classList.toggle('text-slate-300', i !== idx);
+        b.classList.toggle('bg-slate-100', i !== idx);
+        b.classList.toggle('text-slate-600', i !== idx);
       });
+
+      if (!answeredSet[idx]) answeredSet[idx] = { locked: false };
+      const st = answeredSet[idx];
 
       bodyBox.innerHTML = `
         <div class="mb-3">
-          <span class="inline-block text-[11px] font-bold px-2.5 py-1 rounded-full border ${s.badgeClass || 'bg-slate-800 text-slate-200 border-slate-600'}">
+          <span class="inline-block text-[11px] font-bold px-2.5 py-1 rounded-full border ${s.badgeClass || 'bg-slate-100 text-slate-700 border-slate-300'}">
             ข้อ ${idx + 1} • ${s.level}
           </span>
         </div>
-        <div class="text-xs leading-relaxed text-slate-200 mb-4 whitespace-pre-line">${s.question}</div>
-        <div class="space-y-1.5 mb-4 text-xs">
+        <div class="text-sm leading-relaxed text-slate-800 mb-4 whitespace-pre-line">${s.question}</div>
+        <div class="space-y-2 mb-4 text-sm" id="${topicKey}-sample-options">
           ${s.options.map((opt, i) => `
-            <div class="p-2 rounded-lg border ${i === s.correctAnswer ? 'border-emerald-500/60 bg-emerald-500/10 text-emerald-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-300'} flex items-start gap-2">
-              <span class="font-bold font-mono text-[11px] ${i === s.correctAnswer ? 'text-emerald-400' : 'text-slate-400'}">${i + 1}.</span>
+            <button type="button" data-opt-idx="${i}" class="sample-opt w-full text-left p-3 rounded-xl border transition
+              ${st.locked && i === s.correctAnswer ? 'bg-emerald-50 text-emerald-800 border-emerald-500' : ''}
+              ${st.locked && st.picked === i && i !== s.correctAnswer ? 'bg-rose-50 text-rose-800 border-rose-400' : ''}
+              ${!st.locked ? 'border-slate-200 bg-white text-slate-700 hover:border-blue-400 hover:bg-blue-50/40 cursor-pointer' : 'cursor-default'}
+              flex items-start gap-2">
+              <span class="font-bold font-mono text-xs ${st.locked && i === s.correctAnswer ? 'text-emerald-600' : (st.locked && st.picked === i ? 'text-rose-500' : 'text-slate-400')}">${i + 1}.</span>
               <span>${opt}</span>
-              ${i === s.correctAnswer ? '<span class="ml-auto text-[10px] font-bold text-emerald-400 shrink-0">เฉลย</span>' : ''}
-            </div>
+              ${st.locked && i === s.correctAnswer ? '<span class="ml-auto text-[10px] font-bold text-emerald-600 shrink-0">✓ คำตอบถูก</span>' : ''}
+            </button>
           `).join('')}
         </div>
-        <div class="p-3.5 bg-slate-800/90 rounded-xl border border-slate-700 text-xs">
-          <div class="font-bold text-blue-400 mb-1.5 flex items-center gap-1"><span>⚡ วิธีคิดแบบ Blueprint (ทีละสเต็ป):</span></div>
-          <div class="text-slate-300 text-[11px] leading-relaxed">${s.solution}</div>
-        </div>
+        ${st.locked ? `
+          <div class="p-4 bg-slate-900 text-white rounded-xl text-xs">
+            <div class="font-bold text-blue-400 mb-1.5 flex items-center gap-1"><span>⚡ วิธีคิดแบบ Blueprint (ทีละสเต็ป):</span></div>
+            <div class="text-slate-200 leading-relaxed">${s.solution}</div>
+          </div>
+        ` : `
+          <div class="text-[11px] text-slate-400 italic">คลิกเลือกคำตอบข้างบน — เฉลยละเอียดจะปรากฏเมื่อตอบแล้วเท่านั้น</div>
+        `}
       `;
+
+      if (!st.locked) {
+        bodyBox.querySelectorAll('.sample-opt').forEach(btn => {
+          btn.addEventListener('click', () => {
+            st.locked = true;
+            st.picked = Number(btn.dataset.optIdx);
+            renderSample(idx);
+            renderAllMath(bodyBox);
+          });
+        });
+      }
       renderAllMath(bodyBox);
     }
 
-    tabsBox.innerHTML = `
-      <div class="flex flex-wrap gap-1.5 mb-4">
-        ${blueprint.sampleExams.map((s, i) => `
-          <button class="bp-sample-tab text-[11px] font-bold px-3 py-1.5 rounded-lg border transition ${i === 0 ? 'bg-blue-600 border-blue-600 text-white' : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'}">
-            ข้อ ${i + 1}
-          </button>
-        `).join('')}
-      </div>
-    `;
+    tabsBox.innerHTML = blueprint.sampleExams.map((s, i) => `
+      <button class="bp-sample-tab text-[11px] font-bold px-3 py-1.5 rounded-lg border transition ${i === 0 ? 'bg-blue-600 border-blue-600 text-white' : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'}">
+        ข้อ ${i + 1}
+      </button>
+    `).join('');
     tabsBox.querySelectorAll('.bp-sample-tab').forEach((btn, i) => {
       btn.addEventListener('click', () => renderSample(i));
     });

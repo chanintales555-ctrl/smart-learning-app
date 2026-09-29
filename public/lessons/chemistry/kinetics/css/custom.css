@@ -334,3 +334,225 @@ html.presenting #slide-dots {
 #exam-viewer-card::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* ==========================================================================
+   Blueprint Stage Pager (single-frame left) + Worked-example line reveal
+   ========================================================================== */
+
+.bp-stage {
+  min-height: 320px;
+  max-height: 560px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.bp-stage::-webkit-scrollbar { width: 6px; }
+.bp-stage::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+.bp-stage-card {
+  border: 2px solid #e2e8f0;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  animation: bpCardIn .28s ease-out;
+}
+
+@keyframes bpCardIn {
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.bp-stage-dots .stage-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #cbd5e1;
+  transition: all .25s ease;
+}
+.bp-stage-dots .stage-dot.done { background: #93c5fd; }
+.bp-stage-dots .stage-dot.active { background: #2563eb; width: 22px; }
+
+.bp-nav-btn {
+  transition: all .18s ease;
+}
+.bp-nav-btn:not(:disabled):hover { transform: translateY(-1px); }
+.bp-nav-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Worked-example solution lines revealed one by one (step-sync) */
+.work-line {
+  display: none;
+  align-items: flex-start;
+  gap: .5rem;
+  padding: .5rem .75rem;
+  border-radius: .65rem;
+  background: rgba(15, 23, 42, .55);
+  border-left: 3px solid #3b82f6;
+  font-size: 11px;
+  line-height: 1.55;
+  color: #e2e8f0;
+}
+.work-line.shown { display: flex; animation: workLineIn .3s ease-out; }
+
+@keyframes workLineIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.work-line .wl-num {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.work-line.work-final {
+  border-left-color: #10b981;
+  background: rgba(6, 78, 59, .5);
+}
+.work-line.work-final .wl-num { background: #10b981; }
+
+/* ==========================================================================
+   Worked-example visuals: question table + step-animated graph
+   ========================================================================== */
+
+.we-visual { animation: workLineIn .3s ease-out; }
+
+.we-table {
+  width: 100%;
+  font-size: 11px;
+  text-align: center;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, .04);
+}
+.we-table th {
+  background: rgba(59, 130, 246, .18);
+  color: #bfdbfe;
+  font-weight: 700;
+  padding: 5px 6px;
+  border: 1px solid rgba(148, 163, 184, .35);
+}
+.we-table td {
+  padding: 4.5px 6px;
+  border: 1px solid rgba(148, 163, 184, .28);
+  color: #e2e8f0;
+  font-family: 'Fira Code', monospace;
+  font-size: 10.5px;
+  transition: background .3s ease, color .3s ease, box-shadow .3s ease;
+}
+.we-table td.hl {
+  background: rgba(250, 204, 21, .22);
+  color: #fde68a;
+  box-shadow: inset 0 0 0 1.5px rgba(250, 204, 21, .65);
+}
+.we-table td.target {
+  background: rgba(59, 130, 246, .25);
+  color: #bfdbfe;
+  font-weight: 700;
+}
+.we-table td.unknown {
+  color: #fdba74;
+  font-weight: 700;
+  border: 1.5px dashed rgba(251, 146, 60, .75);
+}
+
+.we-badge {
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.55;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(59, 130, 246, .12);
+  border-left: 3px solid #3b82f6;
+  color: #dbeafe;
+  animation: workLineIn .3s ease-out;
+}
+
+.we-graph {
+  width: 100%;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+.we-graph .g-layer { transition: opacity .4s ease; }
+.we-graph text { font-family: 'Fira Code', monospace; }
+
+/* --------------------------------------------------------------------------
+   Tangent-line "rotating ruler" animation (worked-example graph)
+   เส้นตรงปักหมุดที่จุดสัมผัส → หมุนจากมุมที่ทะลุโค้ง (แดง ✗)
+   → จบที่มุมแตะโค้งจุดเดียวพอดี (ส้ม ✓) → จุดตัดแกน + ป้ายค่อยโผล่ท้าย
+   -------------------------------------------------------------------------- */
+
+/* เส้นวาดทีละช่วง (ใช้ในกราฟสไลด์ 1) */
+.draw {
+  animation: drawStroke 0.9s ease-out forwards;
+}
+.draw.s2, .draw:nth-of-type(2) { animation-delay: 0.45s; }
+
+@keyframes drawStroke {
+  to { stroke-dashoffset: 0; }
+}
+
+.ruler-group {
+  animation: rulerSwing 3.2s cubic-bezier(.45, 0, .3, 1) forwards;
+}
+@keyframes rulerSwing {
+  0%   { transform: rotate(14deg); }
+  55%  { transform: rotate(14deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.ruler {
+  stroke: #ef4444;
+  transition: stroke .5s ease;
+  animation: rulerColor 3.2s linear forwards;
+}
+@keyframes rulerColor {
+  0%, 62% { stroke: #ef4444; }
+  100%    { stroke: #d97706; }
+}
+
+.ruler-pivot {
+  animation: pivotPulse 1.4s ease-in-out infinite;
+}
+@keyframes pivotPulse {
+  0%, 100% { opacity: .55; }
+  50%      { opacity: 1; }
+}
+
+.cut-label {
+  opacity: 0;
+  animation: cutIn 3.2s linear forwards;
+}
+@keyframes cutIn {
+  0%, 8%   { opacity: 0; }
+  18%, 60% { opacity: 1; }
+  70%, 100% { opacity: 0; }
+}
+
+.ok-label {
+  opacity: 0;
+  animation: okIn 3.2s linear forwards;
+}
+@keyframes okIn {
+  0%, 70%  { opacity: 0; }
+  82%, 100% { opacity: 1; }
+}
+
+.t-labels {
+  opacity: 0;
+  animation: labelsIn .5s ease-out 2.9s forwards;
+}
+@keyframes labelsIn { to { opacity: 1; } }
+
+.touch-dot {
+  animation: touchPulse 1.6s ease-in-out infinite;
+}
+@keyframes touchPulse {
+  0%, 100% { r: 5.5; }
+  50% { r: 7.5; }
+}

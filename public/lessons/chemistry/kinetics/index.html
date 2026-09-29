@@ -132,8 +132,8 @@
                   <span class="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-mono">- ลดลง</span>
                 </div>
                 <div class="text-slate-600">ปริมาณสารลดลงเรื่อยๆ จึงใส่เครื่องหมายลบข้างหน้าสูตร เพื่อให้อัตรามีค่าเป็นบวกเสมอ</div>
-                <div class="mt-2 font-mono text-[11px] text-slate-800 bg-white p-1.5 rounded border border-slate-200">
-                  $$r_{\text{A}} = -\frac{\Delta [\text{A}]}{\Delta t}$$
+                <div class="mt-2 font-mono text-xs text-slate-800 bg-white p-2 rounded border border-slate-200 [&_.katex]:text-sm">
+                  $$r_{\text{A}} = -\dfrac{\Delta[\text{A}]}{\Delta t} = \dfrac{\left|\Delta[\text{A}]\right|}{\Delta t}$$
                 </div>
               </div>
 
@@ -143,8 +143,8 @@
                   <span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono">+ เพิ่มขึ้น</span>
                 </div>
                 <div class="text-slate-600">ปริมาณสารเพิ่มขึ้นเรื่อยๆ จากศูนย์ จึงใช้เครื่องหมายบวกโดยธรรมชาติ</div>
-                <div class="mt-2 font-mono text-[11px] text-slate-800 bg-white p-1.5 rounded border border-slate-200">
-                  $$r_{\text{C}} = +\frac{\Delta [\text{C}]}{\Delta t}$$
+                <div class="mt-2 font-mono text-xs text-slate-800 bg-white p-2 rounded border border-slate-200 [&_.katex]:text-sm">
+                  $$r_{\text{C}} = +\dfrac{\Delta[\text{C}]}{\Delta t}$$
                 </div>
               </div>
             </div>
@@ -197,11 +197,16 @@
 
                 <!-- Tangent Line Highlight (Instantaneous Rate) — slope ≈ curve's local
                      slope at the touch point (110,110): tangent actually touches the
-                     descending reactant curve -->
-                <line x1="70" y1="80" x2="150" y2="140" stroke="#d97706" stroke-width="2" stroke-dasharray="3,3" />
-                <circle cx="110" cy="110" r="5" fill="#d97706" />
-                <text x="75" y="172" font-size="9" font-weight="bold" fill="#d97706" font-family="Sarabun">เส้นสัมผัส (Tangent):</text>
-                <text x="75" y="186" font-size="9" font-weight="bold" fill="#d97706" font-family="Sarabun">ความชัน = อัตรา ณ จุดนั้น</text>
+                     descending reactant curve. Animated: grows from the touch point
+                     outward in both directions (same rule as worked-example graph) -->
+                <circle class="touch-dot" cx="110" cy="110" r="5" fill="#d97706" stroke="#fff" stroke-width="2" />
+                <line class="draw" x1="110" y1="110" x2="70" y2="80" stroke="#d97706" stroke-width="2" style="--dash:50" stroke-dasharray="50" stroke-dashoffset="50" />
+                <line class="draw s2" x1="110" y1="110" x2="150" y2="140" stroke="#d97706" stroke-width="2" style="--dash:50" stroke-dasharray="50" stroke-dashoffset="50" />
+                <g class="t-labels">
+                  <text x="75" y="172" font-size="9" font-weight="bold" fill="#d97706" font-family="Sarabun">เส้นสัมผัส (Tangent):</text>
+                  <text x="75" y="186" font-size="9" font-weight="bold" fill="#d97706" font-family="Sarabun">ความชัน = อัตรา ณ จุดนั้น</text>
+                  <text x="118" y="98" font-size="8.5" font-weight="bold" fill="#b45309" font-family="Sarabun">จุดสัมผัส</text>
+                </g>
               </svg>
 
               <!-- Annotations below graph -->
@@ -280,87 +285,6 @@
           </div>
           <div class="p-3 bg-white/95 rounded-xl border border-white/20 text-xs font-mono text-slate-900 shrink-0 max-w-full [&_.katex]:text-[10px]">
             $$r = -\frac{1}{a}r_{\text{A}} = -\frac{1}{b}r_{\text{B}} = +\frac{1}{c}r_{\text{C}} = +\frac{1}{d}r_{\text{D}}$$
-          </div>
-        </div>
-
-        <!-- ===== Interactive Straddling Table: เทคนิคช่วงเวลาคร่อม ===== -->
-        <div class="academic-card rounded-2xl p-6 space-y-4" id="straddle-widget">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 rounded-full px-3 py-1 border border-amber-300">เทคนิคเฉพาะของอาจารย์ — Straddling Interval Method</span>
-              <h3 class="text-lg font-bold text-slate-900 font-heading mt-2">หาอัตรา ณ วินาทีที่กำหนด จากตารางทดลอง Zn + HCl (ในห้องสอบไม่มีกราฟให้ลาก!)</h3>
-              <p class="text-xs text-slate-600 mt-1">คลิกเลือก "วินาทีที่ต้องการหาอัตรา" — ระบบจะไฮไลต์<strong>ช่วงเวลาที่คร่อม</strong>วินาทีนั้นพอดี พร้อมคำนวณ Δสาร/Δt แบบ Real-time</p>
-            </div>
-            <span class="text-[11px] text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">ชีท น. 4-7, 19</span>
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            <div class="lg:col-span-7">
-              <div class="text-xs text-slate-600 mb-2 font-semibold">ปฏิกิริยา Zn(s) + 2HCl(aq) → ZnCl₂(aq) + H₂(g) — วัดปริมาตรแก๊ส H₂:</div>
-              <table class="w-full text-xs text-center border-collapse" id="straddle-table">
-                <thead>
-                  <tr class="bg-slate-100">
-                    <th class="border border-slate-200 px-2 py-1.5 font-bold">เวลา t (s)</th>
-                    <th class="border border-slate-200 px-2 py-1.5 font-bold">V<sub>H₂</sub> (cm³)</th>
-                  </tr>
-                </thead>
-                <tbody><!-- rendered by app.js --></tbody>
-              </table>
-              <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                <span class="text-slate-500 font-semibold">เลือกวินาทีที่ต้องการหาอัตรา (t₀):</span>
-                <div id="straddle-target-btns" class="flex flex-wrap gap-1.5"></div>
-              </div>
-            </div>
-
-            <div class="lg:col-span-5 space-y-2.5">
-              <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs">
-                <div class="font-bold text-blue-800 mb-1">ขั้นที่ 1 — เลือกช่วงเวลา "คร่อม" t₀</div>
-                <div id="straddle-step1" class="font-mono text-[11px] text-blue-900">— คลิกวินาทีด้านซ้าย —</div>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                <div class="font-bold text-slate-800 mb-1">ขั้นที่ 2 — ผลต่างปริมาณสาร</div>
-                <div id="straddle-step2" class="font-mono text-[11px] text-slate-900">—</div>
-              </div>
-              <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs">
-                <div class="font-bold text-emerald-800 mb-1">ขั้นที่ 3 — อัตรา ณ วินาทีที่ t₀</div>
-                <div id="straddle-step3" class="font-mono text-[11px] text-emerald-900 font-bold">—</div>
-              </div>
-              <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900">
-                💡 <strong>Exam Tip:</strong> <span id="straddle-tip">หาวินาทีที่ 15 ต้องใช้ช่วง 9–19 คร่อมพอดี — ห้ามใช้ช่วงที่ไม่คร่อม t₀ เด็ดขาด!</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ===== การหาสมการเคมีจากตาราง + กับดักตัวเร่ง ===== -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <div class="lg:col-span-7 academic-card rounded-2xl p-6 space-y-3">
-            <div class="flex items-center justify-between gap-2">
-              <h3 class="text-base font-bold text-slate-900 font-heading">แกะสมการเคมีจากตารางการทดลอง</h3>
-              <span class="text-[11px] text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">ชีท น. 22-23</span>
-            </div>
-            <p class="text-xs text-slate-600">คลิกที่หัวคอลัมน์สารแต่ละตัวเพื่อวิเคราะห์ว่า <strong class="text-rose-600">ลด</strong> / <strong class="text-emerald-600">เพิ่ม</strong> / <strong class="text-amber-600">คงที่</strong> — แล้วดูสมการที่แกะได้ด้านล่าง</p>
-            <table class="w-full text-xs text-center border-collapse" id="eqsolve-table">
-              <thead><tr class="bg-slate-100" id="eqsolve-head"><th class="border border-slate-200 px-2 py-1.5 font-bold">เวลา (s)</th></tr></thead>
-              <tbody id="eqsolve-body"></tbody>
-            </table>
-            <div id="eqsolve-analysis" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]"></div>
-            <div id="eqsolve-conclusion" class="p-3.5 rounded-xl bg-slate-900 text-slate-100 text-xs leading-relaxed"></div>
-          </div>
-
-          <div class="lg:col-span-5 space-y-3">
-            <div class="rounded-2xl p-5 bg-gradient-to-br from-rose-900 to-rose-950 text-white space-y-2">
-              <span class="text-[11px] font-bold uppercase tracking-wider text-rose-300">⚠️ กับดักคะแนนของครูดอกจัน</span>
-              <h3 class="text-sm font-bold font-heading">"สารที่ไม่เพิ่มไม่ลด = ตัวเร่งปฏิกิริยา — ห้ามใส่ในสมการเคมี!"</h3>
-              <p class="text-xs text-rose-100 leading-relaxed">เมื่อแกะตารางเจอสารที่ค่าคงที่ทุกช่วงเวลา (เช่น สาร C) แปลว่ามันคือตัวเร่งที่ไม่ถูกบริโภค นักเรียนส่วนใหญ่พลาดใส่ลงไปในสมการ ทำให้เสียคะแนนทั้งข้อ</p>
-              <div class="p-2.5 bg-white/10 rounded-lg font-mono text-[11px] text-center">ตัวเร่งเขียนคร่อมลูกศรเท่านั้น<br><span class="text-amber-300 font-bold">2A + 3B ──C──▶ D</span></div>
-            </div>
-            <div class="rounded-2xl p-4 bg-white border border-slate-200 text-xs space-y-1.5">
-              <div class="font-bold text-slate-800">หลักการแกะสมการ 3 ข้อ:</div>
-              <div class="text-slate-600">1. สาร<strong class="text-rose-600">ลด</strong> = สารตั้งต้น (ฝั่งซ้ายของลูกศร)</div>
-              <div class="text-slate-600">2. สาร<strong class="text-emerald-600">เพิ่ม</strong> = ผลิตภัณฑ์ (ฝั่งขวาของลูกศร)</div>
-              <div class="text-slate-600">3. ปริมาณที่เปลี่ยนแปลงต่อเวลา ∝ <strong>สัมประสิทธิ์โมล</strong> (หารด้วยค่าน้อยสุด ให้ได้ตัวเลขเต็ม)</div>
-            </div>
           </div>
         </div>
 

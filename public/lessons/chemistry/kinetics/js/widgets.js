@@ -1,10 +1,8 @@
 // ============================================================
 // widgets.js — Interactive teaching widgets
-//  1. Straddling-table rate finder        (slide 2)
-//  2. Equation-from-table + catalyst trap (slide 2)
-//  3. X/Y/Z missing-value puzzle          (slide 5)
-//  4. Three-reactant rate law             (slide 6)
-//  5. Multi-step mechanism 3-peak diagram (slide 4)
+//  1. X/Y/Z missing-value puzzle          (slide 5)
+//  2. Three-reactant rate law             (slide 6)
+//  3. Multi-step mechanism 3-peak diagram (slide 4)
 // ============================================================
 (function () {
   'use strict';
@@ -17,154 +15,7 @@
   }
 
   // ------------------------------------------------------------
-  // 1) STRADDLING TABLE (slide 2)
-  // ------------------------------------------------------------
-  function initStraddle() {
-    const tbody = document.querySelector('#straddle-table tbody');
-    const btnBox = $('#straddle-target-btns');
-    if (!tbody || !btnBox || tbody.children.length) return;
-
-    // Real Zn + HCl gas-collection data (t s, V cm³) — every row shows its
-    // own average rate to the next row, so students see "average ≠ at t0"
-    const rows = [[0, 0], [9, 24], [15, 42], [19, 51], [25, 60], [31, 66], [39, 70], [47, 72], [55, 72]];
-
-    rows.forEach((r, i) => {
-      let avg = '–';
-      if (i < rows.length - 1) {
-        avg = fmt((rows[i + 1][1] - r[1]) / (rows[i + 1][0] - r[0]), 2);
-      }
-      tbody.insertAdjacentHTML('beforeend',
-        '<tr data-t="' + r[0] + '" class="border-b border-slate-100 hover:bg-slate-50 transition">' +
-        '<td class="border border-slate-200 px-2 py-1.5 font-mono">' + r[0] + '</td>' +
-        '<td class="border border-slate-200 px-2 py-1.5 font-mono">' + r[1] + '</td>' +
-        '<td class="border border-slate-200 px-2 py-1.5 font-mono text-emerald-700">' + avg + '</td>' +
-        '</tr>');
-    });
-
-    function pairFor(t0) {
-      const lower = rows.filter(function (r) { return r[0] < t0; });
-      const upper = rows.filter(function (r) { return r[0] > t0; });
-      if (!lower.length || !upper.length) return null;
-      return [lower[lower.length - 1], upper[0]];
-    }
-
-    function select(t0) {
-      const pair = pairFor(t0);
-      if (!pair) return;
-      const lo = pair[0], hi = pair[1];
-      tbody.querySelectorAll('tr').forEach(function (tr) {
-        const t = +tr.dataset.t;
-        const isPair = (t === lo[0] || t === hi[0]);
-        const isTarget = (t === t0);
-        tr.classList.toggle('bg-amber-100', isPair);
-        tr.classList.toggle('font-semibold', isPair);
-        tr.classList.toggle('ring-2', isTarget);
-        tr.classList.toggle('ring-amber-500', isTarget);
-      });
-      const dV = hi[1] - lo[1];
-      const dt = hi[0] - lo[0];
-      $('#straddle-step1').textContent = 't\u2080 = ' + t0 + ' s \u2192 \u0e43\u0e0a\u0e49\u0e0a\u0e48\u0e27\u0e07 ' + lo[0] + '\u2013' + hi[0] + ' s (\u0e04\u0e23\u0e48\u0e2d\u0e21 t\u2080 \u0e1e\u0e2d\u0e14\u0e35)';
-      $('#straddle-step2').textContent = '\u0394V = ' + hi[1] + ' \u2212 ' + lo[1] + ' = ' + dV + ' cm\u00b3 ,  \u0394t = ' + hi[0] + ' \u2212 ' + lo[0] + ' = ' + dt + ' s';
-      $('#straddle-step3').textContent = '\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e17\u0e35\u0e48 t\u2080 \u2248 \u0394V/\u0394t = ' + dV + '/' + dt + ' \u2248 ' + fmt(dV / dt, 2) + ' cm\u00b3/s';
-      $('#straddle-tip').textContent = '\u0e2b\u0e32\u0e27\u0e34\u0e19\u0e32\u0e17\u0e35\u0e48 ' + t0 + ' \u0e15\u0e49\u0e2d\u0e07\u0e43\u0e0a\u0e49\u0e0a\u0e48\u0e27\u0e07 ' + lo[0] + '\u2013' + hi[0] + ' \u0e04\u0e23\u0e48\u0e2d\u0e21\u0e1e\u0e2d\u0e14\u0e35 \u2014 \u0e2b\u0e49\u0e32\u0e21\u0e43\u0e0a\u0e49\u0e0a\u0e48\u0e27\u0e07\u0e17\u0e35\u0e48\u0e44\u0e21\u0e48\u0e04\u0e23\u0e48\u0e2d\u0e21 t\u2080!';
-
-      btnBox.querySelectorAll('button').forEach(function (b) {
-        const on = (+b.dataset.t === t0);
-        b.className = 'text-xs font-bold rounded-lg px-2.5 py-1.5 border transition ' +
-          (on ? 'bg-amber-500 text-white border-amber-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50');
-      });
-    }
-
-    [15, 25, 31].forEach(function (t0) {
-      const b = document.createElement('button');
-      b.textContent = 't = ' + t0 + ' s';
-      b.dataset.t = t0;
-      b.addEventListener('click', function () { select(t0); });
-      btnBox.appendChild(b);
-    });
-
-    select(15);
-  }
-
-  // ------------------------------------------------------------
-  // 2) EQUATION FROM TABLE + CATALYST TRAP (slide 2)
-  // ------------------------------------------------------------
-  function initEqSolve() {
-    const head = $('#eqsolve-head');
-    const body = $('#eqsolve-body');
-    const analysis = $('#eqsolve-analysis');
-    const conclusion = $('#eqsolve-conclusion');
-    if (!head || !body || head.children.length > 1) return;
-
-    const species = [
-      { name: 'A', vals: [0.60, 0.40, 0.20, 0.00], trend: 'down' },
-      { name: 'B', vals: [0.60, 0.50, 0.40, 0.30], trend: 'down' },
-      { name: 'C', vals: [0.20, 0.20, 0.20, 0.20], trend: 'flat' },
-      { name: 'D', vals: [0.00, 0.10, 0.20, 0.30], trend: 'up' }
-    ];
-    const times = [0, 10, 20, 30];
-
-    // header: keep the first "เวลา" th, add one per species (clickable)
-    species.forEach(function (s) {
-      const th = document.createElement('th');
-      th.className = 'border border-slate-200 px-2 py-1.5 font-bold cursor-pointer hover:bg-slate-200 transition';
-      th.innerHTML = '\u0e2a\u0e32\u0e23 ' + s.name + ' (mol)';
-      th.addEventListener('click', function () { analyze(s); });
-      head.appendChild(th);
-    });
-
-    times.forEach(function (t, i) {
-      let html = '<tr><td class="border border-slate-200 px-2 py-1.5 font-mono bg-slate-50">' + t + '</td>';
-      species.forEach(function (s) { html += '<td class="border border-slate-200 px-2 py-1.5 font-mono">' + s.vals[i] + '</td>'; });
-      html += '</tr>';
-      body.insertAdjacentHTML('beforeend', html);
-    });
-
-    function analyze(clicked) {
-      // delta per 10 s for each species
-      const deltas = species.map(function (s) {
-        return (s.vals[s.vals.length - 1] - s.vals[0]) / (times[times.length - 1] - times[0]) * 10;
-      });
-      analysis.innerHTML = species.map(function (s, i) {
-        const styles = {
-          down: 'bg-rose-50 border-rose-300 text-rose-800',
-          up: 'bg-emerald-50 border-emerald-300 text-emerald-800',
-          flat: 'bg-amber-50 border-amber-300 text-amber-800'
-        }[s.trend];
-        const label = { down: '\u0e25\u0e14 \u2192 \u0e2a\u0e32\u0e23\u0e15\u0e31\u0e49\u0e07\u0e15\u0e49\u0e19', up: '\u0e40\u0e1e\u0e34\u0e48\u0e21 \u2192 \u0e1c\u0e25\u0e34\u0e15\u0e20\u0e31\u0e13\u0e11\u0e4c', flat: '\u0e04\u0e07\u0e17\u0e35\u0e48 \u2192 \u0e15\u0e31\u0e27\u0e40\u0e23\u0e48\u0e07!' }[s.trend];
-        return '<div class="p-2 rounded-lg border ' + styles + (clicked && clicked.name === s.name ? ' ring-2 ring-slate-900' : '') + '">' +
-          '<div class="font-bold">' + s.name + ': ' + label + '</div>' +
-          '<div class="font-mono">\u0394/10s = ' + fmt(Math.abs(deltas[i]), 2) + '</div></div>';
-      }).join('');
-
-      // ratio: divide by smallest nonzero delta
-      const moving = deltas.map(function (d, i) { return { d: Math.abs(d), s: species[i] }; })
-        .filter(function (x) { return x.d > 1e-9; })
-        .sort(function (a, b) { return a.d - b.d; });
-      const min = moving[0].d;
-      const ratio = moving.map(function (x) { return { name: x.s.name, r: x.d / min, dir: x.s.trend }; });
-      const lhs = ratio.filter(function (x) { return x.dir === 'down'; })
-        .map(function (x) { return fmt(x.r, 0) + x.name; }).join(' + ');
-      const rhs = ratio.filter(function (x) { return x.dir === 'up'; })
-        .map(function (x) { return fmt(x.r, 0) + x.name; }).join(' + ');
-      const cat = species.filter(function (s) { return s.trend === 'flat'; }).map(function (s) { return s.name; });
-
-      conclusion.innerHTML =
-        '<div class="font-bold text-emerald-300 mb-1">\u0e2a\u0e21\u0e01\u0e32\u0e23\u0e17\u0e35\u0e48\u0e41\u0e01\u0e30\u0e44\u0e14\u0e49:</div>' +
-        '<div class="font-mono text-sm text-center p-2 bg-white/10 rounded-lg">' +
-        (lhs || '?') + ' \u2500\u2500' + (cat.length ? cat[0] : '') + '\u2500\u2500\u25b6 ' + (rhs || '?') + '</div>' +
-        (cat.length
-          ? '<div class="mt-2 text-rose-300 font-bold">\u26a0\ufe0f \u0e08\u0e33\u0e44\u0e14\u0e49: \u0e2a\u0e32\u0e23 ' + cat.join(', ') +
-            ' \u0e04\u0e07\u0e17\u0e35\u0e48\u0e15\u0e25\u0e2d\u0e14 \u2192 \u0e40\u0e1b\u0e47\u0e19\u0e15\u0e31\u0e27\u0e40\u0e23\u0e48\u0e07 \u201c\u0e2b\u0e49\u0e32\u0e21\u0e43\u0e2a\u0e48\u0e43\u0e19\u0e2a\u0e21\u0e01\u0e32\u0e23\u0e40\u0e04\u0e21\u0e35\u201d \u0e40\u0e02\u0e35\u0e22\u0e19\u0e04\u0e23\u0e48\u0e2d\u0e21\u0e25\u0e39\u0e01\u0e28\u0e23\u0e40\u0e17\u0e48\u0e32\u0e19\u0e31\u0e49\u0e19!</div>'
-          : '');
-    }
-
-    analyze(species[3]);
-  }
-
-  // ------------------------------------------------------------
-  // 3) X / Y / Z MISSING-VALUE PUZZLE (slide 5)
-  //    2A + 3B \u2192 C ; every 10 s interval consumes in ratio 2:3:1
+  // 1) XYZ PUZZLE (slide 5)
   // ------------------------------------------------------------
   function initXYZ() {
     const head = $('#xyz-head');
@@ -467,8 +318,6 @@
   // Boot
   // ------------------------------------------------------------
   function boot() {
-    try { initStraddle(); } catch (e) { console.warn('straddle widget:', e); }
-    try { initEqSolve(); } catch (e) { console.warn('eqsolve widget:', e); }
     try { initXYZ(); } catch (e) { console.warn('xyz widget:', e); }
     try { initRate3(); } catch (e) { console.warn('rate3 widget:', e); }
     try { initMultiStep(); } catch (e) { console.warn('multistep widget:', e); }
