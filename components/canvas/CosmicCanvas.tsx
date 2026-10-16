@@ -2,14 +2,161 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 
 interface CosmicCanvasProps {
   scrollProgress: number;
   isWarping?: boolean;
 }
 
-// Generate soft bokeh texture for celestial stars
-function createBokehTexture(size: number = 64): THREE.Texture {
+// ============================================================================
+// CUSTOM GLSL SHADERS (Per-Pixel Mathematical Smoothness — Zero Polygon Edges)
+// ============================================================================
+
+const PLASMA_VERTEX_SHADER = `
+  varying vec3 vNormal;
+  varying vec3 vPosition;
+  varying vec3 vWorldPosition;
+  varying vec3 vViewPosition;
+  uniform float uTime;
+
+  // Smooth 3D harmonic displacement for living plasma surface
+  void main() {
+    vNormal = normalize(normalMatrix * normal);
+    
+    // Subtle organic harmonic breathing
+    float wave = sin(position.x * 2.2 + uTime * 1.8) * cos(position.y * 2.2 - uTime * 1.4) * sin(position.z * 2.2 + uTime * 1.6);
+    vec3 displaced = position + normal * (wave * 0.08);
+    
+    vPosition = displaced;
+    vec4 worldPos = modelMatrix * vec4(displaced, 1.0);
+    vWorldPosition = worldPos.xyz;
+    vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
+    vViewPosition = -mvPosition.xyz;
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+
+const PLASMA_FRAGMENT_SHADER = `
+  varying vec3 vNormal;
+  varying vec3 vPosition;
+  varying vec3 vWorldPosition;
+  varying vec3 vViewPosition;
+  uniform float uTime;
+  uniform vec3 uColorDeep;
+  uniform vec3 uColorMid;
+  uniform vec3 uColorGlow;
+
+  // Compact 3D Simplex-like trigonometric turbulence (100% smooth C-infinity continuous)
+  float fbm(vec3 p) {
+    float v = 0.0;
+    float a = 0.5;
+    vec3 shift = vec3(100.0);
+    for (int i = 0; i < 4; ++i) {
+      v += a * (sin(p.x) * cos(p.y) + sin(p.y) * cos(p.z) + sin(p.z) * cos(p.x)) * 0.3333;
+      p = p * 2.02 + shift;
+      a *= 0.5;
+    }
+    return v * 0.5 + 0.5;
+  }
+
+  void main() {
+    vec3 viewDir = normalize(vViewPosition);
+    vec3 normal = normalize(vNormal);
+
+    // Multi-layered flowing plasma convection
+    vec3 p = vPosition * 1.35 + vec3(uTime * 0.35, -uTime * 0.28, uTime * 0.22);
+    float n1 = fbm(p);
+    float n2 = fbm(p * 2.1 - vec3(n1 * 1.8) + uTime * 0.4);
+    float pattern = smoothstep(0.2, 0.85, n2);
+
+    // Fresnel atmospheric rim lighting
+    float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 2.6);
+
+    vec3 baseColor = mix(uColorDeep, uColorMid, pattern);
+    baseColor = mix(baseColor, uColorGlow, pow(pattern, 2.5) * 0.85);
+    vec3 finalColor = baseColor + uColorGlow * fresnel * 1.45;
+
+    gl_FragColor = vec4(finalColor, 1.0);
+  }
+`;
+
+const FRESNEL_SHELL_VERTEX = `
+  varying vec3 vNormal;
+  varying vec3 vViewPosition;
+  void main() {
+    vNormal = normalize(normalMatrix * normal);
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+    vViewPosition = -mvPosition.xyz;
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+
+const FRESNEL_SHELL_FRAGMENT = `
+  varying vec3 vNormal;
+  varying vec3 vViewPosition;
+  uniform vec3 uRimColor;
+  uniform vec3 uInnerColor;
+  uniform float uPower;
+  uniform float uOpacity;
+
+  void main() {
+    vec3 normal = normalize(vNormal);
+    vec3 viewDir = normalize(vViewPosition);
+    float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), uPower);
+    
+    // Specular studio highlight
+    vec3 lightDir = normalize(vec3(0.6, 0.8, 0.7));
+    vec3 halfVec = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(normal, halfVec), 0.0), 96.0);
+
+    vec3 col = mix(uInnerColor, uRimColor, fresnel) + vec3(1.0) * spec * 0.9;
+    float alpha = clamp(fresnel * uOpacity + spec * 0.7, 0.04, 0.92);
+    gl_FragColor = vec4(col, alpha);
+  }
+`;
+
+const ACCRETION_VERTEX_SHADER = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const ACCRETION_FRAGMENT_SHADER = `
+  varying vec2 vUv;
+  uniform float uTime;
+  uniform vec3 uColorInner;
+  uniform vec3 uColorOuter;
+
+  void main() {
+    vec2 centered = vUv * 2.0 - 1.0;
+    float r = length(centered);
+    float angle = atan(centered.y, centered.x);
+
+    // Smooth radial ring mask
+    float ringMask = smoothstep(0.36, 0.46, r) * (1.0 - smoothstep(0.82, 0.98, r));
+    
+    // Spiral relativistic wave filaments
+    float spiral1 = sin(angle * 4.0 - r * 18.0 + uTime * 2.2) * 0.5 + 0.5;
+    float spiral2 = sin(angle * 7.0 - r * 26.0 - uTime * 1.5) * 0.5 + 0.5;
+    float fineRings = sin(r * 65.0 - uTime * 3.0) * 0.5 + 0.5;
+
+    float intensity = (spiral1 * 0.55 + spiral2 * 0.3 + fineRings * 0.15) * ringMask;
+    vec3 col = mix(uColorOuter, uColorInner, smoothstep(0.95, 0.4, r));
+    col += vec3(0.8, 0.95, 1.0) * pow(intensity, 3.0) * 0.8;
+
+    gl_FragColor = vec4(col, intensity * 0.78);
+  }
+`;
+
+// Soft circular bokeh texture for starfield
+function createBokehTexture(size: number = 128): THREE.Texture {
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
@@ -17,14 +164,28 @@ function createBokehTexture(size: number = 64): THREE.Texture {
   const half = size / 2;
   const gradient = ctx.createRadialGradient(half, half, 0, half, half, half);
   gradient.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
-  gradient.addColorStop(0.2, 'rgba(235, 245, 255, 0.85)');
-  gradient.addColorStop(0.5, 'rgba(160, 200, 255, 0.25)');
+  gradient.addColorStop(0.15, 'rgba(240, 248, 255, 0.9)');
+  gradient.addColorStop(0.45, 'rgba(160, 210, 255, 0.25)');
   gradient.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, size, size);
   const tex = new THREE.CanvasTexture(canvas);
   tex.needsUpdate = true;
   return tex;
+}
+
+// Helper: Generate a smooth 3D Torus Knot / Stellarator Parametric Curve
+function createStellaratorCurve(R: number, r: number, p: number, q: number, segments: number = 256): THREE.CatmullRomCurve3 {
+  const pts: THREE.Vector3[] = [];
+  for (let i = 0; i < segments; i++) {
+    const t = (i / segments) * Math.PI * 2;
+    const rad = R + r * Math.cos(q * t);
+    const x = rad * Math.cos(p * t);
+    const y = rad * Math.sin(p * t);
+    const z = r * Math.sin(q * t);
+    pts.push(new THREE.Vector3(x, y, z));
+  }
+  return new THREE.CatmullRomCurve3(pts, true);
 }
 
 export default function CosmicCanvas({ scrollProgress, isWarping = false }: CosmicCanvasProps) {
@@ -48,9 +209,10 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
 
     // ========== 1. SCENE & CAMERA ==========
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x030306, 0.006);
+    scene.background = new THREE.Color(0x030306);
+    scene.fog = new THREE.FogExp2(0x030306, 0.0055);
 
-    const camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 800);
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 800);
     camera.position.set(0, 2, 48);
 
     const currentCamPos = new THREE.Vector3(0, 2, 48);
@@ -58,105 +220,84 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
     const currentLookAt = new THREE.Vector3(0, 0, 0);
     const targetLookAt = new THREE.Vector3(0, 0, 0);
 
-    // ========== 2. RENDERER & HIGH-END POST SETTINGS ==========
+    // ========== 2. RENDERER & STUDIO ENVIRONMENT (RoomEnvironment) ==========
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: true,
       powerPreference: 'high-performance',
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const dpr = Math.min(window.devicePixelRatio, 2);
+    renderer.setPixelRatio(dpr);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMappingExposure = 1.15;
     container.appendChild(renderer.domElement);
 
-    // ========== 3. PROCEDURAL STUDIO ENVIRONMENT MAP (Luxury PBR Reflections) ==========
+    // Authentic Three.js RoomEnvironment for liquid-smooth metallic & clearcoat reflections
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    pmremGenerator.compileEquirectangularShader();
-
-    const envCanvas = document.createElement('canvas');
-    envCanvas.width = 512;
-    envCanvas.height = 256;
-    const envCtx = envCanvas.getContext('2d')!;
-
-    // Soft dark studio gradient with overhead diffuse lighting
-    const envGrad = envCtx.createLinearGradient(0, 0, 0, 256);
-    envGrad.addColorStop(0, '#1e293b');
-    envGrad.addColorStop(0.35, '#0f172a');
-    envGrad.addColorStop(0.7, '#05070f');
-    envGrad.addColorStop(1, '#020306');
-    envCtx.fillStyle = envGrad;
-    envCtx.fillRect(0, 0, 512, 256);
-
-    // Overhead studio softbox
-    const softbox = envCtx.createRadialGradient(256, 40, 0, 256, 40, 140);
-    softbox.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
-    softbox.addColorStop(0.4, 'rgba(180, 220, 255, 0.4)');
-    softbox.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    envCtx.fillStyle = softbox;
-    envCtx.fillRect(0, 0, 512, 256);
-
-    // Side rim softbox
-    const sidebox = envCtx.createRadialGradient(80, 120, 0, 80, 120, 90);
-    sidebox.addColorStop(0, 'rgba(140, 200, 255, 0.6)');
-    sidebox.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    envCtx.fillStyle = sidebox;
-    envCtx.fillRect(0, 0, 512, 256);
-
-    const envTexture = new THREE.CanvasTexture(envCanvas);
-    envTexture.mapping = THREE.EquirectangularReflectionMapping;
-    const envMap = pmremGenerator.fromEquirectangular(envTexture).texture;
+    const roomEnv = new RoomEnvironment();
+    const envMap = pmremGenerator.fromScene(roomEnv, 0.04).texture;
     scene.environment = envMap;
+    roomEnv.dispose();
 
-    // ========== 4. STUDIO LIGHTING HIERARCHY ==========
-    const ambient = new THREE.AmbientLight(0x0c1322, 2.2);
+    // ========== 3. CINEMATIC POST-PROCESSING (UnrealBloomPass) ==========
+    const composer = new EffectComposer(renderer);
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
+
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      0.52, // Subtle luxury optical bloom strength
+      0.65, // Smooth bloom radius
+      0.68  // Only bright emissive highlights bloom
+    );
+    composer.addPass(bloomPass);
+
+    const outputPass = new OutputPass();
+    composer.addPass(outputPass);
+
+    // ========== 4. STUDIO 3-POINT LIGHTING ==========
+    const ambient = new THREE.AmbientLight(0x0d1526, 1.8);
     scene.add(ambient);
 
-    // Key Light - Precision Cool Platinum
-    const keyLight = new THREE.DirectionalLight(0xe2e8f0, 3.2);
+    const keyLight = new THREE.DirectionalLight(0xf8fafc, 3.0);
     keyLight.position.set(25, 35, 30);
     scene.add(keyLight);
 
-    // Fill Light - Subtle Cyan
-    const fillLight = new THREE.DirectionalLight(0x38bdf8, 1.4);
+    const fillLight = new THREE.DirectionalLight(0x38bdf8, 1.5);
     fillLight.position.set(-25, 15, 20);
     scene.add(fillLight);
 
-    // Rim Backlight - Crisp Edge Definition
-    const rimLight = new THREE.DirectionalLight(0x94a3b8, 2.0);
-    rimLight.position.set(0, -10, -35);
+    const rimLight = new THREE.DirectionalLight(0x34d399, 1.4);
+    rimLight.position.set(0, -15, -35);
     scene.add(rimLight);
 
-    // Accent Lights
-    const physAccent = new THREE.PointLight(0x00f0ff, 4.5, 45, 1.4);
-    physAccent.position.set(24, 2, -16);
-    scene.add(physAccent);
+    const physLight = new THREE.PointLight(0x00e5ff, 6.0, 50, 1.4);
+    physLight.position.set(24, 2, -16);
+    scene.add(physLight);
 
-    const chemAccent = new THREE.PointLight(0x10b981, 4.5, 45, 1.4);
-    chemAccent.position.set(-26, 0, -48);
-    scene.add(chemAccent);
+    const chemLight = new THREE.PointLight(0x10b981, 6.0, 50, 1.4);
+    chemLight.position.set(-26, 2, -48);
+    scene.add(chemLight);
 
-    // ========== 5. REFINED CELESTIAL BOKEH STARFIELD ==========
-    const bokehTex = createBokehTexture(64);
-    const starCount = 1800; // Elegant, not crowded
+    // ========== 5. CELESTIAL BOKEH STARFIELD ==========
+    const bokehTex = createBokehTexture(128);
+    const starCount = 1600;
     const starGeo = new THREE.BufferGeometry();
     const starPos = new Float32Array(starCount * 3);
     const starCol = new Float32Array(starCount * 3);
 
     const starPalette = [
-      new THREE.Color(0xffffff), // Pure white
-      new THREE.Color(0xdbeafe), // Ice blue
-      new THREE.Color(0xfef3c7), // Warm champagne
-      new THREE.Color(0xbae6fd), // Pale cyan
+      new THREE.Color(0xffffff),
+      new THREE.Color(0xdbeafe),
+      new THREE.Color(0xfef3c7),
+      new THREE.Color(0xa7f3d0),
     ];
 
     for (let i = 0; i < starCount; i++) {
       const i3 = i * 3;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const radius = 70 + Math.pow(Math.random(), 0.5) * 280;
+      const radius = 65 + Math.pow(Math.random(), 0.55) * 280;
       starPos[i3] = radius * Math.sin(phi) * Math.cos(theta);
       starPos[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
       starPos[i3 + 2] = radius * Math.cos(phi);
@@ -172,10 +313,10 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
 
     const starMat = new THREE.PointsMaterial({
       map: bokehTex,
-      size: 1.6,
+      size: 1.5,
       vertexColors: true,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.72,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       sizeAttenuation: true,
@@ -183,211 +324,296 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
     const stars = new THREE.Points(starGeo, starMat);
     scene.add(stars);
 
-    // ========== 6. 🪐 PHYSICS REALM: THE QUANTUM CORE (at 24, 0, -16) ==========
+    // =========================================================================
+    // 6. 🪐 PHYSICS REALM: RELATIVISTIC TOKAMAK & SINGULARITY (at 24, 0, -16)
+    // =========================================================================
     const physGroup = new THREE.Group();
     physGroup.position.set(24, 0, -16);
     scene.add(physGroup);
 
-    // A. Outer Optical Glass Sphere (Ultra-smooth 64x64, Refractive)
-    const glassSphereGeo = new THREE.SphereGeometry(3.4, 64, 64);
-    const glassSphereMat = new THREE.MeshPhysicalMaterial({
-      color: 0x020817,
-      emissive: 0x002855,
-      emissiveIntensity: 0.3,
-      metalness: 0.05,
-      roughness: 0.03,
-      transmission: 0.92,
-      thickness: 3.2,
-      ior: 1.54,
+    // A. Custom Shader Living Plasma Singularity Core (128x128 — Zero Facets!)
+    const physPlasmaMat = new THREE.ShaderMaterial({
+      vertexShader: PLASMA_VERTEX_SHADER,
+      fragmentShader: PLASMA_FRAGMENT_SHADER,
+      uniforms: {
+        uTime: { value: 0 },
+        uColorDeep: { value: new THREE.Color(0x020617) },
+        uColorMid: { value: new THREE.Color(0x0284c7) },
+        uColorGlow: { value: new THREE.Color(0x7dd3fc) },
+      },
+    });
+    const physCoreMesh = new THREE.Mesh(new THREE.SphereGeometry(2.65, 128, 128), physPlasmaMat);
+    physGroup.add(physCoreMesh);
+
+    // B. Outer Optical Containment Shell (Smooth Fresnel Glass Shader)
+    const physShellMat = new THREE.ShaderMaterial({
+      vertexShader: FRESNEL_SHELL_VERTEX,
+      fragmentShader: FRESNEL_SHELL_FRAGMENT,
+      uniforms: {
+        uRimColor: { value: new THREE.Color(0x38bdf8) },
+        uInnerColor: { value: new THREE.Color(0x03112b) },
+        uPower: { value: 2.3 },
+        uOpacity: { value: 0.85 },
+      },
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const physShellMesh = new THREE.Mesh(new THREE.SphereGeometry(3.35, 128, 128), physShellMat);
+    physGroup.add(physShellMesh);
+
+    // C. Sculpted 3D Tokamak Magnetic Flux Ribbon (Smooth Continuous Spline)
+    const stellaratorCurve = createStellaratorCurve(5.6, 1.15, 2, 3, 300);
+    const stellaratorGeo = new THREE.TubeGeometry(stellaratorCurve, 300, 0.11, 32, true);
+    const chromeRibbonMat = new THREE.MeshPhysicalMaterial({
+      color: 0xf1f5f9,
+      emissive: 0x0369a1,
+      emissiveIntensity: 0.35,
+      metalness: 0.98,
+      roughness: 0.05,
       clearcoat: 1.0,
       clearcoatRoughness: 0.04,
-      transparent: true,
-      opacity: 0.95,
+      iridescence: 0.7,
+      iridescenceIOR: 1.3,
     });
-    const glassCore = new THREE.Mesh(glassSphereGeo, glassSphereMat);
-    physGroup.add(glassCore);
+    const stellaratorMesh = new THREE.Mesh(stellaratorGeo, chromeRibbonMat);
+    physGroup.add(stellaratorMesh);
 
-    // Inner Luminous Quantum Singularity
-    const innerCoreGeo = new THREE.SphereGeometry(1.6, 48, 48);
-    const innerCoreMat = new THREE.MeshStandardMaterial({
-      color: 0x38bdf8,
+    // Secondary Inner Energy Filament Ribbon (Harmonic 3,5 Knot)
+    const innerKnotCurve = createStellaratorCurve(4.4, 0.65, 3, 5, 300);
+    const innerKnotGeo = new THREE.TubeGeometry(innerKnotCurve, 300, 0.045, 24, true);
+    const cyanFilamentMat = new THREE.MeshStandardMaterial({
+      color: 0x7dd3fc,
       emissive: 0x00d4ff,
-      emissiveIntensity: 2.4,
+      emissiveIntensity: 2.2,
       roughness: 0.1,
-      metalness: 0.2,
+      metalness: 0.5,
     });
-    const innerCore = new THREE.Mesh(innerCoreGeo, innerCoreMat);
-    physGroup.add(innerCore);
+    const innerKnotMesh = new THREE.Mesh(innerKnotGeo, cyanFilamentMat);
+    physGroup.add(innerKnotMesh);
 
-    // B. Precision-Engineered Liquid Platinum / Titanium Rings
-    const createLuxuryRing = (radius: number, tube: number, color: number, emissive: number) => {
-      const geo = new THREE.TorusGeometry(radius, tube, 48, 128);
-      const mat = new THREE.MeshPhysicalMaterial({
-        color,
-        emissive,
-        emissiveIntensity: 0.2,
+    // D. Precision-Machined Gyroscopic Gimbal Rings (256-segment Ultra Smooth)
+    const createMachinedGimbal = (radius: number, tube: number, emissiveHex: number) => {
+      const group = new THREE.Group();
+      // Main Brushed Titanium Ring
+      const mainGeo = new THREE.TorusGeometry(radius, tube, 64, 256);
+      const mainMat = new THREE.MeshPhysicalMaterial({
+        color: 0xe2e8f0,
         metalness: 0.96,
         roughness: 0.08,
         clearcoat: 1.0,
-        clearcoatRoughness: 0.06,
-        reflectivity: 1.0,
+        clearcoatRoughness: 0.05,
       });
-      return new THREE.Mesh(geo, mat);
+      group.add(new THREE.Mesh(mainGeo, mainMat));
+
+      // Inner Luminous Laser Track
+      const trackGeo = new THREE.TorusGeometry(radius - tube * 0.85, tube * 0.28, 32, 256);
+      const trackMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        emissive: emissiveHex,
+        emissiveIntensity: 2.0,
+      });
+      group.add(new THREE.Mesh(trackGeo, trackMat));
+      return group;
     };
 
-    const ringA = createLuxuryRing(6.8, 0.14, 0xe2e8f0, 0x0284c7);
-    ringA.rotation.x = Math.PI / 3.2;
-    ringA.rotation.y = 0.35;
-    physGroup.add(ringA);
+    const gimbalA = createMachinedGimbal(7.4, 0.14, 0x00e5ff);
+    gimbalA.rotation.x = Math.PI / 3.1;
+    physGroup.add(gimbalA);
 
-    const ringB = createLuxuryRing(8.4, 0.11, 0xcfd8dc, 0x0369a1);
-    ringB.rotation.x = -Math.PI / 2.6;
-    ringB.rotation.y = Math.PI / 6;
-    physGroup.add(ringB);
+    const gimbalB = createMachinedGimbal(9.1, 0.1, 0x38bdf8);
+    gimbalB.rotation.x = -Math.PI / 2.5;
+    gimbalB.rotation.y = Math.PI / 5;
+    physGroup.add(gimbalB);
 
-    const ringC = createLuxuryRing(10.2, 0.08, 0x94a3b8, 0x0284c7);
-    ringC.rotation.x = Math.PI / 2.1;
-    ringC.rotation.z = Math.PI / 4.5;
-    physGroup.add(ringC);
+    // E. Relativistic Accretion Disk (Custom Spiral Shader)
+    const accretionMat = new THREE.ShaderMaterial({
+      vertexShader: ACCRETION_VERTEX_SHADER,
+      fragmentShader: ACCRETION_FRAGMENT_SHADER,
+      uniforms: {
+        uTime: { value: 0 },
+        uColorInner: { value: new THREE.Color(0x7dd3fc) },
+        uColorOuter: { value: new THREE.Color(0x1d4ed8) },
+      },
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    const accretionDisk = new THREE.Mesh(new THREE.PlaneGeometry(22, 22), accretionMat);
+    accretionDisk.rotation.x = Math.PI / 2.25;
+    accretionDisk.rotation.y = -0.2;
+    physGroup.add(accretionDisk);
 
-    // C. Orbiting Platinum-Mercury Nodes (Clean, minimal, 10 nodes)
-    const fluxGroup = new THREE.Group();
-    physGroup.add(fluxGroup);
-
-    const nodeGeo = new THREE.SphereGeometry(0.3, 32, 32);
-    const nodeMat = new THREE.MeshPhysicalMaterial({
+    // F. Orbiting Liquid-Mercury Quantum Spheres (64x64)
+    const mercuryCount = 8;
+    const mercuryNodes: THREE.Mesh[] = [];
+    const mercuryGeo = new THREE.SphereGeometry(0.32, 64, 64);
+    const mercuryMat = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       emissive: 0x38bdf8,
-      emissiveIntensity: 1.4,
-      metalness: 0.98,
-      roughness: 0.02,
+      emissiveIntensity: 1.2,
+      metalness: 1.0,
+      roughness: 0.0,
       clearcoat: 1.0,
     });
-
-    const fluxCount = 10;
-    const fluxNodes: THREE.Mesh[] = [];
-    for (let i = 0; i < fluxCount; i++) {
-      const n = new THREE.Mesh(nodeGeo, nodeMat);
-      fluxGroup.add(n);
-      fluxNodes.push(n);
+    for (let i = 0; i < mercuryCount; i++) {
+      const m = new THREE.Mesh(mercuryGeo, mercuryMat);
+      physGroup.add(m);
+      mercuryNodes.push(m);
     }
 
-    // ========== 7. 🧪 CHEMISTRY REALM: THE MOLECULAR PRISM (at -26, 0, -48) ==========
+    // =========================================================================
+    // 7. 🧪 CHEMISTRY REALM: SCULPTED DNA HELIX & LIQUID ORBITAL (at -26, 0, -48)
+    // =========================================================================
     const chemGroup = new THREE.Group();
     chemGroup.position.set(-26, 0, -48);
     scene.add(chemGroup);
 
-    // A. Faceted Optical Emerald Crystal (Icosahedron Subdivision 3)
-    const crystalGeo = new THREE.IcosahedronGeometry(3.6, 3);
-    const crystalMat = new THREE.MeshPhysicalMaterial({
-      color: 0x012417,
-      emissive: 0x059669,
-      emissiveIntensity: 0.45,
-      metalness: 0.08,
-      roughness: 0.04,
-      transmission: 0.88,
-      thickness: 2.8,
-      ior: 1.58,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.04,
+    // A. Central Quantum Orbital Droplet (128x128 Custom Shader — Zero Flat Edges!)
+    const chemCoreMat = new THREE.ShaderMaterial({
+      vertexShader: PLASMA_VERTEX_SHADER,
+      fragmentShader: PLASMA_FRAGMENT_SHADER,
+      uniforms: {
+        uTime: { value: 0 },
+        uColorDeep: { value: new THREE.Color(0x022c22) },
+        uColorMid: { value: new THREE.Color(0x059669) },
+        uColorGlow: { value: new THREE.Color(0x6ee7b7) },
+      },
+    });
+    const chemCoreMesh = new THREE.Mesh(new THREE.SphereGeometry(2.55, 128, 128), chemCoreMat);
+    chemGroup.add(chemCoreMesh);
+
+    // Outer Iridescent Glass Meniscus Shell
+    const chemShellMat = new THREE.ShaderMaterial({
+      vertexShader: FRESNEL_SHELL_VERTEX,
+      fragmentShader: FRESNEL_SHELL_FRAGMENT,
+      uniforms: {
+        uRimColor: { value: new THREE.Color(0x34d399) },
+        uInnerColor: { value: new THREE.Color(0x022c22) },
+        uPower: { value: 2.2 },
+        uOpacity: { value: 0.85 },
+      },
       transparent: true,
-      opacity: 0.93,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
     });
-    const crystalCore = new THREE.Mesh(crystalGeo, crystalMat);
-    chemGroup.add(crystalCore);
+    const chemShellMesh = new THREE.Mesh(new THREE.SphereGeometry(3.25, 128, 128), chemShellMat);
+    chemGroup.add(chemShellMesh);
 
-    // Inner Emerald Pulse Sphere
-    const chemInnerGeo = new THREE.SphereGeometry(1.7, 48, 48);
-    const chemInnerMat = new THREE.MeshStandardMaterial({
-      color: 0x34d399,
-      emissive: 0x10b981,
-      emissiveIntensity: 2.0,
-      roughness: 0.05,
-      metalness: 0.1,
-    });
-    const chemInner = new THREE.Mesh(chemInnerGeo, chemInnerMat);
-    chemGroup.add(chemInner);
+    // B. Sculpted 3D Double-Helix Macromolecule Ring (Smooth Parametric Helices)
+    const dnaGroup = new THREE.Group();
+    chemGroup.add(dnaGroup);
 
-    // B. Molecular Lattice Nodes (Curated Platinum & Emerald Spheres)
-    const latticeGroup = new THREE.Group();
-    chemGroup.add(latticeGroup);
-
-    const atomCount = 8;
-    const atomMeshes: THREE.Mesh[] = [];
-    const atomGeo = new THREE.SphereGeometry(0.7, 40, 40);
-
-    // Refined dual-tone palette: Emerald glass & Liquid Platinum
-    const atomMatEmerald = new THREE.MeshPhysicalMaterial({
-      color: 0x10b981,
-      emissive: 0x059669,
-      emissiveIntensity: 0.5,
-      metalness: 0.3,
-      roughness: 0.1,
-      clearcoat: 1.0,
-    });
-    const atomMatPlatinum = new THREE.MeshPhysicalMaterial({
-      color: 0xf1f5f9,
-      emissive: 0x38bdf8,
-      emissiveIntensity: 0.3,
-      metalness: 0.95,
-      roughness: 0.08,
-      clearcoat: 1.0,
-    });
-
-    for (let i = 0; i < atomCount; i++) {
-      const mat = i % 2 === 0 ? atomMatEmerald : atomMatPlatinum;
-      const atom = new THREE.Mesh(atomGeo, mat);
-      latticeGroup.add(atom);
-      atomMeshes.push(atom);
-    }
-
-    // Cylindrical struts connecting atoms
-    const strutGeo = new THREE.CylinderGeometry(0.06, 0.06, 1, 16);
-    const strutMat = new THREE.MeshPhysicalMaterial({
-      color: 0x94a3b8,
-      metalness: 0.95,
-      roughness: 0.15,
-      clearcoat: 0.6,
-    });
-    const struts: THREE.Mesh[] = [];
-    for (let i = 0; i < atomCount; i++) {
-      const s = new THREE.Mesh(strutGeo, strutMat);
-      latticeGroup.add(s);
-      struts.push(s);
-    }
-
-    // C. Orbital Platinum Tracks
-    const chemRingA = createLuxuryRing(7.2, 0.09, 0xa7f3d0, 0x059669);
-    chemRingA.rotation.x = Math.PI / 2.3;
-    chemRingA.rotation.z = 0.25;
-    chemGroup.add(chemRingA);
-
-    const chemRingB = createLuxuryRing(9.2, 0.07, 0x94a3b8, 0x10b981);
-    chemRingB.rotation.x = -Math.PI / 3.2;
-    chemRingB.rotation.y = Math.PI / 4.5;
-    chemGroup.add(chemRingB);
-
-    // ========== 8. VOLUMETRIC STUDIO FOG GLOW ==========
-    const createSoftFog = (pos: THREE.Vector3, color: number, scale: number) => {
-      const geo = new THREE.SphereGeometry(1, 32, 32);
-      const mat = new THREE.MeshBasicMaterial({
-        color,
-        transparent: true,
-        opacity: 0.045,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.copy(pos);
-      mesh.scale.setScalar(scale);
-      return mesh;
+    const createHelixTorusCurve = (majorR: number, minorR: number, twists: number, phaseOffset: number) => {
+      const pts: THREE.Vector3[] = [];
+      const steps = 280;
+      for (let i = 0; i < steps; i++) {
+        const u = (i / steps) * Math.PI * 2;
+        const v = u * twists + phaseOffset;
+        const r = majorR + minorR * Math.cos(v);
+        const x = r * Math.cos(u);
+        const y = r * Math.sin(u);
+        const z = minorR * Math.sin(v);
+        pts.push(new THREE.Vector3(x, y, z));
+      }
+      return new THREE.CatmullRomCurve3(pts, true);
     };
 
-    scene.add(createSoftFog(new THREE.Vector3(24, 0, -16), 0x0099ff, 26));
-    scene.add(createSoftFog(new THREE.Vector3(-26, 0, -48), 0x00e676, 24));
-    scene.add(createSoftFog(new THREE.Vector3(0, -4, -30), 0x1e1b4b, 45));
+    const strandCurveA = createHelixTorusCurve(6.4, 0.95, 8, 0);
+    const strandCurveB = createHelixTorusCurve(6.4, 0.95, 8, Math.PI);
 
-    // ========== 9. EVENT LISTENERS ==========
+    const strandMatPlatinum = new THREE.MeshPhysicalMaterial({
+      color: 0xf8fafc,
+      emissive: 0x059669,
+      emissiveIntensity: 0.25,
+      metalness: 0.96,
+      roughness: 0.06,
+      clearcoat: 1.0,
+      iridescence: 0.85,
+      iridescenceIOR: 1.35,
+    });
+
+    const strandMeshA = new THREE.Mesh(new THREE.TubeGeometry(strandCurveA, 280, 0.12, 32, true), strandMatPlatinum);
+    const strandMeshB = new THREE.Mesh(new THREE.TubeGeometry(strandCurveB, 280, 0.12, 32, true), strandMatPlatinum);
+    dnaGroup.add(strandMeshA);
+    dnaGroup.add(strandMeshB);
+
+    // Smooth Base-Pair Rungs & Glossy Valence Nodes along the Circular Double-Helix
+    const rungCount = 24;
+    const nodeGeoChem = new THREE.SphereGeometry(0.28, 48, 48);
+    const nodeMatEmerald = new THREE.MeshPhysicalMaterial({
+      color: 0x34d399,
+      emissive: 0x10b981,
+      emissiveIntensity: 1.4,
+      metalness: 0.3,
+      roughness: 0.04,
+      clearcoat: 1.0,
+    });
+    const nodeMatCyan = new THREE.MeshPhysicalMaterial({
+      color: 0x38bdf8,
+      emissive: 0x0284c7,
+      emissiveIntensity: 1.4,
+      metalness: 0.3,
+      roughness: 0.04,
+      clearcoat: 1.0,
+    });
+
+    for (let i = 0; i < rungCount; i++) {
+      const t = i / rungCount;
+      const pA = strandCurveA.getPointAt(t);
+      const pB = strandCurveB.getPointAt(t);
+
+      // Smooth connecting covalent bridge
+      const bridgeCurve = new THREE.LineCurve3(pA, pB);
+      const bridgeGeo = new THREE.TubeGeometry(bridgeCurve, 8, 0.045, 16, false);
+      const bridgeMesh = new THREE.Mesh(bridgeGeo, i % 2 === 0 ? nodeMatEmerald : nodeMatCyan);
+      dnaGroup.add(bridgeMesh);
+
+      // Glossy valence nodes at junctions
+      const nA = new THREE.Mesh(nodeGeoChem, nodeMatEmerald);
+      nA.position.copy(pA);
+      dnaGroup.add(nA);
+
+      const nB = new THREE.Mesh(nodeGeoChem, nodeMatCyan);
+      nB.position.copy(pB);
+      dnaGroup.add(nB);
+    }
+
+    dnaGroup.rotation.x = Math.PI / 2.8;
+    dnaGroup.rotation.y = -0.35;
+
+    // C. Outer Precision Orbital Gimbal Ring
+    const chemGimbal = createMachinedGimbal(9.2, 0.09, 0x10b981);
+    chemGimbal.rotation.x = -Math.PI / 3.2;
+    chemGimbal.rotation.z = Math.PI / 5;
+    chemGroup.add(chemGimbal);
+
+    // D. Orbiting Iridescent Valence Atoms (64x64 Smooth Pearlescent Spheres)
+    const valenceGroup = new THREE.Group();
+    chemGroup.add(valenceGroup);
+
+    const valenceCount = 6;
+    const valenceAtoms: THREE.Mesh[] = [];
+    const valenceGeo = new THREE.SphereGeometry(0.58, 64, 64);
+    const valenceMat = new THREE.MeshPhysicalMaterial({
+      color: 0xa7f3d0,
+      emissive: 0x059669,
+      emissiveIntensity: 0.6,
+      metalness: 0.65,
+      roughness: 0.04,
+      clearcoat: 1.0,
+      iridescence: 1.0,
+      iridescenceIOR: 1.4,
+    });
+
+    for (let i = 0; i < valenceCount; i++) {
+      const v = new THREE.Mesh(valenceGeo, valenceMat);
+      valenceGroup.add(v);
+      valenceAtoms.push(v);
+    }
+
+    // ========== 8. EVENT LISTENERS ==========
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
       mouseRef.current.y = -(e.clientY / window.innerHeight - 0.5) * 2;
@@ -395,13 +621,16 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
     window.addEventListener('mousemove', handleMouseMove);
 
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(w, h);
+      composer.setSize(w, h);
     };
     window.addEventListener('resize', handleResize);
 
-    // ========== 10. SMOOTH RENDER LOOP ==========
+    // ========== 9. ANIMATION & CHOREOGRAPHY LOOP ==========
     let frameId: number;
     const clock = new THREE.Clock();
 
@@ -410,76 +639,55 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
       const t = clock.getElapsedTime();
       const p = scrollRef.current;
 
-      // Mouse inertia damping
+      // Smooth mouse inertia
       smoothMouse.current.x += (mouseRef.current.x - smoothMouse.current.x) * 0.04;
       smoothMouse.current.y += (mouseRef.current.y - smoothMouse.current.y) * 0.04;
 
-      // --- PHYSICS ROTATION & HARMONICS ---
-      ringA.rotation.z = t * 0.45;
-      ringA.rotation.x = Math.PI / 3.2 + Math.sin(t * 0.25) * 0.08;
-      ringB.rotation.z = -t * 0.35;
-      ringB.rotation.y = Math.PI / 6 + Math.cos(t * 0.2) * 0.06;
-      ringC.rotation.z = t * 0.25;
+      // Update Custom Shader Time Uniforms
+      physPlasmaMat.uniforms.uTime.value = t;
+      accretionMat.uniforms.uTime.value = t;
+      chemCoreMat.uniforms.uTime.value = t * 0.9;
 
-      const pPulse = 1.0 + Math.sin(t * 1.8) * 0.035;
-      glassCore.scale.setScalar(pPulse);
-      innerCore.scale.setScalar(pPulse * 0.55);
-      (innerCoreMat.emissiveIntensity as number) = 1.8 + Math.sin(t * 2.5) * 0.6;
+      // --- PHYSICS ANIMATION ---
+      stellaratorMesh.rotation.z = t * 0.28;
+      stellaratorMesh.rotation.x = Math.sin(t * 0.3) * 0.25;
+      innerKnotMesh.rotation.z = -t * 0.45;
+      innerKnotMesh.rotation.y = t * 0.25;
 
-      // Flux nodes smooth orbit
-      for (let i = 0; i < fluxCount; i++) {
-        const orbitR = 5.2 + (i % 2) * 2.4;
-        const speed = 0.7 + (i % 3) * 0.2;
-        const phase = (i / fluxCount) * Math.PI * 2;
-        const angle = t * speed + phase;
-        fluxNodes[i].position.set(
-          Math.cos(angle) * orbitR,
-          Math.sin(angle * 1.2) * orbitR * 0.3,
-          Math.sin(angle) * orbitR * 0.8
+      gimbalA.rotation.z = t * 0.35;
+      gimbalB.rotation.z = -t * 0.22;
+      accretionDisk.rotation.z = -t * 0.15;
+
+      for (let i = 0; i < mercuryCount; i++) {
+        const angle = t * (0.65 + (i % 3) * 0.15) + (i / mercuryCount) * Math.PI * 2;
+        const rad = 4.8 + (i % 2) * 3.2;
+        mercuryNodes[i].position.set(
+          Math.cos(angle) * rad,
+          Math.sin(angle * 1.4) * 1.6,
+          Math.sin(angle) * rad
         );
       }
 
-      physAccent.intensity = 3.8 + Math.sin(t * 2) * 0.8;
+      // --- CHEMISTRY ANIMATION ---
+      dnaGroup.rotation.z = t * 0.22;
+      dnaGroup.rotation.x = Math.PI / 2.8 + Math.sin(t * 0.35) * 0.12;
+      chemGimbal.rotation.z = -t * 0.28;
 
-      // --- CHEMISTRY ROTATION & HARMONICS ---
-      crystalCore.rotation.y = t * 0.12;
-      crystalCore.rotation.x = Math.sin(t * 0.25) * 0.12;
-      chemInner.scale.setScalar(1.0 + Math.sin(t * 2) * 0.05);
-
-      for (let i = 0; i < atomCount; i++) {
-        const r = 5.2 + (i % 2) * 2.2;
-        const speed = 0.45 + (i % 2) * 0.12;
-        const phase = (i / atomCount) * Math.PI * 2;
-        const a = t * speed + phase;
-        atomMeshes[i].position.set(
-          Math.cos(a) * r,
-          Math.sin(a * 0.8) * r * 0.35,
-          Math.sin(a) * r
+      for (let i = 0; i < valenceCount; i++) {
+        const angle = -t * 0.5 + (i / valenceCount) * Math.PI * 2;
+        const rad = 4.6;
+        valenceAtoms[i].position.set(
+          Math.cos(angle) * rad,
+          Math.sin(angle * 2.0) * 1.3,
+          Math.sin(angle) * rad
         );
       }
 
-      for (let i = 0; i < atomCount; i++) {
-        const p1 = atomMeshes[i].position;
-        const p2 = atomMeshes[(i + 1) % atomCount].position;
-        const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
-        const dir = new THREE.Vector3().subVectors(p2, p1);
-        const len = dir.length();
-
-        struts[i].position.copy(mid);
-        struts[i].scale.set(1, len, 1);
-        struts[i].quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
-      }
-
-      chemRingA.rotation.z = t * 0.3;
-      chemRingB.rotation.z = -t * 0.22;
-      chemAccent.intensity = 3.8 + Math.sin(t * 1.8) * 0.8;
-
-      // Starfield gentle drift
-      stars.rotation.y = t * 0.005;
+      // Starfield drift
+      stars.rotation.y = t * 0.004;
 
       // --- CINEMATIC CAMERA CHOREOGRAPHY ---
       if (p < 0.25) {
-        // Stage 1: Hero Vista
         const s = p / 0.25;
         targetCamPos.set(
           THREE.MathUtils.lerp(0, 10, s),
@@ -492,12 +700,11 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
           THREE.MathUtils.lerp(0, -6, s)
         );
       } else if (p < 0.55) {
-        // Stage 2: Quantum Physics Approach
         const s = (p - 0.25) / 0.3;
         targetCamPos.set(
           THREE.MathUtils.lerp(10, 18, s),
-          THREE.MathUtils.lerp(1.5, 3.2, s),
-          THREE.MathUtils.lerp(30, 0, s)
+          THREE.MathUtils.lerp(1.5, 3.0, s),
+          THREE.MathUtils.lerp(30, 1, s)
         );
         targetLookAt.set(
           THREE.MathUtils.lerp(14, 24, s),
@@ -505,12 +712,11 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
           THREE.MathUtils.lerp(-6, -16, s)
         );
       } else if (p < 0.85) {
-        // Stage 3: Molecular Chemistry Sweep
         const s = (p - 0.55) / 0.3;
         targetCamPos.set(
           THREE.MathUtils.lerp(18, -16, s),
-          THREE.MathUtils.lerp(3.2, 2.5, s),
-          THREE.MathUtils.lerp(0, -34, s)
+          THREE.MathUtils.lerp(3.0, 2.5, s),
+          THREE.MathUtils.lerp(1, -33, s)
         );
         targetLookAt.set(
           THREE.MathUtils.lerp(24, -26, s),
@@ -518,12 +724,11 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
           THREE.MathUtils.lerp(-16, -48, s)
         );
       } else {
-        // Stage 4: Nexus Overview
         const s = (p - 0.85) / 0.15;
         targetCamPos.set(
           THREE.MathUtils.lerp(-16, 0, s),
-          THREE.MathUtils.lerp(2.5, 26, s),
-          THREE.MathUtils.lerp(-34, -12, s)
+          THREE.MathUtils.lerp(2.5, 25, s),
+          THREE.MathUtils.lerp(-33, -10, s)
         );
         targetLookAt.set(
           THREE.MathUtils.lerp(-26, 0, s),
@@ -532,9 +737,7 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
         );
       }
 
-      // Check if hyper-speed warp transition is active
       if (warpingRef.current) {
-        // Accelerate camera directly plunging into the emerald crystal (-26, 0, -48)
         targetCamPos.set(-26, 0, -47.2);
         targetLookAt.set(-26, 0, -52);
         currentCamPos.lerp(targetCamPos, 0.12);
@@ -542,7 +745,6 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
         camera.fov = THREE.MathUtils.lerp(camera.fov, 80, 0.08);
         camera.updateProjectionMatrix();
       } else {
-        // Smooth camera interpolation
         currentCamPos.lerp(targetCamPos, 0.05);
         currentLookAt.lerp(targetLookAt, 0.05);
       }
@@ -552,12 +754,12 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
       camera.position.z = currentCamPos.z;
       camera.lookAt(currentLookAt);
 
-      renderer.render(scene, camera);
+      composer.render();
     };
 
     animate();
 
-    // ========== 11. CLEANUP ==========
+    // ========== 10. CLEANUP ==========
     return () => {
       cancelAnimationFrame(frameId);
       window.removeEventListener('mousemove', handleMouseMove);
@@ -566,11 +768,8 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
       scene.traverse((obj) => {
         if (obj instanceof THREE.Mesh) {
           obj.geometry?.dispose();
-          if (Array.isArray(obj.material)) {
-            obj.material.forEach((m) => m.dispose());
-          } else {
-            obj.material?.dispose();
-          }
+          if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose());
+          else obj.material?.dispose();
         }
         if (obj instanceof THREE.Points) {
           obj.geometry?.dispose();
@@ -579,9 +778,9 @@ export default function CosmicCanvas({ scrollProgress, isWarping = false }: Cosm
       });
 
       bokehTex.dispose();
-      envTexture.dispose();
       envMap.dispose();
       pmremGenerator.dispose();
+      composer.dispose();
 
       if (renderer.domElement?.parentNode) {
         renderer.domElement.parentNode.removeChild(renderer.domElement);
