@@ -1,0 +1,20 @@
+{
+  "name": "NJ TUTOR - กระดานอัจฉริยะ เคมี ม.5",
+  "short_name": "SmartBoard เคมี",
+  "description": "กระดานสอนเคมีอัจฉริยะ Interactive Smartboard & 3D Lab พร้อมระบบจดโน้ต",
+  "start_url": "/lessons/chemistry/acid-base/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["fullscreen", "standalone", "window-controls-overlay"],
+  "orientation": "any",
+  "background_color": "#14171c",
+  "theme_color": "#14171c",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

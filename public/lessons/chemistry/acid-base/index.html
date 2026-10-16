@@ -2,7 +2,14 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SmartBoard เคมี">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#14171c">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/logo.png">
 <title>กระดานอัจฉริยะ เคมี ม.5 : กรด - เบส (Interactive Smartboard & 3D Lab)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -816,6 +823,42 @@ body.light-board #pen-toolbar {
   display: flex;
 }
 
+/* PWA Guide Modal Overlay */
+.pwa-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 16, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.pwa-modal-overlay.open {
+  display: flex;
+}
+
+.pwa-card {
+  width: 100%;
+  max-width: 620px;
+  background: #1b1f27;
+  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  border-radius: 18px;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 .modal-header {
   height: 58px;
   padding: 0 24px;
@@ -1310,6 +1353,7 @@ body.light-board #fullscreen-nav-bar {
           <span id="account-user-badge" style="font-weight:600; color:#38bdf8;">⏳ บัญชี</span>
           <span id="account-sync-status" style="font-size:11px; color:#94a3b8;"></span>
         </div>
+        <button class="icon-btn responsive-compact" onclick="openIpadPWAGuide()" id="btn-ipad-guide" title="วิธีติดตั้งเป็นแอพ iPad เต็มจอ 100% ไร้แถบ Safari" style="display:none; color:#38bdf8; border-color:rgba(56,189,248,0.45); background:rgba(56,189,248,0.1);"><span>📲</span><span class="btn-text-responsive"> แอพ iPad</span></button>
         <button class="icon-btn responsive-compact" onclick="toggleTheme()" id="btn-theme" title="สลับสีกระดาน มืด/สว่าง"><span>🌙</span><span class="btn-text-responsive"> กระดานดำ</span></button>
         <button class="icon-btn responsive-compact" onclick="saveNotesJSON()" title="บันทึกไฟล์ลายมือ (.json) เก็บเข้าเครื่อง"><span>💾</span><span class="btn-text-responsive"> เซฟไฟล์</span></button>
         <button class="icon-btn responsive-compact" onclick="document.getElementById('load-json-input').click()" title="โหลดไฟล์ลายมือ (.json)"><span>📂</span><span class="btn-text-responsive"> โหลดไฟล์</span></button>
@@ -1326,6 +1370,7 @@ body.light-board #fullscreen-nav-bar {
       <span id="fs-page-indicator" onclick="promptJumpPage()" title="คลิกเพื่อระบุเลขหน้า">หน้า 1 / 1</span>
       <button class="fs-nav-btn" onclick="nextSlide()" title="หน้าถัดไป (→)">▶</button>
       <div class="fs-nav-divider"></div>
+      <button id="fs-btn-pwa" class="fs-nav-btn" onclick="openIpadPWAGuide()" title="วิธีใช้แบบแอพแท้ เต็มจอ 100% บน iPad" style="display:none; color:#38bdf8; border-color:rgba(56,189,248,0.4); background:rgba(56,189,248,0.1);">📲 แอพ iPad</button>
       <button id="fs-btn-3d" class="fs-nav-btn" onclick="openCurrent3DLab()" title="เปิดห้องแล็บ 3D" style="display:none; color:#f472b6; border-color:rgba(244,114,182,0.4);">🎮 3D</button>
       <button id="fs-btn-anim" class="fs-nav-btn" onclick="openCurrentAnimation()" title="เปิด Animation" style="display:none; color:#4ade80; border-color:rgba(74,222,128,0.4);">🎬 Anim</button>
       <button class="fs-nav-btn exit-btn" onclick="toggleFullScreen()" title="ออกจากโหมดเต็มจอ">🗗 ย่อจอ</button>
@@ -1432,6 +1477,61 @@ body.light-board #fullscreen-nav-bar {
         <div id="anim-graphic-explanation" class="modal-explanation-bar"></div>
       </div>
       <div id="anim-graphic-controls" class="lab-controls"></div>
+    </div>
+  </div>
+
+  <!-- Modal 3: iPad PWA Guide (Add to Home Screen) -->
+  <div id="modal-ipad-pwa" class="pwa-modal-overlay" onclick="if(event.target===this) closeIpadPWAGuide()">
+    <div class="pwa-card">
+      <div class="modal-header" style="height:54px; background: linear-gradient(135deg, rgba(56,189,248,0.18), rgba(168,85,247,0.15)); border-bottom:1px solid rgba(56,189,248,0.3);">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:22px;">📲</span>
+          <span style="font-size:16.5px; font-weight:700; color:#38bdf8;">วิธีใช้งานเป็น "แอพ iPad เต็มจอ 100%" (ไร้แถบ Safari)</span>
+        </div>
+        <button class="icon-btn" style="width:32px; height:32px; padding:0; border-radius:50%;" onclick="closeIpadPWAGuide()">✕</button>
+      </div>
+      <div style="padding:22px 24px; font-size:14px; line-height:1.6; color:#e2e8f0; overflow-y:auto; max-height:80vh;">
+        <p style="margin-bottom:14px; color:#f1f5f9; font-weight:500;">
+          ไม่ต้องเขียนแอพใหม่ หรือโหลดจาก App Store เลยครับ! คุณเจ้านายสามารถเปลี่ยนเว็บนี้ให้เป็น <b>แอพประจำเครื่อง iPad</b> ได้ทันทีใน 3 สเต็ป (ใช้เวลาแค่ 5 วินาที):
+        </p>
+        
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;">
+          <div style="display:flex; gap:14px; align-items:flex-start; background:rgba(15,23,42,0.8); padding:12px 14px; border-radius:12px; border:1px solid rgba(56,189,248,0.25);">
+            <div style="width:28px; height:28px; border-radius:50%; background:#38bdf8; color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0;">1</div>
+            <div>
+              <div style="font-weight:700; color:#fff;">แตะปุ่ม "แชร์" (Share) ที่แถบขวาบนของ Safari</div>
+              <div style="color:#94a3b8; font-size:12.5px; margin-top:2px;">ไอคอนรูปสี่เหลี่ยมที่มีลูกศรชี้ขึ้น <b>[ ⎋ / 📤 ]</b></div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start; background:rgba(15,23,42,0.8); padding:12px 14px; border-radius:12px; border:1px solid rgba(74,222,128,0.25);">
+            <div style="width:28px; height:28px; border-radius:50%; background:#4ade80; color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0;">2</div>
+            <div>
+              <div style="font-weight:700; color:#fff;">เลื่อนเมนูลงมาแล้วแตะ "เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</div>
+              <div style="color:#94a3b8; font-size:12.5px; margin-top:2px;">ไอคอนรูปสี่เหลี่ยมพร้อมเครื่องหมายบวก <b>[ ➕ เพิ่มไปยังหน้าจอโฮม ]</b></div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:14px; align-items:flex-start; background:rgba(15,23,42,0.8); padding:12px 14px; border-radius:12px; border:1px solid rgba(250,204,21,0.25);">
+            <div style="width:28px; height:28px; border-radius:50%; background:#facc15; color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0;">3</div>
+            <div>
+              <div style="font-weight:700; color:#fff;">แตะ "เพิ่ม" (Add) ที่มุมขวาบนของหน้าต่าง</div>
+              <div style="color:#94a3b8; font-size:12.5px; margin-top:2px;">iPad จะสร้างไอคอนแอพ <b>SmartBoard เคมี</b> บนหน้าจอโฮมทันที</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:rgba(56,189,248,0.08); border-left:3px solid #38bdf8; padding:12px 16px; border-radius:8px; font-size:13px; color:#bae6fd; margin-bottom:18px;">
+          ✨ <b>ข้อดีเมื่อเปิดใช้งานจากไอคอนบนหน้าจอโฮม:</b><br>
+          • <b>แถบแท็บ Safari ด้านบน และแถบพิมพ์ URL จะหายไปทั้งหมด 100%</b><br>
+          • <b>ปัดนิ้วขึ้น/ลง รูดหน้าจอ หรือเขียนกระดาน แถบเว็บจะไม่โผล่มาขัดจังหวะอีกต่อไป</b><br>
+          • หน้าจอแสดงผลเต็มขอบ (Edge-to-Edge) เสมือนแอพ GoodNotes / Procreate ตัวจริง!
+        </div>
+
+        <div style="text-align:right;">
+          <button class="icon-btn primary" onclick="closeIpadPWAGuide()" style="padding:8px 22px; font-size:13.5px; border-radius:8px;">รับทราบ เริ่มใช้งาน</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1702,7 +1802,11 @@ drawCanvas.addEventListener('touchmove', (e) => {
 
   const vp = getViewportEl();
   if (vp) {
-    vp.scrollTop -= dy;
+    if (vp.scrollTop <= 0 && dy > 0) {
+      vp.scrollTop = 0;
+    } else {
+      vp.scrollTop -= dy;
+    }
     vp.scrollLeft -= dx;
   }
   e.preventDefault();
@@ -7287,16 +7391,25 @@ function enterFullscreenMode() {
   document.body.classList.add('immersive-fullscreen');
   updateFullscreenButtonUI();
 
-  // Request browser native fullscreen if available
-  const docEl = document.documentElement;
-  const req = docEl.requestFullscreen ||
-              docEl.webkitRequestFullscreen ||
-              docEl.webkitRequestFullScreen;
-  if (req) {
-    try {
-      const p = req.call(docEl);
-      if (p && p.catch) p.catch(() => {});
-    } catch(e) {}
+  // On iPadOS Safari in a standard browser tab, calling docEl.webkitRequestFullscreen()
+  // activates Apple's fragile system gesture where pulling or swiping down from the top edge
+  // automatically exits fullscreen and reveals the URL bar and tabs.
+  // By avoiding native webkitRequestFullscreen on iOS Safari, our pure App-Level immersive fullscreen
+  // stays 100% active and rock-solid without iOS Safari gesture interruptions!
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  if (!isIOS) {
+    const docEl = document.documentElement;
+    const req = docEl.requestFullscreen ||
+                docEl.webkitRequestFullscreen ||
+                docEl.webkitRequestFullScreen;
+    if (req) {
+      try {
+        const p = req.call(docEl);
+        if (p && p.catch) p.catch(() => {});
+      } catch(e) {}
+    }
   }
   setTimeout(resizeBoardCanvases, 250);
 }
@@ -7320,12 +7433,54 @@ function exitFullscreenMode() {
   setTimeout(resizeBoardCanvases, 250);
 }
 
+// Keep desktop Esc key sync without breaking iPad
+document.addEventListener('fullscreenchange', () => {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (!document.fullscreenElement && !document.webkitFullscreenElement && !isIOS) {
+    document.body.classList.remove('immersive-fullscreen');
+    updateFullscreenButtonUI();
+    setTimeout(resizeBoardCanvases, 200);
+  }
+});
+
 function toggleFullScreen() {
   SoundFX.click();
   if (!isFullscreenActive()) {
     enterFullscreenMode();
   } else {
     exitFullscreenMode();
+  }
+}
+
+// iPad PWA Help Guide Handlers
+function openIpadPWAGuide() {
+  SoundFX.click();
+  const m = document.getElementById('modal-ipad-pwa');
+  if (m) m.classList.add('open');
+}
+
+function closeIpadPWAGuide() {
+  SoundFX.click();
+  const m = document.getElementById('modal-ipad-pwa');
+  if (m) m.classList.remove('open');
+}
+
+function checkIpadEnvironment() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isStandalone = Boolean(window.navigator.standalone) || 
+                       window.matchMedia('(display-mode: standalone)').matches ||
+                       window.matchMedia('(display-mode: fullscreen)').matches;
+
+  const btnTopbar = document.getElementById('btn-ipad-guide');
+  const btnFs = document.getElementById('fs-btn-pwa');
+
+  if (isIOS && !isStandalone) {
+    if (btnTopbar) btnTopbar.style.display = 'inline-flex';
+    if (btnFs) btnFs.style.display = 'inline-flex';
+  } else {
+    if (btnTopbar) btnTopbar.style.display = 'none';
+    if (btnFs) btnFs.style.display = 'none';
   }
 }
 
@@ -7342,6 +7497,16 @@ if (vpEl) {
     }
   }, { passive: true });
 }
+
+// Global touchmove guard to stop iOS Safari pull-down address bar bounce and pull-to-refresh
+document.addEventListener('touchmove', (e) => {
+  if (isTouchPanning || isDrawing || isFullscreenActive()) {
+    const scrollable = e.target.closest('#toc-list, .modal-body, .calc-display, #account-modal, #modal-ipad-pwa');
+    if (!scrollable) {
+      e.preventDefault();
+    }
+  }
+}, { passive: false });
 
 window.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
@@ -9516,6 +9681,7 @@ window.addEventListener('DOMContentLoaded', () => {
   buildSidebarTOC();
   goToSlide(0);
   initAccountAndSmartboardNotes();
+  checkIpadEnvironment();
 });
 </script>
 </body>

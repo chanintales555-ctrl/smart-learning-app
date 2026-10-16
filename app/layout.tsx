@@ -16,6 +16,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "NJ TUTOR - Smart Learning",
   description: "Platform สำหรับการเรียนรู้อัจฉริยะ",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "SmartBoard เคมี",
+  },
 };
 
 export default function RootLayout({
