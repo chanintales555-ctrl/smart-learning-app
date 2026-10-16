@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import Lenis from 'lenis';
 import { 
   ArrowLeft, 
@@ -16,7 +17,9 @@ import {
   ChevronDown,
   Atom,
   CheckCircle2,
-  Box
+  Box,
+  PenTool,
+  LogOut
 } from 'lucide-react';
 
 // Dynamic import for the 3D Chemistry Course Canvas
@@ -138,6 +141,7 @@ const chemistryChapters = [
 
 export default function ChemistryCoursePage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [scrollProgress, setScrollProgress] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -208,7 +212,7 @@ export default function ChemistryCoursePage() {
           </div>
         </div>
 
-        {/* Right Active Chapter Counter */}
+        {/* Right Active Chapter Counter & Account */}
         <div className="pointer-events-auto flex items-center gap-3">
           <div className="flex items-center gap-2 bg-black/50 backdrop-blur-3xl px-4 py-2 rounded-full border border-white/[0.1] shadow-2xl">
             <span className="text-[11px] font-mono text-white/40 uppercase tracking-wider">Chapter</span>
@@ -216,6 +220,27 @@ export default function ChemistryCoursePage() {
               {String(activeChapterIndex).padStart(2, '0')} / 13
             </span>
           </div>
+          {session ? (
+            <div className="hidden md:flex items-center gap-2.5 bg-black/50 backdrop-blur-3xl pl-3.5 pr-2 py-1.5 rounded-full border border-emerald-500/30">
+              <span className="text-xs font-semibold text-emerald-300 max-w-[110px] truncate">
+                👤 {session.user?.name}
+              </span>
+              <button
+                onClick={() => signOut()}
+                className="text-white/40 hover:text-red-400 p-1 transition-colors"
+                title="ออกจากระบบ"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login?callbackUrl=/course/chemistry"
+              className="hidden md:inline-flex px-4 py-2 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.15] text-white font-semibold text-xs uppercase tracking-wider transition-all"
+            >
+              เข้าสู่ระบบ (ซิงก์โน้ต)
+            </Link>
+          )}
           <Link
             href="/quizzes/chemistry"
             className="hidden sm:inline-flex px-5 py-2 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs uppercase tracking-wider transition-all hover:scale-[1.02] shadow-[0_0_20px_rgba(16,185,129,0.3)]"
@@ -266,7 +291,7 @@ export default function ChemistryCoursePage() {
             <span>·</span>
             <span>3D VISUALIZATIONS</span>
             <span>·</span>
-            <span>EXAM QUIZZES</span>
+            <span>SMARTBOARD CLOUD NOTES</span>
           </div>
         </div>
 
@@ -306,6 +331,12 @@ export default function ChemistryCoursePage() {
                         <span>เนื้อหา 3D พร้อมเรียนแล้ว</span>
                       </span>
                     )}
+                    {chapter.id === '10' && (
+                      <span className="px-3 py-1 rounded-full bg-cyan-400/20 text-cyan-300 text-[10px] font-bold border border-cyan-400/40 uppercase tracking-wider animate-pulse flex items-center gap-1.5">
+                        <PenTool className="w-3 h-3 text-cyan-300" />
+                        <span>กระดานจดโน้ต + 3D Lab พร้อมเรียน</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Telemetry label for 3D model */}
@@ -341,6 +372,25 @@ export default function ChemistryCoursePage() {
                       >
                         <Sparkles className="w-4 h-4" />
                         <span>เข้าเรียนเนื้อหา 3D Interactive</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                      {/* Direct Quiz Button */}
+                      <Link
+                        href={`/quizzes/chemistry/chapter/${chapter.id}`}
+                        className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.15] text-white font-semibold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                      >
+                        <span>ทำข้อสอบบทนี้</span>
+                      </Link>
+                    </>
+                  ) : chapter.id === '10' ? (
+                    <>
+                      {/* Active Smartboard & 3D Lab Lesson Button for Chapter 10 */}
+                      <Link
+                        href="/lessons/chemistry/acid-base/index.html"
+                        className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-emerald-300 hover:to-cyan-300 text-black font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 hover:scale-[1.03] shadow-[0_0_28px_rgba(56,189,248,0.5)]"
+                      >
+                        <PenTool className="w-4 h-4" />
+                        <span>เข้าเรียนกระดานอัจฉริยะ 3D (จดโน้ตผูกบัญชี)</span>
                         <ArrowRight className="w-4 h-4" />
                       </Link>
                       {/* Direct Quiz Button */}
