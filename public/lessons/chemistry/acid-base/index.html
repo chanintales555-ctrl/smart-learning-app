@@ -1079,21 +1079,101 @@ body.light-board .qnav-select {
   gap: 6px;
 }
 
-/* Standalone Fullscreen Simulation (iPadOS Safari Fallback) */
-body.standalone-fullscreen {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  height: 100dvh !important;
-  z-index: 999999 !important;
+/* Immersive Fullscreen Mode (Requirement 1 & 3) */
+body.immersive-fullscreen {
   overflow: hidden !important;
 }
 
-body.standalone-fullscreen #app {
-  width: 100vw !important;
-  height: 100vh !important;
-  height: 100dvh !important;
+body.immersive-fullscreen #topbar {
+  display: none !important;
+}
+
+body.immersive-fullscreen #sidebar {
+  display: none !important;
+}
+
+body.immersive-fullscreen #question-nav-bar {
+  display: none !important;
+}
+
+body.immersive-fullscreen #fullscreen-nav-bar {
+  display: flex !important;
+}
+
+#fullscreen-nav-bar {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 30px;
+  padding: 4px 10px;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+}
+
+body.light-board #fullscreen-nav-bar {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.fs-nav-btn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s;
+}
+
+.fs-nav-btn:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: var(--accent-cyan);
+}
+
+.fs-nav-btn.exit-btn {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #fca5a5;
+  font-size: 12px;
+}
+
+.fs-nav-btn.exit-btn:hover {
+  background: rgba(239, 68, 68, 0.4);
+  color: #fff;
+}
+
+.fs-nav-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.18);
+  margin: 0 2px;
+}
+
+#fs-page-indicator {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  padding: 0 8px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 /* Tablet & iPad Responsive Optimizations */
@@ -1239,6 +1319,17 @@ body.standalone-fullscreen #app {
         <button class="icon-btn primary responsive-compact" onclick="toggleFullScreen()" id="btn-fullscreen" title="ขยายเต็มจอ (F11)"><span id="btn-fullscreen-icon">⛶</span><span id="btn-fullscreen-text" class="btn-text-fullscreen"> เต็มจอ</span></button>
       </div>
     </header>
+
+    <!-- Floating Minimal Nav Pill (Active in Fullscreen Mode - Requirement 1) -->
+    <div id="fullscreen-nav-bar">
+      <button class="fs-nav-btn" onclick="prevSlide()" title="หน้าก่อนหน้า (←)">◀</button>
+      <span id="fs-page-indicator" onclick="promptJumpPage()" title="คลิกเพื่อระบุเลขหน้า">หน้า 1 / 1</span>
+      <button class="fs-nav-btn" onclick="nextSlide()" title="หน้าถัดไป (→)">▶</button>
+      <div class="fs-nav-divider"></div>
+      <button id="fs-btn-3d" class="fs-nav-btn" onclick="openCurrent3DLab()" title="เปิดห้องแล็บ 3D" style="display:none; color:#f472b6; border-color:rgba(244,114,182,0.4);">🎮 3D</button>
+      <button id="fs-btn-anim" class="fs-nav-btn" onclick="openCurrentAnimation()" title="เปิด Animation" style="display:none; color:#4ade80; border-color:rgba(74,222,128,0.4);">🎬 Anim</button>
+      <button class="fs-nav-btn exit-btn" onclick="toggleFullScreen()" title="ออกจากโหมดเต็มจอ">🗗 ย่อจอ</button>
+    </div>
 
     <!-- Single Question Navigation Bar (Automatically shown on Exercise & Real Exam slides) -->
     <div id="question-nav-bar">
@@ -1563,27 +1654,105 @@ function getStageCoords(e) {
   return { x, y, nx: x / stageW };
 }
 
-let isPanning = false;
-let panStartX = 0;
-let panStartY = 0;
-let panStartScrollTop = 0;
-let panStartScrollLeft = 0;
+// Dedicated Hand / Pan & Two-Finger Smooth Scrolling Controller (iPad + Desktop)
+let isTouchPanning = false;
+let touchLastX = 0;
+let touchLastY = 0;
 
-drawCanvas.addEventListener('pointerdown', (e) => {
-  if (currentDrawTool === 'pan') {
-    if (e.button !== 0 && e.pointerType === 'mouse') return;
-    isPanning = true;
-    panStartX = e.clientX;
-    panStartY = e.clientY;
-    panStartScrollTop = boardViewport.scrollTop;
-    panStartScrollLeft = boardViewport.scrollLeft;
-    try {
-      drawCanvas.setPointerCapture(e.pointerId);
-    } catch(err) {}
-    drawCanvas.classList.add('panning');
+let isMousePanning = false;
+let mouseLastX = 0;
+let mouseLastY = 0;
+
+function getViewportEl() {
+  return document.getElementById('board-viewport');
+}
+
+// Touch Handling on Canvas (1-finger in Pan mode, OR 2-fingers in ANY mode)
+drawCanvas.addEventListener('touchstart', (e) => {
+  if (currentDrawTool === 'pan' && e.touches.length === 1) {
+    isTouchPanning = true;
+    touchLastX = e.touches[0].clientX;
+    touchLastY = e.touches[0].clientY;
+    e.preventDefault(); // Stop native iOS bounce / exit fullscreen gesture
+  } else if (e.touches.length >= 2) {
+    // Two-finger scroll supported anytime without switching tools!
+    isTouchPanning = true;
+    touchLastX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+    touchLastY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
     e.preventDefault();
+  }
+}, { passive: false });
+
+drawCanvas.addEventListener('touchmove', (e) => {
+  if (!isTouchPanning) return;
+  let curX = 0, curY = 0;
+  if (e.touches.length === 1 && currentDrawTool === 'pan') {
+    curX = e.touches[0].clientX;
+    curY = e.touches[0].clientY;
+  } else if (e.touches.length >= 2) {
+    curX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+    curY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+  } else {
     return;
   }
+  const dx = curX - touchLastX;
+  const dy = curY - touchLastY;
+  touchLastX = curX;
+  touchLastY = curY;
+
+  const vp = getViewportEl();
+  if (vp) {
+    vp.scrollTop -= dy;
+    vp.scrollLeft -= dx;
+  }
+  e.preventDefault();
+}, { passive: false });
+
+drawCanvas.addEventListener('touchend', (e) => {
+  if (e.touches.length === 0) {
+    isTouchPanning = false;
+  }
+});
+drawCanvas.addEventListener('touchcancel', () => {
+  isTouchPanning = false;
+});
+
+// Mouse Drag Handling for Desktop Hand Tool
+drawCanvas.addEventListener('mousedown', (e) => {
+  if (currentDrawTool === 'pan' && e.button === 0) {
+    isMousePanning = true;
+    mouseLastX = e.clientX;
+    mouseLastY = e.clientY;
+    drawCanvas.classList.add('panning');
+    e.preventDefault();
+  }
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (isMousePanning) {
+    const dx = e.clientX - mouseLastX;
+    const dy = e.clientY - mouseLastY;
+    mouseLastX = e.clientX;
+    mouseLastY = e.clientY;
+    const vp = getViewportEl();
+    if (vp) {
+      vp.scrollTop -= dy;
+      vp.scrollLeft -= dx;
+    }
+    e.preventDefault();
+  }
+});
+
+window.addEventListener('mouseup', () => {
+  if (isMousePanning) {
+    isMousePanning = false;
+    drawCanvas.classList.remove('panning');
+  }
+});
+
+// Pointer down/move for Drawing Tools (Pen, Highlighter, Line, Rect, Eraser, Laser)
+drawCanvas.addEventListener('pointerdown', (e) => {
+  if (currentDrawTool === 'pan') return; // Handled by touch/mouse pan
   if (e.button !== 0 && e.pointerType === 'mouse') return;
   try {
     drawCanvas.setPointerCapture(e.pointerId);
@@ -1607,16 +1776,7 @@ drawCanvas.addEventListener('pointerdown', (e) => {
 });
 
 drawCanvas.addEventListener('pointermove', (e) => {
-  if (currentDrawTool === 'pan') {
-    if (!isPanning) return;
-    const dx = e.clientX - panStartX;
-    const dy = e.clientY - panStartY;
-    boardViewport.scrollTop = panStartScrollTop - dy;
-    boardViewport.scrollLeft = panStartScrollLeft - dx;
-    e.preventDefault();
-    return;
-  }
-
+  if (currentDrawTool === 'pan') return;
   if (!isDrawing) return;
   const pt = getStageCoords(e);
 
@@ -1636,19 +1796,7 @@ drawCanvas.addEventListener('pointermove', (e) => {
 });
 
 function finishStroke(e) {
-  if (currentDrawTool === 'pan') {
-    if (isPanning) {
-      isPanning = false;
-      drawCanvas.classList.remove('panning');
-      try {
-        if (e && e.pointerId && drawCanvas.hasPointerCapture(e.pointerId)) {
-          drawCanvas.releasePointerCapture(e.pointerId);
-        }
-      } catch(err) {}
-    }
-    return;
-  }
-
+  if (currentDrawTool === 'pan') return;
   if (!isDrawing) return;
   isDrawing = false;
   try {
@@ -7041,6 +7189,14 @@ function goToSlide(idx) {
   document.getElementById('page-indicator').textContent = `หน้า ${idx + 1} / ${SLIDES.length}`;
   document.getElementById('current-section-badge').textContent = `${slide.group} • ${slide.badge || ''}`;
 
+  // Sync floating fullscreen navbar
+  const fsPageInd = document.getElementById('fs-page-indicator');
+  if (fsPageInd) fsPageInd.textContent = `หน้า ${idx + 1} / ${SLIDES.length}`;
+  const fsBtn3d = document.getElementById('fs-btn-3d');
+  const fsBtnAnim = document.getElementById('fs-btn-anim');
+  if (fsBtn3d) fsBtn3d.style.display = slide.lab3d ? 'inline-flex' : 'none';
+  if (fsBtnAnim) fsBtnAnim.style.display = slide.anim ? 'inline-flex' : 'none';
+
   // Show/hide small feature buttons on topbar
   const btn3d = document.getElementById('btn-open-3d');
   const btnAnim = document.getElementById('btn-open-anim');
@@ -7106,96 +7262,83 @@ function toggleTheme() {
 }
 
 function isFullscreenActive() {
-  return Boolean(
-    document.fullscreenElement ||
-    document.webkitFullscreenElement ||
-    document.mozFullScreenElement ||
-    document.msFullscreenElement ||
-    document.body.classList.contains('standalone-fullscreen')
-  );
+  return document.body.classList.contains('immersive-fullscreen');
 }
 
 function updateFullscreenButtonUI() {
   const btn = document.getElementById('btn-fullscreen');
   const icon = document.getElementById('btn-fullscreen-icon');
   const txt = document.getElementById('btn-fullscreen-text');
-  if (!btn) return;
   const active = isFullscreenActive();
+  if (btn) {
+    btn.title = active ? 'ออกจากโหมดเต็มจอ (Esc)' : 'ขยายเต็มจอ (F11)';
+  }
   if (icon) icon.textContent = active ? '🗗' : '⛶';
   if (txt) txt.textContent = active ? ' ย่อจอ' : ' เต็มจอ';
-  btn.title = active ? 'ออกจากโหมดเต็มจอ (Esc)' : 'ขยายเต็มจอ (F11)';
+
+  // Sync floating fullscreen navbar page indicator
+  const fsPageInd = document.getElementById('fs-page-indicator');
+  if (fsPageInd) {
+    fsPageInd.textContent = `หน้า ${currentSlideIndex + 1} / ${SLIDES.length}`;
+  }
+}
+
+function enterFullscreenMode() {
+  document.body.classList.add('immersive-fullscreen');
+  updateFullscreenButtonUI();
+
+  // Request browser native fullscreen if available
+  const docEl = document.documentElement;
+  const req = docEl.requestFullscreen ||
+              docEl.webkitRequestFullscreen ||
+              docEl.webkitRequestFullScreen;
+  if (req) {
+    try {
+      const p = req.call(docEl);
+      if (p && p.catch) p.catch(() => {});
+    } catch(e) {}
+  }
+  setTimeout(resizeBoardCanvases, 250);
+}
+
+function exitFullscreenMode() {
+  document.body.classList.remove('immersive-fullscreen');
+  updateFullscreenButtonUI();
+
+  const doc = document;
+  const exit = doc.exitFullscreen ||
+               doc.webkitExitFullscreen ||
+               doc.webkitCancelFullScreen ||
+               doc.mozCancelFullScreen ||
+               doc.msExitFullscreen;
+  if (exit && (doc.fullscreenElement || doc.webkitFullscreenElement)) {
+    try {
+      const p = exit.call(doc);
+      if (p && p.catch) p.catch(() => {});
+    } catch(e) {}
+  }
+  setTimeout(resizeBoardCanvases, 250);
 }
 
 function toggleFullScreen() {
   SoundFX.click();
-  const doc = document;
-  const docEl = document.documentElement;
-  const appEl = document.getElementById('app') || docEl;
-
   if (!isFullscreenActive()) {
-    const req = appEl.requestFullscreen ||
-                appEl.webkitRequestFullscreen ||
-                docEl.requestFullscreen ||
-                docEl.webkitRequestFullscreen ||
-                docEl.webkitRequestFullScreen;
-
-    let handled = false;
-    if (req) {
-      try {
-        const p = req.call(appEl.requestFullscreen ? appEl : docEl);
-        if (p && p.then) {
-          handled = true;
-          p.then(() => {
-            updateFullscreenButtonUI();
-          }).catch(() => {
-            document.body.classList.add('standalone-fullscreen');
-            updateFullscreenButtonUI();
-          });
-        }
-      } catch(e) {
-        document.body.classList.add('standalone-fullscreen');
-        updateFullscreenButtonUI();
-      }
-    }
-    if (!handled && !document.fullscreenElement && !document.webkitFullscreenElement) {
-      document.body.classList.add('standalone-fullscreen');
-      updateFullscreenButtonUI();
-    }
+    enterFullscreenMode();
   } else {
-    if (document.body.classList.contains('standalone-fullscreen')) {
-      document.body.classList.remove('standalone-fullscreen');
-      updateFullscreenButtonUI();
-    }
-    const exit = doc.exitFullscreen ||
-                 doc.webkitExitFullscreen ||
-                 doc.webkitCancelFullScreen ||
-                 doc.mozCancelFullScreen ||
-                 doc.msExitFullscreen;
-    if (exit) {
-      try {
-        const p = exit.call(doc);
-        if (p && p.then) {
-          p.then(() => updateFullscreenButtonUI()).catch(() => {});
-        }
-      } catch(e) {}
-    }
-    updateFullscreenButtonUI();
+    exitFullscreenMode();
   }
-  setTimeout(updateFullscreenButtonUI, 150);
 }
 
-document.addEventListener('fullscreenchange', updateFullscreenButtonUI);
-document.addEventListener('webkitfullscreenchange', updateFullscreenButtonUI);
-
 // Guard viewport touch boundaries on iPad to prevent native rubber-band bounce
-if (typeof boardViewport !== 'undefined' && boardViewport) {
-  boardViewport.addEventListener('touchstart', (e) => {
-    if (boardViewport.scrollTop <= 0) {
-      boardViewport.scrollTop = 1;
+const vpEl = document.getElementById('board-viewport');
+if (vpEl) {
+  vpEl.addEventListener('touchstart', (e) => {
+    if (vpEl.scrollTop <= 0) {
+      vpEl.scrollTop = 1;
     }
-    const maxScroll = boardViewport.scrollHeight - boardViewport.clientHeight;
-    if (boardViewport.scrollTop >= maxScroll) {
-      boardViewport.scrollTop = maxScroll - 1;
+    const maxScroll = vpEl.scrollHeight - vpEl.clientHeight;
+    if (vpEl.scrollTop >= maxScroll) {
+      vpEl.scrollTop = maxScroll - 1;
     }
   }, { passive: true });
 }
