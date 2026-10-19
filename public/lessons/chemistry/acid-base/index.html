@@ -8951,9 +8951,9 @@ function setupAnim5Buffer() {
   function updateBufferExplanation(modeTitle, liveDetail) {
     let prepDesc = '';
     if (bufSim.prepMethod === 'direct_acid') {
-      prepDesc = `<b>วิธีที่ 1 (ผสมโดยตรง):</b> เทสารละลายกรดอ่อน <b>CH₃COOH (8 ส่วน)</b> รวมกับสารละลายเกลือของกรดอ่อน <b>CH₃COONa (8 ส่วน)</b> ซึ่งแตกตัวให้ <b>CH₃COO⁻</b> โดยตรง ได้องค์ประกอบ <b>[กรดอ่อน + เกลือของกรดอ่อน]</b> ทันที`;
+      prepDesc = `<b>วิธีที่ 1 (ผสมโดยตรง):</b> เทสารละลายกรดอ่อน <b>CH₃COOH (8 ส่วน)</b> รวมกับเกลือของกรดอ่อน <b>CH₃COONa (8 ส่วน)</b> โดยเกลือจะแตกตัวให้ <b>CH₃COO⁻ + Na⁺</b> อยู่คู่กับกรดอ่อน <b>CH₃COOH</b> ทันที`;
     } else {
-      prepDesc = `<b>วิธีที่ 2 (ไม่ได้ใส่เกลือโดยตรง — ผสมกรดอ่อนมาก + เบสแก่น้อย):</b><br>• <b>ขั้น 1.1:</b> ใส่กรดอ่อน <b>CH₃COOH (16 ส่วน)</b> + เบสแก่ <b>NaOH (8 ส่วน)</b> ตอนเริ่มต้น<b>ยังไม่มีเกลือเลย</b><br>• <b>ขั้น 1.2:</b> เบสแก่ <b>OH⁻</b> วิ่งเข้าทำปฏิกิริยากับ <b>CH₃COOH</b> ครึ่งหนึ่ง: <span style="color:#facc15;">CH₃COOH + OH⁻ ⟶ CH₃COO⁻ (เกลือ) + H₂O</span><br>• <b>ขั้น 1.3:</b> เบสแก่ <b>OH⁻ ถูกใช้จนหมดเกลี้ยง (เหลือ 0)!</b> เกิดเกลือ <b>CH₃COO⁻ (8 ส่วน)</b> + เหลือกรดอ่อน <b>CH₃COOH (8 ส่วน)</b> ได้องค์ประกอบเหมือนวิธีที่ 1 ทุกประการ!`;
+      prepDesc = `<b>วิธีที่ 2 (ผสมกรดอ่อนมากเกินพอ + เบสแก่น้อยกว่า):</b><br>• <b>ขั้น 1.1:</b> เทกรดอ่อน <b>CH₃COOH (16 ส่วน)</b> + เบสแก่ <b>NaOH (8 ส่วน)</b> แยกกันชัดเจน (เริ่มต้นยังไม่มีเกลือ = 0)<br>• <b>ขั้น 1.2:</b> จับคู่ทำปฏิกิริยา: <span style="color:#38bdf8;">CH₃COO⁻ จับกับ Na⁺ ⟶ ได้เกลือกรดอ่อน CH₃COONa (8 ส่วน)</span> และ <span style="color:#facc15;">H⁺ จับกับ OH⁻ ⟶ ได้น้ำ H₂O</span> จน<b>เบสแก่หมดเกลี้ยง!</b> จึงเหลือ <b>[กรดอ่อนที่เหลือ (8) + เกลือกรดอ่อน (8)]</b> ตรงตามคอนเซ็ปต์บัฟเฟอร์!<br>• <b>ขั้น 1.3:</b> เหมือนวิธีที่ 1 คือ เกลือกรดอ่อน <b>CH₃COONa แตกตัวเป็น CH₃COO⁻ + Na⁺</b> อยู่ร่วมกับกรดอ่อน <b>CH₃COOH</b> พร้อมจับคู่เมื่อเติมกรด/เบส!`;
     }
 
     setModalExplanation(
@@ -8961,7 +8961,7 @@ function setupAnim5Buffer() {
       '1. การเตรียมสารละลายบัฟเฟอร์ (Buffer Preparation)',
       prepDesc,
       modeTitle || '2. กลไกระดับโมเลกุลเมื่อหยดกรด (H⁺) หรือเบส (OH⁻)',
-      liveDetail || `• เมื่อหยด<b>กรด (H⁺)</b>: ไอออนเกลือคู่เบส <b style="color:#38bdf8;">CH₃COO⁻</b> จะวิ่งเข้าไปจับ H⁺ กลายเป็น CH₃COOH ทำให้ <b>[CH₃COO⁻] ลดลง (↓)</b> และ <b>[CH₃COOH] เพิ่มขึ้น (↑)</b><br>• เมื่อหยด<b>เบส (OH⁻)</b>: โมเลกุลกรดอ่อน <b style="color:#f472b6;">CH₃COOH</b> จะวิ่งเข้าไปสกัด OH⁻ กลายเป็น CH₃COO⁻ + H₂O ทำให้ <b>[CH₃COOH] ลดลง (↓)</b> และ <b>[CH₃COO⁻] เพิ่มขึ้น (↑)</b>`,
+      liveDetail || `• เมื่อหยด<b>กรด (H⁺)</b>: ไอออนจากเกลือกรดอ่อน <b style="color:#38bdf8;">CH₃COO⁻</b> จะวิ่งเข้าไปจับ H⁺ กลายเป็น CH₃COOH ทำให้ <b>[CH₃COO⁻] ลดลง (↓)</b> และ <b>[CH₃COOH] เพิ่มขึ้น (↑)</b><br>• เมื่อหยด<b>เบส (OH⁻)</b>: โมเลกุลกรดอ่อน <b style="color:#f472b6;">CH₃COOH</b> จะวิ่งเข้าไปจ่าย H⁺ จับกับ OH⁻ กลายเป็นน้ำ H₂O + CH₃COO⁻ ทำให้ <b>[CH₃COOH] ลดลง (↓)</b> และ <b>[CH₃COO⁻] เพิ่มขึ้น (↑)</b>`,
       '3. สมการเฮนเดอร์สัน-ฮัสเซลบัลค์ (Henderson-Hasselbalch)',
       `<b>pH = pK<sub>a</sub> + log([เกลือ CH₃COO⁻] / [กรด CH₃COOH])</b><br>• ขณะนี้: <b>[CH₃COOH] = ${bufSim.haCount} ส่วน</b> , <b>[CH₃COO⁻] = ${bufSim.aMinusCount} ส่วน</b><br>• อัตราส่วน [เกลือ]/[กรด] = ${(bufSim.aMinusCount / Math.max(1, bufSim.haCount)).toFixed(2)} ⟶ <b style="color:#4ade80;">pH = ${bufSim.bufferPH.toFixed(2)}</b>`
     );
@@ -8985,22 +8985,22 @@ function setupAnim5Buffer() {
       bufSim.lastEventColor = '#a855f7';
       bufSim.lastEventBanner = '🧪 วิธีที่ 2 (ขั้น 1.1 เทสารตั้งต้น): ใส่กรดอ่อน CH₃COOH (16 ส่วน) + เบสแก่ NaOH (8 ส่วน) — สังเกตว่ายังไม่มีเกลือเลย!';
       updateBufferExplanation(
-        'วิธีที่ 2 — ขั้นที่ 1.1 : เทกรดอ่อน (มากเกินพอ) ผสมกับ เบสแก่ (น้อยกว่า)',
-        `• เรา<b>ไม่ได้เติมเกลือโดยตรง</b> แต่เติม <b>CH₃COOH (กรดอ่อน 16 ส่วน)</b> ลงไปคู่กับ <b>NaOH (เบสแก่ 8 ส่วน ซึ่งให้ OH⁻ สีม่วง)</b><br>• ในบีกเกอร์ผสมขณะนี้มีเฉพาะโมเลกุล <b>CH₃COOH</b> และไอออน <b>OH⁻</b> (ความเข้มข้นของเกลือ CH₃COO⁻ = 0)`
+        'วิธีที่ 2 — ขั้นที่ 1.1 : เทกรดอ่อน CH₃COOH (มากเกินพอ) ผสมกับ เบสแก่ NaOH (น้อยกว่า)',
+        `• เรา<b>ไม่ได้เติมเกลือโดยตรง</b> แต่เติม <b>CH₃COOH (กรดอ่อน 16 ส่วน)</b> ลงไปคู่กับ <b>NaOH (เบสแก่ 8 ส่วน ซึ่งมี Na⁺ กับ OH⁻)</b><br>• ในบีกเกอร์ผสมขณะนี้มีเฉพาะกรดอ่อน <b>CH₃COOH</b> และเบสแก่ <b>NaOH</b> แยกกันชัดเจน (ยังไม่มีเกลือ CH₃COONa = 0)`
       );
     } else if (subStep === 2) {
       bufSim.lastEventColor = '#facc15';
-      bufSim.lastEventBanner = '⚡ วิธีที่ 2 (ขั้น 1.2 ทำปฏิกิริยา): เบสแก่ OH⁻ วิ่งเข้าดึง H⁺ จากกรดอ่อน CH₃COOH บางส่วน กลายเป็นเกลือ CH₃COO⁻ + น้ำ!';
+      bufSim.lastEventBanner = '⚡ วิธีที่ 2 (ขั้น 1.2 จับคู่ได้เกลือ + น้ำ): CH₃COO⁻ จับกับ Na⁺ ⟶ ได้เกลือ CH₃COONa และ H⁺ จับกับ OH⁻ ⟶ ได้น้ำ H₂O (เบสหมด!)';
       updateBufferExplanation(
-        'วิธีที่ 2 — ขั้นที่ 1.2 : เบสแก่ (OH⁻) ทำปฏิกิริยาสะเทินกับกรดอ่อน (CH₃COOH) บางส่วน',
-        `• ไอออนเบสแก่ <b style="color:#c084fc;">OH⁻ (8 ส่วน)</b> วิ่งเข้าทำปฏิกิริยากับ <b style="color:#f472b6;">CH₃COOH (8 จาก 16 ส่วน)</b> ดึงโปรตอน H⁺ ออกมาตามสมการ:<br><b style="color:#facc15;">CH₃COOH(มาก) + OH⁻(น้อย) ⟶ CH₃COO⁻(เกลือเกิดใหม่) + H₂O</b><br>• สังเกตโมเลกุลกรดอ่อนคู่บนกำลังเสีย H⁺ และเปลี่ยนเป็นไอออนเกลือ <b style="color:#38bdf8;">CH₃COO⁻ (สีฟ้า)</b>!`
+        'วิธีที่ 2 — ขั้นที่ 1.2 : จับคู่เกิดเกลือกรดอ่อน (CH₃COONa) + น้ำ (H₂O) จนเบสแก่หมดเกลี้ยง!',
+        `• <b>คู่ที่ 1 (เกิดเกลือกรดอ่อน):</b> <b style="color:#38bdf8;">CH₃COO⁻ จับคู่กับไอออน Na⁺ ⟶ กลายเป็นเกลือของกรดอ่อน CH₃COONa (8 ส่วน)!</b><br>• <b>คู่ที่ 2 (สะเทินเป็นน้ำ):</b> <b style="color:#facc15;">H⁺ จับคู่กับ OH⁻ ⟶ กลายเป็นน้ำ H₂O (8 ส่วน)!</b><br>• เมื่อเบสแก่ NaOH หมดเกลี้ยง (เหลือ 0) ในบีกเกอร์จึงเหลือ <b>[กรดอ่อนที่เหลือ CH₃COOH (8 ส่วน) + เกลือของกรดอ่อน CH₃COONa (8 ส่วน)]</b> ตรงตามคอนเซ็ปต์บัฟเฟอร์เป๊ะ!`
       );
     } else if (subStep === 3) {
       bufSim.lastEventColor = '#4ade80';
-      bufSim.lastEventBanner = '✅ วิธีที่ 2 (ขั้น 1.3 เสร็จสิ้น): เบสแก่ OH⁻ หมดเกลี้ยง (0)! เกิดเกลือ CH₃COO⁻ (8) + เหลือกรดอ่อน CH₃COOH (8) = บัฟเฟอร์เหมือนวิธีที่ 1!';
+      bufSim.lastEventBanner = '✅ วิธีที่ 2 (ขั้น 1.3 แยกเหมือนวิธีที่ 1): เกลือกรดอ่อน CH₃COONa แตกตัวเป็น CH₃COO⁻ + Na⁺ คู่กับกรดอ่อน CH₃COOH พร้อมจับ H⁺/OH⁻!';
       updateBufferExplanation(
-        'วิธีที่ 2 — ขั้นที่ 1.3 : เบสแก่หมด! ได้องค์ประกอบ [กรดอ่อนที่เหลือ + เกลือจากกรดอ่อน] เหมือนวิธีที่ 1',
-        `• เบสแก่ <b>OH⁻ ถูกใช้ทำปฏิกิริยาจนหมดเกลี้ยง (เหลือ 0)!</b><br>• เกิดไอออนเกลือจากกรดอ่อน <b style="color:#38bdf8;">CH₃COO⁻ ขึ้นมา 8 ส่วน</b> และมีกรดอ่อน <b style="color:#f472b6;">CH₃COOH เหลืออยู่ 8 ส่วน</b><br>• สารละลายที่ได้จึงมีองค์ประกอบ <b>[กรดอ่อน + เกลือของกรดอ่อน]</b> เหมือนวิธีที่ 1 ทุกประการ และแยกเข้าสู่ขวดบัฟเฟอร์ตรงกลาง!`
+        'วิธีที่ 2 — ขั้นที่ 1.3 : แยกองค์ประกอบเหมือนวิธีที่ 1 (เกลือแตกตัวเป็น CH₃COO⁻ + กรดอ่อน CH₃COOH)',
+        `• <b>เกลือของกรดอ่อน CH₃COONa (8 ส่วน)</b> แตกตัวเป็นไอออน <b style="color:#38bdf8;">CH₃COO⁻ (8 ส่วน) + Na⁺</b><br>• อยู่ร่วมกับ <b>กรดอ่อนที่เหลือ</b> <b style="color:#f472b6;">CH₃COOH (8 ส่วน)</b> เหมือนวิธีที่ 1 ทุกประการ!<br>• เมื่อถ่ายเข้าขวดบัฟเฟอร์ตรงกลาง เวลาเติมกรด (H⁺) หรือเบส (OH⁻) จึงวิ่งเข้าจับคู่เหมือนวิธีที่ 1 เลย!`
       );
     }
   }
@@ -9025,10 +9025,10 @@ function setupAnim5Buffer() {
 
     if (bufSim.prepMethod === 'direct_acid') {
       bufSim.lastEventColor = '#facc15';
-      bufSim.lastEventBanner = '🧪 วิธีที่ 1 (ผสมโดยตรง): เทกรดอ่อน CH₃COOH (8) + เกลือ CH₃COONa (8) รวมกัน ได้บัฟเฟอร์ทันที!';
+      bufSim.lastEventBanner = '🧪 วิธีที่ 1 (ผสมโดยตรง): เทกรดอ่อน CH₃COOH (8) + เกลือ CH₃COONa (8 แตกตัวเป็น CH₃COO⁻ + Na⁺) ได้บัฟเฟอร์ทันที!';
       updateBufferExplanation(
         'กำลังจำลองวิธีที่ 1 : ผสมกรดอ่อน + เกลือของกรดอ่อนโดยตรง',
-        `เทสารละลายจาก <b>ขวดที่ 1 (กรดอ่อน CH₃COOH 8 ส่วน)</b> และ <b>ขวดที่ 2 (เกลือ CH₃COONa 8 ส่วน ซึ่งให้ CH₃COO⁻)</b> ลงในบีกเกอร์ผสม ได้คู่กรด-เบสครบองค์ประกอบทันที แล้วแยกเข้าสู่ขวดสารละลายบัฟเฟอร์`
+        `เทสารละลายจาก <b>ขวดที่ 1 (กรดอ่อน CH₃COOH 8 ส่วน)</b> และ <b>ขวดที่ 2 (เกลือ CH₃COONa 8 ส่วน ซึ่งแตกตัวเป็น CH₃COO⁻ + Na⁺)</b> ลงในบีกเกอร์ผสม ได้คู่กรดอ่อนและไอออนเกลือครบองค์ประกอบทันที แล้วแยกเข้าสู่ขวดสารละลายบัฟเฟอร์`
       );
     } else {
       applySubStepBannerAndExplanation(1);
@@ -9119,9 +9119,9 @@ function setupAnim5Buffer() {
       <button class="lab-btn buf-prep-btn" data-method="partial_acid" onclick="playBufferPreparation('partial_acid')">🧪 วิธีที่ 2 : ผสม CH₃COOH (มาก) + เบสแก่ NaOH (น้อย)</button>
       <div id="method2-substeps-box" style="display:none; margin-top:8px; padding:8px; background:rgba(15,23,42,0.75); border:1px solid #475569; border-radius:8px;">
         <div style="font-size:12px; color:#facc15; font-weight:700; margin-bottom:6px;">🔍 ดูขั้นย่อยของวิธีที่ 2 (ทำปฏิกิริยาเกิดเกลือ):</div>
-        <button class="lab-btn buf-sub-btn" data-substep="1" style="font-size:12px; padding:5px 8px; margin-bottom:4px;" onclick="setMethod2SubStep(1)">1.1 เทกรดอ่อน (16) + เบสแก่ OH⁻ (8) [เกลือ = 0]</button>
-        <button class="lab-btn buf-sub-btn" data-substep="2" style="font-size:12px; padding:5px 8px; margin-bottom:4px;" onclick="setMethod2SubStep(2)">1.2 เบสแก่ OH⁻ วิ่งทำปฏิกิริยากับกรดอ่อนครึ่งหนึ่ง</button>
-        <button class="lab-btn buf-sub-btn" data-substep="3" style="font-size:12px; padding:5px 8px; margin-bottom:4px;" onclick="setMethod2SubStep(3)">1.3 เบสหมด (0)! ได้เกลือ (8) + เหลือกรดอ่อน (8)</button>
+        <button class="lab-btn buf-sub-btn" data-substep="1" style="font-size:11.5px; padding:5px 8px; margin-bottom:4px;" onclick="setMethod2SubStep(1)">1.1 เท CH₃COOH (16) + NaOH (8) [ยังไม่มีเกลือ]</button>
+        <button class="lab-btn buf-sub-btn" data-substep="2" style="font-size:11.5px; padding:5px 8px; margin-bottom:4px;" onclick="setMethod2SubStep(2)">1.2 จับคู่ได้เกลือ CH₃COONa + น้ำ (เบสหมด! เหลือกรด+เกลือ)</button>
+        <button class="lab-btn buf-sub-btn" data-substep="3" style="font-size:11.5px; padding:5px 8px; margin-bottom:4px;" onclick="setMethod2SubStep(3)">1.3 แยกเหมือนวิธีที่ 1: เกลือแตกตัว CH₃COO⁻ + กรดอ่อน</button>
         <button class="lab-btn" style="font-size:12px; padding:5px 8px; background:#059669; color:#fff; border-color:#10b981;" onclick="playBufferPreparation('partial_acid')">▶️ เล่นอนิเมชั่นวิธีที่ 2 ต่อเนื่องทั้งหมด</button>
       </div>
     </div>
@@ -9136,9 +9136,8 @@ function setupAnim5Buffer() {
       <h4>สีสัญลักษณ์ของโมเลกุลในระบบ</h4>
       <div style="font-size:12px; line-height:1.6; color:#e2e8f0;">
         • <span style="color:#f472b6; font-weight:700;">● CH₃COO–H⁺ (ชมพู+หัวโปรตอนทอง)</span> : กรดอ่อน<br>
-        • <span style="color:#38bdf8; font-weight:700;">● CH₃COO⁻ (ฟ้าเรืองแสง)</span> : ไอออนเกลือของกรดอ่อน (คู่เบส)<br>
-        • <span style="color:#c084fc; font-weight:700;">● OH⁻ (ม่วง)</span> : เบสแก่ (ทำปฏิกิริยากับกรดอ่อนจนหมด)<br>
-        • <span style="color:#94a3b8;">● Na⁺ (เทา)</span> : ไอออนโซเดียม
+        • <span style="color:#38bdf8; font-weight:700;">● CH₃COONa ⟶ CH₃COO⁻ + Na⁺</span> : เกลือกรดอ่อนแตกตัวให้คู่เบสสีฟ้า<br>
+        • <span style="color:#c084fc; font-weight:700;">● OH⁻ (ม่วง)</span> : เบสแก่ (จับกับ H⁺ กลายเป็นน้ำ H₂O จนเบสหมด)
       </div>
     </div>
   `;
@@ -9151,14 +9150,14 @@ function setupAnim5Buffer() {
     ctx.save();
     if (highlight) {
       ctx.shadowColor = type === 'HA' ? '#f472b6' : (type === 'OH-' ? '#c084fc' : '#38bdf8');
-      ctx.shadowBlur = 16;
+      ctx.shadowBlur = 14;
     }
 
     if (type === 'HA') {
       // Weak Acid CH3COOH: Pink acetate core + attached glowing Golden H+ proton!
       ctx.beginPath();
-      ctx.arc(x - 6, y, 17, 0, Math.PI * 2);
-      const grad = ctx.createRadialGradient(x - 10, y - 6, 3, x - 6, y, 17);
+      ctx.arc(x - 6, y, 16, 0, Math.PI * 2);
+      const grad = ctx.createRadialGradient(x - 10, y - 6, 3, x - 6, y, 16);
       grad.addColorStop(0, '#fbcfe8');
       grad.addColorStop(1, '#db2777');
       ctx.fillStyle = grad;
@@ -9168,25 +9167,25 @@ function setupAnim5Buffer() {
       ctx.stroke();
 
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 9px Prompt';
-      ctx.fillText('CH₃COO', x - 21, y + 3);
+      ctx.font = 'bold 8.5px Prompt';
+      ctx.fillText('CH₃COO', x - 20, y + 3);
 
       // Attached Golden H+ Proton on the right
       ctx.beginPath();
-      ctx.arc(x + 14, y - 4, 9.5, 0, Math.PI * 2);
+      ctx.arc(x + 13, y - 4, 9, 0, Math.PI * 2);
       ctx.fillStyle = '#facc15';
       ctx.fill();
       ctx.strokeStyle = '#0f172a';
       ctx.lineWidth = 1.2;
       ctx.stroke();
       ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 9px Prompt';
-      ctx.fillText('H⁺', x + 8.5, y);
+      ctx.font = 'bold 8.5px Prompt';
+      ctx.fillText('H⁺', x + 8, y - 1);
     } else if (type === 'A-') {
       // Conjugate Base / Salt Ion CH3COO-: Cyan core + open docking pocket ring on the right!
       ctx.beginPath();
-      ctx.arc(x - 4, y, 17, 0, Math.PI * 2);
-      const grad = ctx.createRadialGradient(x - 8, y - 6, 3, x - 4, y, 17);
+      ctx.arc(x - 4, y, 16, 0, Math.PI * 2);
+      const grad = ctx.createRadialGradient(x - 8, y - 6, 3, x - 4, y, 16);
       grad.addColorStop(0, '#bae6fd');
       grad.addColorStop(1, '#0284c7');
       ctx.fillStyle = grad;
@@ -9196,17 +9195,80 @@ function setupAnim5Buffer() {
       ctx.stroke();
 
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 9px Prompt';
-      ctx.fillText('CH₃COO⁻', x - 22, y + 3);
+      ctx.font = 'bold 8.5px Prompt';
+      ctx.fillText('CH₃COO⁻', x - 21, y + 3);
 
       // Dashed receptor site waiting for H+
       ctx.beginPath();
       ctx.setLineDash([2, 2]);
-      ctx.arc(x + 15, y - 4, 7.5, 0, Math.PI * 2);
+      ctx.arc(x + 14, y - 4, 7, 0, Math.PI * 2);
       ctx.strokeStyle = '#facc15';
       ctx.lineWidth = 1.2;
       ctx.stroke();
       ctx.setLineDash([]);
+    } else if (type === 'SALT_PAIR') {
+      // Paired Salt CH3COONa: CH3COO- (Cyan) bonded directly with Na+ (Silver/Blue) inside a glowing capsule!
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.16)';
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(x - 28, y - 18, 60, 36, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      // CH3COO- sphere
+      ctx.beginPath();
+      ctx.arc(x - 9, y, 14.5, 0, Math.PI * 2);
+      const grad = ctx.createRadialGradient(x - 12, y - 4, 2, x - 9, y, 14.5);
+      grad.addColorStop(0, '#bae6fd');
+      grad.addColorStop(1, '#0284c7');
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 7.5px Prompt';
+      ctx.fillText('CH₃COO⁻', x - 23, y + 2.5);
+
+      // Bonded Na+ sphere right next to CH3COO-
+      ctx.beginPath();
+      ctx.arc(x + 16, y, 10.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#64748b';
+      ctx.fill();
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 8.5px Prompt';
+      ctx.fillText('Na⁺', x + 8.5, y + 3);
+    } else if (type === 'HOH_PAIR') {
+      // H+ and OH- pairing up to form Water H2O!
+      ctx.fillStyle = 'rgba(250, 204, 21, 0.14)';
+      ctx.strokeStyle = '#facc15';
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.roundRect(x - 24, y - 16, 48, 32, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      // Golden H+
+      ctx.beginPath();
+      ctx.arc(x - 10, y, 8.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#facc15';
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 8px Prompt';
+      ctx.fillText('H⁺', x - 15, y + 3);
+
+      // Purple OH- bonded to H+
+      ctx.beginPath();
+      ctx.arc(x + 8, y, 11, 0, Math.PI * 2);
+      ctx.fillStyle = '#9333ea';
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 8px Prompt';
+      ctx.fillText('OH⁻', x, y + 3);
     } else if (type === 'OH-') {
       // Strong Base Hydroxide Ion OH-: Vivid purple glowing sphere
       ctx.beginPath();
@@ -9226,22 +9288,25 @@ function setupAnim5Buffer() {
     } else if (type === 'Na+') {
       ctx.beginPath();
       ctx.arc(x, y, 9.5, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(148, 163, 184, 0.45)';
+      ctx.fillStyle = 'rgba(100, 116, 139, 0.75)';
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1;
       ctx.fill();
-      ctx.fillStyle = '#e2e8f0';
-      ctx.font = '8.5px Prompt';
+      ctx.stroke();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 8.5px Prompt';
       ctx.fillText('Na⁺', x - 7.5, y + 3);
     } else if (type === 'H2O_new') {
       ctx.beginPath();
-      ctx.arc(x, y, 11.5, 0, Math.PI * 2);
+      ctx.arc(x, y, 11, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(56, 189, 248, 0.55)';
       ctx.strokeStyle = '#bae6fd';
       ctx.lineWidth = 1;
       ctx.fill();
       ctx.stroke();
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 9px Prompt';
-      ctx.fillText('H₂O', x - 9, y + 3);
+      ctx.font = 'bold 8.5px Prompt';
+      ctx.fillText('H₂O', x - 8.5, y + 3);
     }
     ctx.restore();
   }
@@ -9251,7 +9316,7 @@ function setupAnim5Buffer() {
 
     // Advance preparation animation if active and not paused on a manual sub-step
     if (bufSim.isPreparing && !bufSim.prepPaused) {
-      const speed = bufSim.prepMethod === 'partial_acid' ? 0.0022 : 0.007;
+      const speed = bufSim.prepMethod === 'partial_acid' ? 0.0020 : 0.007;
       bufSim.prepProgress = Math.min(1.0, bufSim.prepProgress + speed);
 
       if (bufSim.prepMethod === 'partial_acid') {
@@ -9284,7 +9349,7 @@ function setupAnim5Buffer() {
     ctx.stroke();
 
     ctx.fillStyle = bufSim.lastEventColor;
-    ctx.font = 'bold 15px Prompt';
+    ctx.font = 'bold 14.5px Prompt';
     ctx.fillText(bufSim.lastEventBanner, 34, 39);
 
     // =========================================================================
@@ -9306,7 +9371,7 @@ function setupAnim5Buffer() {
     const bottle1Label = isM2 ? 'ขวด 1: CH₃COOH (มาก)' : 'ขวด 1: CH₃COOH';
     const bottle1Sub = isM2 ? 'กรดอ่อน (16 ส่วน)' : 'กรดอ่อน (8 ส่วน)';
     const bottle2Label = isM2 ? 'ขวด 2: NaOH (น้อย)' : 'ขวด 2: CH₃COONa';
-    const bottle2Sub = isM2 ? 'เบสแก่ OH⁻ (8 ส่วน)' : 'เกลือกรดอ่อน (8 ส่วน)';
+    const bottle2Sub = isM2 ? 'เบสแก่ Na⁺+OH⁻ (8 ส่วน)' : 'เกลือกรดอ่อน (8 ส่วน)';
     const bottle2Color = isM2 ? '#c084fc' : '#38bdf8';
     const bottle2Bg = isM2 ? 'rgba(168, 85, 247, 0.18)' : 'rgba(56, 189, 248, 0.18)';
 
@@ -9342,15 +9407,14 @@ function setupAnim5Buffer() {
     ctx.fillText(bottle2Label, 200, 126);
     ctx.fillStyle = '#cbd5e1';
     ctx.font = '11px Prompt';
-    ctx.fillText(bottle2Sub, 210, 143);
+    ctx.fillText(bottle2Sub, 204, 143);
     if (isM2) {
-      // Bottle 2 in Method 2 contains Strong Base NaOH (OH- + Na+), NOT salt!
+      // Bottle 2 in Method 2 contains Strong Base NaOH (OH- + Na+)
       drawMoleculeCluster(ctx, 'OH-', 242, 176);
       drawMoleculeCluster(ctx, 'Na+', 286, 176);
     } else {
-      // Bottle 2 in Method 1 contains Salt CH3COONa (CH3COO- + Na+)
-      drawMoleculeCluster(ctx, 'A-', 248, 176);
-      drawMoleculeCluster(ctx, 'Na+', 296, 176);
+      // Bottle 2 in Method 1 contains Salt CH3COONa
+      drawMoleculeCluster(ctx, 'SALT_PAIR', 262, 176);
     }
 
     // Pouring streams from Bottle 1 & Bottle 2 into Mixing Beaker
@@ -9376,56 +9440,92 @@ function setupAnim5Buffer() {
     }
 
     // Mixing Beaker (Middle-Bottom of Zone 1: x = 36..334, y = 242..485)
-    ctx.fillStyle = 'rgba(30, 41, 59, 0.75)';
+    ctx.fillStyle = 'rgba(30, 41, 59, 0.78)';
     ctx.fillRect(36, 265, 298, 220);
     ctx.strokeStyle = '#94a3b8';
     ctx.lineWidth = 2.5;
     ctx.strokeRect(36, 242, 298, 243);
 
+    // Helper to draw the dissociated state (Salt CH3COONa -> CH3COO- + Na+, plus Weak Acid CH3COOH)
+    // Shared by Method 1 AND Method 2 Step 1.3 so students see they are 100% identical!
+    function drawDissociatedBufferBeaker(headerText, isStep13) {
+      ctx.fillStyle = '#4ade80';
+      ctx.font = 'bold 11.5px Prompt';
+      ctx.fillText(headerText, 42, 259);
+
+      // Top box: Salt CH3COONa dissociating into CH3COO- + Na+
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.10)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.roundRect(42, 268, 286, 86, 8);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 11px Prompt';
+      ctx.fillText('🔹 เกลือกรดอ่อนแตกตัว: CH₃COONa ⟶ CH₃COO⁻ + Na⁺', 48, 284);
+
+      // Pair 1 dissociated: CH3COO- and Na+
+      drawMoleculeCluster(ctx, 'A-', 82, 315, true);
+      drawMoleculeCluster(ctx, 'Na+', 136, 315);
+      // Pair 2 dissociated: CH3COO- and Na+
+      drawMoleculeCluster(ctx, 'A-', 212, 315, true);
+      drawMoleculeCluster(ctx, 'Na+', 266, 315);
+
+      ctx.fillStyle = '#bae6fd';
+      ctx.font = '10.5px Prompt';
+      ctx.fillText('(ได้ไอออน CH₃COO⁻ 8 ส่วน รอจับ H⁺ เมื่อเติมกรด)', 68, 346);
+
+      // Bottom box: Weak acid CH3COOH remaining in molecular form
+      ctx.fillStyle = 'rgba(244, 114, 182, 0.10)';
+      ctx.strokeStyle = 'rgba(244, 114, 182, 0.45)';
+      ctx.beginPath();
+      ctx.roundRect(42, 358, 286, 76, 8);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#f472b6';
+      ctx.font = 'bold 11px Prompt';
+      ctx.fillText('🔸 กรดอ่อน: CH₃COOH (ไม่แตกตัว รอจ่าย H⁺ จับ OH⁻)', 48, 374);
+
+      drawMoleculeCluster(ctx, 'HA', 95, 402);
+      drawMoleculeCluster(ctx, 'HA', 235, 402);
+
+      // Bottom Stoichiometry Bar
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+      ctx.fillRect(42, 438, 286, 42);
+      ctx.font = 'bold 11.5px Prompt';
+      ctx.fillStyle = '#f472b6'; ctx.fillText('กรดอ่อน CH₃COOH: 8', 48, 463);
+      ctx.fillStyle = '#38bdf8'; ctx.fillText('| คู่เบสจากเกลือ CH₃COO⁻: 8', 170, 463);
+
+      ctx.fillStyle = '#4ade80';
+      ctx.font = 'bold 11.5px Prompt';
+      ctx.fillText(
+        isStep13
+          ? '✅ แยกเกลือ+กรดอ่อนเหมือนวิธีที่ 1 เป๊ะ! พร้อมจับ H⁺/OH⁻'
+          : '✅ ได้บัฟเฟอร์ทันที (มีทั้ง CH₃COO⁻ จากเกลือ & กรดอ่อน)',
+        40, 508
+      );
+      if (isStep13) {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Prompt';
+        ctx.fillText('(กดปุ่ม 1.1 / 1.2 / 1.3 ด้านขวาเพื่อดูทีละขั้นย่อยได้)', 50, 528);
+      }
+    }
+
     if (!isM2) {
       // ---------------- METHOD 1 MIXING BEAKER ----------------
-      ctx.fillStyle = '#e2e8f0';
-      ctx.font = 'bold 12.5px Prompt';
-      ctx.fillText('บีกเกอร์ผสม: ใส่กรดอ่อน + เกลือโดยตรง', 78, 260);
-
-      drawMoleculeCluster(ctx, 'HA', 105, 320);
-      drawMoleculeCluster(ctx, 'A-', 235, 320);
-      drawMoleculeCluster(ctx, 'A-', 105, 395);
-      drawMoleculeCluster(ctx, 'HA', 235, 395);
-      drawMoleculeCluster(ctx, 'Na+', 172, 358);
-
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-      ctx.fillRect(44, 435, 282, 42);
-      ctx.fillStyle = '#4ade80';
-      ctx.font = 'bold 12px Prompt';
-      ctx.fillText('องค์ประกอบ: กรดอ่อน CH₃COOH (8) + เกลือ CH₃COO⁻ (8)', 52, 460);
-
-      ctx.fillStyle = '#facc15';
-      ctx.font = 'bold 12.5px Prompt';
-      ctx.fillText('✅ ได้บัฟเฟอร์ทันที (มีทั้งกรดอ่อน & เกลือคู่เบส)', 52, 512);
+      drawDissociatedBufferBeaker('วิธีที่ 1: เกลือ CH₃COONa แตกตัว + กรดอ่อน CH₃COOH', false);
     } else {
       // ---------------- METHOD 2 MIXING BEAKER (3 DETAILED SUB-STEPS!) ----------------
       const sub = bufSim.prepSubStep;
 
-      // Sub-step progress header inside Mixing Beaker
-      ctx.fillStyle = sub === 1 ? '#c084fc' : (sub === 2 ? '#facc15' : '#4ade80');
-      ctx.font = 'bold 12px Prompt';
-      const beakerHeader = sub === 1
-        ? 'ขั้น 1.1: เทกรดอ่อน (16) + เบสแก่ OH⁻ (8) [เกลือ = 0]'
-        : (sub === 2
-          ? 'ขั้น 1.2: เบสแก่ OH⁻ ทำปฏิกิริยากับกรดอ่อนครึ่งหนึ่ง!'
-          : 'ขั้น 1.3: เบสแก่หมด (0)! เกิดเกลือ (8) + เหลือกรดอ่อน (8)');
-      ctx.fillText(beakerHeader, 44, 260);
-
-      // Bottom 2 molecules: Excess Weak Acid CH3COOH that ALWAYS remain unreacted!
-      drawMoleculeCluster(ctx, 'HA', 95, 402);
-      drawMoleculeCluster(ctx, 'HA', 235, 402);
-      ctx.fillStyle = '#f472b6';
-      ctx.font = '10.5px Prompt';
-      ctx.fillText('(กรดอ่อนส่วนที่เหลือ 8 ส่วน)', 122, 428);
-
       if (sub === 1) {
-        // Sub-step 1: Top 2 are also unreacted CH3COOH, and 2 purple OH- ions are floating separately
+        // ---------------- SUB-STEP 1.1: CH3COOH (16) + NaOH (8) Separate ----------------
+        ctx.fillStyle = '#c084fc';
+        ctx.font = 'bold 11.5px Prompt';
+        ctx.fillText('ขั้น 1.1: เท CH₃COOH (16) + NaOH (8) [ยังไม่มีเกลือ = 0]', 42, 259);
+
+        // Top 2 Weak Acid + 2 NaOH (OH- + Na+)
         drawMoleculeCluster(ctx, 'HA', 82, 310);
         drawMoleculeCluster(ctx, 'HA', 202, 310);
         drawMoleculeCluster(ctx, 'OH-', 145, 310, true);
@@ -9435,80 +9535,103 @@ function setupAnim5Buffer() {
 
         ctx.fillStyle = '#e9d5ff';
         ctx.font = 'bold 11px Prompt';
-        ctx.fillText('⚠️ เริ่มต้นมีแต่กรดอ่อนกับเบสแก่ (ยังไม่มีเกลือ CH₃COO⁻)', 48, 366);
+        ctx.fillText('⚠️ เริ่มต้นมีแต่กรดอ่อน CH₃COOH กับเบสแก่ NaOH', 52, 364);
+
+        // Bottom 2 Excess Weak Acid
+        drawMoleculeCluster(ctx, 'HA', 95, 400);
+        drawMoleculeCluster(ctx, 'HA', 235, 400);
+        ctx.fillStyle = '#f472b6';
+        ctx.font = '10.5px Prompt';
+        ctx.fillText('(กรดอ่อนส่วนที่เกินพออีก 8 ส่วน)', 114, 428);
+
+        // Stoichiometry bar
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+        ctx.fillRect(42, 438, 286, 42);
+        ctx.font = 'bold 11.5px Prompt';
+        ctx.fillStyle = '#f472b6'; ctx.fillText('กรดอ่อน: 16', 48, 463);
+        ctx.fillStyle = '#c084fc'; ctx.fillText('| เบส NaOH: 8', 124, 463);
+        ctx.fillStyle = '#94a3b8'; ctx.fillText('| เกลือ CH₃COONa: 0', 210, 463);
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = 'bold 11.5px Prompt';
+        ctx.fillText('⏳ รอทำปฏิกิริยาจับคู่สร้างเกลือ CH₃COONa ในขั้น 1.2...', 42, 508);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Prompt';
+        ctx.fillText('(กดปุ่ม 1.1 / 1.2 / 1.3 ด้านขวาเพื่อดูทีละขั้นย่อยได้)', 50, 528);
+
       } else if (sub === 2) {
-        // Sub-step 2: The 2 purple OH- ions collide with the top 2 CH3COOH to pull off H+!
-        const localP = bufSim.prepPaused
-          ? 0.55
-          : Math.min(1, Math.max(0, (bufSim.prepProgress - 0.34) / 0.38));
-
-        // Top 2 molecules transitioning from HA to A-
-        drawMoleculeCluster(ctx, localP > 0.5 ? 'A-' : 'HA', 85, 312, true);
-        drawMoleculeCluster(ctx, localP > 0.5 ? 'A-' : 'HA', 215, 312, true);
-
-        // OH- moving in to grab H+
-        const oh1X = 148 - localP * 36;
-        const oh2X = 278 - localP * 36;
-        drawMoleculeCluster(ctx, 'OH-', oh1X, 312, true);
-        drawMoleculeCluster(ctx, 'OH-', oh2X, 312, true);
-        drawMoleculeCluster(ctx, 'Na+', 148, 280);
-        drawMoleculeCluster(ctx, 'Na+', 278, 280);
-
-        // Reaction collision rings
-        ctx.strokeStyle = '#facc15';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(105, 312, 18 + Math.sin(t * 8) * 4, 0, Math.PI * 2);
-        ctx.arc(235, 312, 18 + Math.sin(t * 8) * 4, 0, Math.PI * 2);
-        ctx.stroke();
-
+        // ---------------- SUB-STEP 1.2: CH3COO- pairs with Na+ -> CH3COONa (Salt) & H+ pairs with OH- -> H2O! Base = 0! ----------------
         ctx.fillStyle = '#facc15';
         ctx.font = 'bold 11.5px Prompt';
-        ctx.fillText('⚡ CH₃COOH + OH⁻ ⟶ CH₃COO⁻ (เกลือ) + H₂O', 55, 366);
-      } else {
-        // Sub-step 3: Strong base OH- is 100% gone (0)! Top 2 are now Salt CH3COO- (A-) + H2O!
-        drawMoleculeCluster(ctx, 'A-', 88, 310, true);
-        drawMoleculeCluster(ctx, 'A-', 218, 310, true);
-        drawMoleculeCluster(ctx, 'H2O_new', 148, 310);
-        drawMoleculeCluster(ctx, 'H2O_new', 278, 310);
-        drawMoleculeCluster(ctx, 'Na+', 148, 280);
-        drawMoleculeCluster(ctx, 'Na+', 278, 280);
+        ctx.fillText('ขั้น 1.2: จับคู่ได้เกลือกรดอ่อน CH₃COONa + น้ำ (เบสหมด!)', 42, 259);
+
+        // Left Box: CH3COO- + Na+ -> Salt CH3COONa (8 parts)
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.12)';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.roundRect(42, 268, 166, 84, 8);
+        ctx.fill(); ctx.stroke();
 
         ctx.fillStyle = '#38bdf8';
+        ctx.font = 'bold 10.5px Prompt';
+        ctx.fillText('1) CH₃COO⁻ จับกับ Na⁺', 62, 283);
+        drawMoleculeCluster(ctx, 'SALT_PAIR', 84, 310, true);
+        drawMoleculeCluster(ctx, 'SALT_PAIR', 160, 310, true);
+        ctx.fillStyle = '#bae6fd';
+        ctx.font = 'bold 10.5px Prompt';
+        ctx.fillText('✨ ได้เกลือ CH₃COONa (8)', 58, 345);
+
+        // Right Box: H+ + OH- -> Water H2O
+        ctx.fillStyle = 'rgba(250, 204, 21, 0.10)';
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.roundRect(212, 268, 116, 84, 8);
+        ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = '#facc15';
+        ctx.font = 'bold 10.5px Prompt';
+        ctx.fillText('2) H⁺ จับกับ OH⁻', 228, 283);
+        drawMoleculeCluster(ctx, 'HOH_PAIR', 242, 310);
+        drawMoleculeCluster(ctx, 'HOH_PAIR', 298, 310);
+        ctx.fillStyle = '#fef08a';
+        ctx.font = 'bold 10.5px Prompt';
+        ctx.fillText('💧 ได้น้ำ H₂O', 238, 345);
+
+        // Bottom Box: Remaining Weak Acid CH3COOH (8 parts)
+        ctx.fillStyle = 'rgba(244, 114, 182, 0.12)';
+        ctx.strokeStyle = '#f472b6';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.roundRect(42, 356, 286, 78, 8);
+        ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = '#f472b6';
+        ctx.font = 'bold 10.5px Prompt';
+        ctx.fillText('3) เมื่อเบสหมด ⟶ เหลือกรดอ่อน CH₃COOH ที่ไม่ได้ทำปฏิกิริยา (8)', 48, 372);
+        drawMoleculeCluster(ctx, 'HA', 95, 404);
+        drawMoleculeCluster(ctx, 'HA', 235, 404);
+
+        // Stoichiometry bar showing Concept: Weak Acid left (8) + Salt of Weak Acid (8), Base = 0!
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+        ctx.fillRect(42, 438, 286, 42);
         ctx.font = 'bold 11px Prompt';
-        ctx.fillText('✨ เกิดเกลือจากกรดอ่อน CH₃COO⁻ (8 ส่วน) & เบสแก่หมดแล้ว!', 44, 366);
-      }
-
-      // Live Stoichiometry Bar inside bottom of Mixing Beaker
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-      ctx.fillRect(42, 438, 286, 42);
-      ctx.font = 'bold 11.5px Prompt';
-      if (sub === 1) {
-        ctx.fillStyle = '#f472b6'; ctx.fillText('กรดอ่อน: 16', 48, 463);
-        ctx.fillStyle = '#c084fc'; ctx.fillText('| เบสแก่ OH⁻: 8', 122, 463);
-        ctx.fillStyle = '#94a3b8'; ctx.fillText('| เกลือ CH₃COO⁻: 0', 214, 463);
-      } else if (sub === 2) {
-        ctx.fillStyle = '#f472b6'; ctx.fillText('กรดอ่อน: 16-8', 46, 463);
-        ctx.fillStyle = '#c084fc'; ctx.fillText('| เบส OH⁻: 8-8', 132, 463);
-        ctx.fillStyle = '#38bdf8'; ctx.fillText('| เกลือเกิดใหม่: +8', 218, 463);
-      } else {
         ctx.fillStyle = '#f472b6'; ctx.fillText('กรดอ่อนเหลือ: 8', 46, 463);
-        ctx.fillStyle = '#ef4444'; ctx.fillText('| เบส OH⁻: 0 (หมด)', 136, 463);
-        ctx.fillStyle = '#38bdf8'; ctx.fillText('| เกลือที่ได้: 8', 242, 463);
-      }
+        ctx.fillStyle = '#ef4444'; ctx.fillText('| เบสหมด: 0', 132, 463);
+        ctx.fillStyle = '#38bdf8'; ctx.fillText('| เกลือ CH₃COONa: 8', 202, 463);
 
-      // Summary below beaker in Zone 1
-      ctx.fillStyle = sub === 3 ? '#4ade80' : '#cbd5e1';
-      ctx.font = 'bold 11.5px Prompt';
-      ctx.fillText(
-        sub === 3
-          ? '✅ ได้ [กรดอ่อน 8 + เกลือกรดอ่อน 8] เหมือนวิธีที่ 1 เป๊ะ!'
-          : '⏳ รอเบสแก่ทำปฏิกิริยากับกรดอ่อนจนหมด เพื่อเกิดเกลือ...',
-        40, 508
-      );
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '11px Prompt';
-      ctx.fillText('(กดปุ่ม 1.1 / 1.2 / 1.3 ด้านขวาเพื่อดูทีละขั้นย่อยได้)', 50, 528);
+        ctx.fillStyle = '#facc15';
+        ctx.font = 'bold 11px Prompt';
+        ctx.fillText('🎯 ครบคอนเซ็ปต์บัฟเฟอร์: [เกลือกรดอ่อน CH₃COONa + กรดอ่อนที่เหลือ]', 36, 508);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Prompt';
+        ctx.fillText('(กด 1.3 เพื่อดูเกลือแตกตัวเหมือนวิธีที่ 1 และเข้าขวดบัฟเฟอร์)', 46, 528);
+
+      } else {
+        // ---------------- SUB-STEP 1.3: Identical to Method 1! Salt CH3COONa dissociates into CH3COO- + Na+ ----------------
+        drawDissociatedBufferBeaker('ขั้น 1.3: เกลือแตกตัว + กรดอ่อน (เหมือนวิธีที่ 1 เป๊ะ!)', true);
+      }
     }
 
     // Animated Transfer Arrow from Mixing Beaker -> Main Buffer Vessel (Zone 2)
@@ -9605,17 +9728,30 @@ function setupAnim5Buffer() {
         drawMoleculeCluster(ctx, m.type, m.x, m.y, m.busy);
       });
     } else {
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
-      ctx.fillRect(vx + 20, vy + 140, vw - 40, 90);
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+      ctx.fillRect(vx + 18, vy + 135, vw - 36, 105);
       ctx.strokeStyle = '#facc15';
       ctx.lineWidth = 1.5;
-      ctx.strokeRect(vx + 20, vy + 140, vw - 40, 90);
+      ctx.strokeRect(vx + 18, vy + 135, vw - 36, 105);
       ctx.fillStyle = '#facc15';
       ctx.font = 'bold 14px Prompt';
-      ctx.fillText('⏳ กำลังทำปฏิกิริยาเตรียมบัฟเฟอร์ในบีกเกอร์ซ้ายมือ...', vx + 36, vy + 178);
+      ctx.fillText(
+        bufSim.prepSubStep === 1
+          ? '⏳ ขั้น 1.1 : กำลังเทกรดอ่อน (มาก) + เบสแก่ (น้อย)...'
+          : '⚡ ขั้น 1.2 : ได้เกลือกรดอ่อน CH₃COONa + กรดอ่อนที่เหลือ!',
+        vx + 32, vy + 170
+      );
       ctx.fillStyle = '#cbd5e1';
       ctx.font = '12.5px Prompt';
-      ctx.fillText('เมื่อเบสแก่ (OH⁻) ทำปฏิกิริยากับกรดอ่อนจนหมด จะถ่ายเข้าขวดนี้', vx + 36, vy + 205);
+      ctx.fillText(
+        bufSim.prepSubStep === 1
+          ? 'เริ่มต้นยังไม่มีเกลือ (รอจับคู่เกิดเกลือ CH₃COONa ในขั้น 1.2)'
+          : 'ในขั้น 1.3 เกลือ CH₃COONa จะแตกตัวเป็น CH₃COO⁻ แล้วถ่ายเข้าขวดนี้',
+        vx + 32, vy + 200
+      );
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 12px Prompt';
+      ctx.fillText('👉 กดปุ่ม 1.3 ด้านขวา (หรือรอสักครู่) เพื่อนำเข้าขวดบัฟเฟอร์', vx + 32, vy + 225);
     }
 
     // Update and draw Incoming Acid (H+) or Base (OH-) Drops & Active Molecular Interception!
@@ -9686,7 +9822,7 @@ function setupAnim5Buffer() {
             bufSim.lastEventBanner = `⚡ หยดกรด H⁺: คู่เบส CH₃COO⁻ วิ่งเข้าจับ H⁺ กลายเป็น CH₃COOH! ([CH₃COO⁻] ลดลง ↓ , [CH₃COOH] เพิ่มขึ้น ↑ , pH = ${bufSim.bufferPH.toFixed(2)})`;
             updateBufferExplanation(
               'ผลของการหยดกรดแก่ (H⁺) ลงในบัฟเฟอร์',
-              `• ทันทีที่ <b>H⁺</b> ลงสู่สารละลาย ไอออนคู่เบส <b style="color:#38bdf8;">CH₃COO⁻</b> จะวิ่งเข้าไปจับ H⁺ ทันทีตามสมการ:<br><b style="color:#facc15;">CH₃COO⁻(aq) + H⁺(aq) ⟶ CH₃COOH(aq)</b><br>• ผลลัพธ์: ความเข้มข้น <b>[CH₃COO⁻] ลดลง (เหลือ ${bufSim.aMinusCount})</b> และ <b>[CH₃COOH] เพิ่มขึ้น (เป็น ${bufSim.haCount})</b> ไฮโดรเจนไอออนที่เติมลงไปถูกกำจัดหมด ค่า pH จึงแทบไม่เปลี่ยน!`
+              `• ทันทีที่ <b>H⁺</b> ลงสู่สารละลาย ไอออนคู่เบส <b style="color:#38bdf8;">CH₃COO⁻ (ที่ได้จากการแตกตัวของเกลือ CH₃COONa)</b> จะวิ่งเข้าไปจับ H⁺ ทันทีตามสมการ:<br><b style="color:#facc15;">CH₃COO⁻(aq) + H⁺(aq) ⟶ CH₃COOH(aq)</b><br>• ผลลัพธ์: ความเข้มข้น <b>[CH₃COO⁻] ลดลง (เหลือ ${bufSim.aMinusCount})</b> และ <b>[CH₃COOH] เพิ่มขึ้น (เป็น ${bufSim.haCount})</b> ค่า pH จึงแทบไม่เปลี่ยน!`
             );
           } else {
             // CH3COOH donated H+ to OH- and turned into CH3COO- + H2O!
@@ -9699,10 +9835,10 @@ function setupAnim5Buffer() {
             bufSim.waterPH = 12.15;
             recalcBufferPH();
             bufSim.lastEventColor = '#38bdf8';
-            bufSim.lastEventBanner = `⚡ หยดเบส OH⁻: กรดอ่อน CH₃COOH วิ่งไปจ่าย H⁺ สกัด OH⁻ กลายเป็น CH₃COO⁻ + H₂O! ([CH₃COOH] ลดลง ↓ , [CH₃COO⁻] เพิ่มขึ้น ↑ , pH = ${bufSim.bufferPH.toFixed(2)})`;
+            bufSim.lastEventBanner = `⚡ หยดเบส OH⁻: กรดอ่อน CH₃COOH วิ่งไปจ่าย H⁺ จับกับ OH⁻ กลายเป็นน้ำ H₂O + CH₃COO⁻! ([CH₃COOH] ลดลง ↓ , [CH₃COO⁻] เพิ่มขึ้น ↑ , pH = ${bufSim.bufferPH.toFixed(2)})`;
             updateBufferExplanation(
               'ผลของการหยดเบสแก่ (OH⁻) ลงในบัฟเฟอร์',
-              `• ทันทีที่ <b>OH⁻</b> ลงสู่สารละลาย โมเลกุลกรดอ่อน <b style="color:#f472b6;">CH₃COOH</b> จะวิ่งเข้าไปจ่ายโปรตอน H⁺ สกัด OH⁻ ให้กลายเป็นน้ำทันทีตามสมการ:<br><b style="color:#facc15;">CH₃COOH(aq) + OH⁻(aq) ⟶ CH₃COO⁻(aq) + H₂O(l)</b><br>• ผลลัพธ์: ความเข้มข้น <b>[CH₃COOH] ลดลง (เหลือ ${bufSim.haCount})</b> และ <b>[CH₃COO⁻] เพิ่มขึ้น (เป็น ${bufSim.aMinusCount})</b> ค่า pH จึงแทบไม่เปลี่ยน!`
+              `• ทันทีที่ <b>OH⁻</b> ลงสู่สารละลาย โมเลกุลกรดอ่อน <b style="color:#f472b6;">CH₃COOH</b> จะวิ่งเข้าไปจ่ายโปรตอน H⁺ จับกับ OH⁻ กลายเป็นน้ำทันทีตามสมการ:<br><b style="color:#facc15;">CH₃COOH(aq) + OH⁻(aq) ⟶ CH₃COO⁻(aq) + H₂O(l)</b><br>• ผลลัพธ์: ความเข้มข้น <b>[CH₃COOH] ลดลง (เหลือ ${bufSim.haCount})</b> และ <b>[CH₃COO⁻] เพิ่มขึ้น (เป็น ${bufSim.aMinusCount})</b> ค่า pH จึงแทบไม่เปลี่ยน!`
             );
           }
           bufSim.incomingDrops.splice(i, 1);
@@ -9793,17 +9929,17 @@ function setupAnim5Buffer() {
     const barBaseY = 415;
 
     if (isM2) {
-      // Show 3 bars for Method 2 so students see Weak Acid (16->8), Strong Base OH- (8->0), and Salt CH3COO- (0->8)!
+      // Show 3 bars for Method 2:
+      // Step 1.1: Weak Acid = 16, Strong Base NaOH = 8, Salt CH3COONa = 0
+      // Step 1.2: Weak Acid remaining = 8, Strong Base NaOH = 0 (depleted!), Salt CH3COONa formed = 8
+      // Step 1.3: Weak Acid = 8 (or live haCount), Strong Base = 0, Dissociated Salt CH3COO- = 8 (or live aMinusCount)
       let dispHA = bufSim.haCount;
       let dispOH = 0;
       let dispAM = bufSim.aMinusCount;
       if (bufSim.prepSubStep === 1) {
         dispHA = 16; dispOH = 8; dispAM = 0;
       } else if (bufSim.prepSubStep === 2) {
-        const p2 = bufSim.prepPaused ? 0.5 : Math.min(1, Math.max(0, (bufSim.prepProgress - 0.34) / 0.38));
-        dispHA = Math.round(16 - 8 * p2);
-        dispOH = Math.round(8 - 8 * p2);
-        dispAM = Math.round(8 * p2);
+        dispHA = 8; dispOH = 0; dispAM = 8;
       }
 
       const hHA = Math.min(maxBarH, (dispHA / 16) * maxBarH);
@@ -9823,7 +9959,7 @@ function setupAnim5Buffer() {
       ctx.fillStyle = '#f472b6'; ctx.font = '11.5px Prompt';
       ctx.fillText(`กรดอ่อน (${dispHA})`, 825, barBaseY + 38);
 
-      // Bar 2: [OH-] Strong Base (x = 924, w = 72)
+      // Bar 2: [NaOH / OH-] Strong Base (x = 924, w = 72)
       ctx.fillStyle = 'rgba(168, 85, 247, 0.12)';
       ctx.strokeStyle = '#475569';
       ctx.strokeRect(924, barBaseY - maxBarH, 72, maxBarH);
@@ -9834,11 +9970,11 @@ function setupAnim5Buffer() {
         ctx.fillRect(924, barBaseY - hOH, 72, hOH);
       }
       ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Prompt';
-      ctx.fillText('[OH⁻ เบสแก่]', 924, barBaseY + 20);
+      ctx.fillText('[NaOH เบส]', 926, barBaseY + 20);
       ctx.fillStyle = dispOH === 0 ? '#ef4444' : '#c084fc'; ctx.font = 'bold 11.5px Prompt';
-      ctx.fillText(dispOH === 0 ? '0 (ใช้หมด!)' : `เบสแก่ (${dispOH})`, 928, barBaseY + 38);
+      ctx.fillText(dispOH === 0 ? '0 (เบสหมด!)' : `เบสแก่ (${dispOH})`, 928, barBaseY + 38);
 
-      // Bar 3: [CH3COO-] Salt of Weak Acid (x = 1026, w = 72)
+      // Bar 3: Salt [CH3COONa] in Step 1.2 -> Dissociated [CH3COO-] in Step 1.3 (x = 1026, w = 72)
       ctx.fillStyle = 'rgba(56, 189, 248, 0.14)';
       ctx.strokeStyle = '#475569';
       ctx.strokeRect(1026, barBaseY - maxBarH, 72, maxBarH);
@@ -9848,10 +9984,10 @@ function setupAnim5Buffer() {
         ctx.fillStyle = gradAM;
         ctx.fillRect(1026, barBaseY - hAM, 72, hAM);
       }
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Prompt';
-      ctx.fillText('[CH₃COO⁻]', 1028, barBaseY + 20);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 11.5px Prompt';
+      ctx.fillText(bufSim.prepSubStep === 2 ? '[CH₃COONa]' : '[CH₃COO⁻]', 1026, barBaseY + 20);
       ctx.fillStyle = '#38bdf8'; ctx.font = '11.5px Prompt';
-      ctx.fillText(`เกลือ (${dispAM})`, 1038, barBaseY + 38);
+      ctx.fillText(bufSim.prepSubStep === 2 ? `เกลือ (${dispAM})` : `คู่เบสเกลือ (${dispAM})`, 1026, barBaseY + 38);
 
       // Dynamic status badges above bars
       ctx.font = 'bold 11.5px Prompt';
@@ -9860,22 +9996,22 @@ function setupAnim5Buffer() {
         ctx.fillStyle = '#c084fc'; ctx.fillText('เติมลงไป 8', 930, barBaseY - hOH - 8);
         ctx.fillStyle = '#94a3b8'; ctx.fillText('ยังไม่มี (0)', 1034, barBaseY - 10);
       } else if (bufSim.prepSubStep === 2) {
-        ctx.fillStyle = '#f87171'; ctx.fillText('▼ ลดลงครึ่งหนึ่ง', 820, barBaseY - hHA - 8);
-        ctx.fillStyle = '#facc15'; ctx.fillText('▼ ทำปฏิกิริยา!', 924, barBaseY - hOH - 8);
-        ctx.fillStyle = '#4ade80'; ctx.fillText('▲ เกิดเกลือ!', 1030, barBaseY - hAM - 8);
+        ctx.fillStyle = '#f472b6'; ctx.fillText('กรดเหลือ 8!', 826, barBaseY - hHA - 8);
+        ctx.fillStyle = '#ef4444'; ctx.fillText('เบสหมด (0)!', 928, barBaseY - 10);
+        ctx.fillStyle = '#4ade80'; ctx.fillText('▲ ได้เกลือ 8!', 1028, barBaseY - hAM - 8);
       } else {
         if (bufSim.deltaHA !== 0) {
           ctx.fillStyle = bufSim.deltaHA > 0 ? '#4ade80' : '#f87171';
           ctx.fillText(bufSim.deltaHA > 0 ? '▲ เพิ่มขึ้น!' : '▼ ลดลง!', 830, barBaseY - hHA - 8);
         } else {
-          ctx.fillStyle = '#f472b6'; ctx.fillText('เหลือ 8', 838, barBaseY - hHA - 8);
+          ctx.fillStyle = '#f472b6'; ctx.fillText('กรดอ่อน (8)', 828, barBaseY - hHA - 8);
         }
-        ctx.fillStyle = '#ef4444'; ctx.fillText('เบสหมด (0)!', 928, barBaseY - 10);
+        ctx.fillStyle = '#ef4444'; ctx.fillText('เบสหมด (0)', 930, barBaseY - 10);
         if (bufSim.deltaAMinus !== 0) {
           ctx.fillStyle = bufSim.deltaAMinus > 0 ? '#4ade80' : '#f87171';
           ctx.fillText(bufSim.deltaAMinus > 0 ? '▲ เพิ่มขึ้น!' : '▼ ลดลง!', 1032, barBaseY - hAM - 8);
         } else {
-          ctx.fillStyle = '#4ade80'; ctx.fillText('เกิดเกลือ 8!', 1032, barBaseY - hAM - 8);
+          ctx.fillStyle = '#38bdf8'; ctx.fillText('แตกตัว (8)', 1032, barBaseY - hAM - 8);
         }
       }
     } else {
@@ -9941,16 +10077,26 @@ function setupAnim5Buffer() {
     ctx.stroke();
 
     ctx.fillStyle = '#e2e8f0';
-    ctx.font = '12.5px Prompt';
-    if (isM2 && bufSim.prepSubStep < 3) {
-      ctx.fillText(`• กำลังทำปฏิกิริยา: CH₃COOH + OH⁻ ⟶ CH₃COO⁻ + H₂O`, 828, 505);
-      ctx.fillStyle = '#facc15';
-      ctx.font = 'bold 13.5px Prompt';
-      ctx.fillText(`• รอเบสแก่ OH⁻ หมด จะได้บัฟเฟอร์ pH = 4.74`, 828, 535);
+    ctx.font = '12px Prompt';
+    if (isM2 && bufSim.prepSubStep === 1) {
+      ctx.fillText(`• ตั้งต้น: มีเฉพาะกรดอ่อน (16) กับเบสแก่ NaOH (8)`, 828, 504);
+      ctx.fillStyle = '#c084fc';
+      ctx.font = 'bold 13px Prompt';
+      ctx.fillText(`• สังเกต: ตอนเริ่มต้นยังไม่มีเกลือเลย (เกลือ = 0)`, 828, 534);
       ctx.fillStyle = '#94a3b8';
       ctx.font = '12px Prompt';
-      ctx.fillText(`• สุดท้ายจะได้ [เกลือ 8] / [กรดอ่อนที่เหลือ 8]`, 828, 563);
+      ctx.fillText(`• กดขั้น 1.2 เพื่อดูการจับคู่เกิดเกลือ CH₃COONa`, 828, 562);
+    } else if (isM2 && bufSim.prepSubStep === 2) {
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 12px Prompt';
+      ctx.fillText(`• CH₃COO⁻ + Na⁺ ⟶ ได้เกลือกรดอ่อน CH₃COONa (8)`, 828, 504);
+      ctx.fillStyle = '#facc15';
+      ctx.fillText(`• H⁺ + OH⁻ ⟶ ได้น้ำ H₂O (เบส NaOH หมดเกลี้ยง!)`, 828, 532);
+      ctx.fillStyle = '#4ade80';
+      ctx.font = 'bold 12.5px Prompt';
+      ctx.fillText(`• เหลือ [กรดอ่อน 8 + เกลือกรดอ่อน 8] ครบเป็นบัฟเฟอร์!`, 828, 562);
     } else {
+      ctx.font = '12.5px Prompt';
       ctx.fillText(`• สัดส่วน [CH₃COO⁻]/[CH₃COOH] = ${bufSim.aMinusCount} / ${bufSim.haCount}`, 832, 505);
       ctx.fillStyle = '#4ade80';
       ctx.font = 'bold 15px Prompt';
