@@ -2,14 +2,10 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="SmartBoard เคมี">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#14171c">
-<link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="/logo.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>กระดานอัจฉริยะ เคมี ม.5 : กรด - เบส (Interactive Smartboard & 3D Lab)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,11 +61,7 @@ body.light-board {
 html, body {
   width: 100vw;
   height: 100vh;
-  height: 100dvh;
   overflow: hidden;
-  overscroll-behavior: none !important;
-  overscroll-behavior-y: none !important;
-  -webkit-overflow-scrolling: touch;
   background-color: var(--bg-board);
   color: var(--text-main);
   font-family: 'Prompt', 'Sarabun', sans-serif;
@@ -80,11 +72,7 @@ html, body {
   display: flex;
   width: 100vw;
   height: 100vh;
-  height: 100dvh;
   position: relative;
-  overflow: hidden;
-  overscroll-behavior: none !important;
-  overscroll-behavior-y: none !important;
 }
 
 /* Left Sidebar: Table of Contents */
@@ -311,28 +299,19 @@ body.light-board .sidebar-search input {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 10px;
+  padding: 0 14px;
   z-index: 40;
-  gap: 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-#topbar::-webkit-scrollbar {
-  display: none;
 }
 
 .topbar-left, .topbar-center, .topbar-right {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  gap: 8px;
 }
 
 .icon-btn {
   height: 34px;
-  padding: 0 10px;
+  padding: 0 11px;
   border-radius: 8px;
   border: 1px solid var(--panel-border);
   background: rgba(255,255,255,0.04);
@@ -343,11 +322,8 @@ body.light-board .sidebar-search input {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 5px;
+  gap: 6px;
   transition: all 0.15s;
-  white-space: nowrap !important;
-  flex-shrink: 0;
 }
 
 .icon-btn:hover {
@@ -364,13 +340,11 @@ body.light-board .sidebar-search input {
 .slide-nav-pill {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   background: rgba(0,0,0,0.25);
-  padding: 2px 6px;
+  padding: 3px 8px;
   border-radius: 10px;
   border: 1px solid var(--panel-border);
-  white-space: nowrap !important;
-  flex-shrink: 0;
 }
 
 body.light-board .slide-nav-pill {
@@ -379,25 +353,11 @@ body.light-board .slide-nav-pill {
 
 #page-indicator {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
-  min-width: 82px;
+  min-width: 90px;
   text-align: center;
   cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-}
-
-#current-section-badge {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-left: 4px;
-  max-width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
-  vertical-align: middle;
 }
 
 /* Interactive Feature Launch Buttons (Small buttons on top bar / slide corner) */
@@ -456,9 +416,6 @@ body.light-board .slide-nav-pill {
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
-  overscroll-behavior: none !important;
-  overscroll-behavior-y: none !important;
-  -webkit-overflow-scrolling: touch;
   background-color: var(--bg-board);
   background-image:
     linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
@@ -497,18 +454,12 @@ body.light-board .slide-nav-pill {
   width: 100%;
   height: 100%;
   z-index: 20;
-  touch-action: none !important;
+  touch-action: none;
   cursor: crosshair;
 }
 
 #drawing-canvas.pan-mode {
-  cursor: grab !important;
-  pointer-events: auto !important; /* Keep interactive for pan handler to intercept drag and prevent iOS overscroll bounce */
-  touch-action: none !important;
-}
-
-#drawing-canvas.pan-mode.panning {
-  cursor: grabbing !important;
+  pointer-events: none;
 }
 
 /* Laser Pointer Trail Canvas */
@@ -823,42 +774,6 @@ body.light-board #pen-toolbar {
   display: flex;
 }
 
-/* PWA Guide Modal Overlay */
-.pwa-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 12, 16, 0.82);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  z-index: 300;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-
-.pwa-modal-overlay.open {
-  display: flex;
-}
-
-.pwa-card {
-  width: 100%;
-  max-width: 620px;
-  background: #1b1f27;
-  border: 1.5px solid rgba(56, 189, 248, 0.45);
-  border-radius: 18px;
-  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.7);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes popIn {
-  from { opacity: 0; transform: scale(0.94); }
-  to { opacity: 1; transform: scale(1); }
-}
-
 .modal-header {
   height: 58px;
   padding: 0 24px;
@@ -1122,174 +1037,6 @@ body.light-board .qnav-select {
   gap: 6px;
 }
 
-/* Immersive Fullscreen Mode (Requirement 1 & 3) */
-body.immersive-fullscreen {
-  overflow: hidden !important;
-}
-
-body.immersive-fullscreen #topbar {
-  display: none !important;
-}
-
-body.immersive-fullscreen #sidebar {
-  display: none !important;
-}
-
-body.immersive-fullscreen #question-nav-bar {
-  display: none !important;
-}
-
-body.immersive-fullscreen #fullscreen-nav-bar {
-  display: flex !important;
-}
-
-#fullscreen-nav-bar {
-  display: none;
-  position: fixed;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  background: rgba(15, 23, 42, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 30px;
-  padding: 4px 10px;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
-}
-
-body.light-board #fullscreen-nav-bar {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: rgba(0, 0, 0, 0.15);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-.fs-nav-btn {
-  height: 32px;
-  padding: 0 12px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-main);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  transition: all 0.15s;
-}
-
-.fs-nav-btn:hover {
-  background: rgba(56, 189, 248, 0.25);
-  border-color: var(--accent-cyan);
-}
-
-.fs-nav-btn.exit-btn {
-  background: rgba(239, 68, 68, 0.18);
-  border-color: rgba(239, 68, 68, 0.45);
-  color: #fca5a5;
-  font-size: 12px;
-}
-
-.fs-nav-btn.exit-btn:hover {
-  background: rgba(239, 68, 68, 0.4);
-  color: #fff;
-}
-
-.fs-nav-divider {
-  width: 1px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.18);
-  margin: 0 2px;
-}
-
-#fs-page-indicator {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--accent-cyan);
-  padding: 0 8px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-/* Tablet & iPad Responsive Optimizations */
-@media (max-width: 1320px) {
-  .btn-text-responsive {
-    display: none !important; /* Icon-only for secondary action buttons on iPad/Laptop */
-  }
-  .icon-btn.responsive-compact {
-    padding: 0 9px;
-  }
-  #current-section-badge {
-    max-width: 140px;
-  }
-}
-
-@media (max-width: 1080px) {
-  #current-section-badge {
-    display: none !important; /* Hide long section text on iPad */
-  }
-  .nav-btn-text {
-    display: none !important; /* "◀ ก่อนหน้า" becomes "◀", "ถัดไป ▶" becomes "▶" */
-  }
-  .slide-nav-pill {
-    padding: 2px 4px;
-    gap: 2px;
-  }
-  #page-indicator {
-    min-width: 72px;
-    font-size: 11.5px;
-  }
-  .topbar-left, .topbar-right {
-    gap: 4px;
-  }
-  #account-sync-widget {
-    padding: 0 7px !important;
-    font-size: 11px !important;
-  }
-}
-
-@media (max-width: 820px) {
-  #sidebar {
-    width: 270px;
-    min-width: 270px;
-  }
-  #sidebar.collapsed {
-    margin-left: -270px;
-  }
-  .sb-grid-2 {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .sb-grid-3 {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .slide-main-title {
-    font-size: 24px;
-  }
-  #board-stage {
-    padding: 18px 20px 120px 20px;
-  }
-  #pen-toolbar {
-    max-width: calc(100vw - 16px);
-    padding: 5px 10px;
-    gap: 6px;
-  }
-  .tool-btn {
-    width: 34px;
-    height: 34px;
-    font-size: 15px;
-  }
-}
-
 /* Print / Export PDF Styling */
 @media print {
   #sidebar, #topbar, #question-nav-bar, #pen-toolbar, .modal-overlay {
@@ -1328,14 +1075,13 @@ body.light-board #fullscreen-nav-bar {
     <!-- Top Navigation & Action Bar -->
     <header id="topbar">
       <div class="topbar-left">
-        <a href="/course/chemistry" class="icon-btn" style="text-decoration:none; background:rgba(16,185,129,0.14); border-color:rgba(16,185,129,0.45); color:#34d399; font-weight:600;" title="กลับสู่หน้าคอร์สเคมี">← <span class="btn-text-responsive">คอร์ส</span>เคมี</a>
-        <button class="icon-btn" onclick="toggleSidebar()" title="เปิด/ปิดสารบัญ (M)">☰ <span class="nav-btn-text">สารบัญ</span></button>
+        <button class="icon-btn" onclick="toggleSidebar()" title="เปิด/ปิดสารบัญ (M)">☰ สารบัญ</button>
         <div class="slide-nav-pill">
-          <button class="icon-btn" onclick="prevSlide()" title="หน้าก่อนหน้า (←)">◀<span class="nav-btn-text"> ก่อนหน้า</span></button>
+          <button class="icon-btn" onclick="prevSlide()" title="หน้าก่อนหน้า (←)">◀ ก่อนหน้า</button>
           <span id="page-indicator" onclick="promptJumpPage()" title="คลิกเพื่อระบุเลขหน้า">หน้า 1 / 1</span>
-          <button class="icon-btn" onclick="nextSlide()" title="หน้าถัดไป (→)"><span class="nav-btn-text">ถัดไป </span>▶</button>
+          <button class="icon-btn" onclick="nextSlide()" title="หน้าถัดไป (→)">ถัดไป ▶</button>
         </div>
-        <span id="current-section-badge" title="หัวข้อปัจจุบัน"></span>
+        <span id="current-section-badge" style="font-size:13px; color:var(--text-muted); margin-left:6px;"></span>
       </div>
 
       <!-- Small Trigger Buttons for 3D Lab & Animation Graphic (Only visible on matching slides) -->
@@ -1349,32 +1095,15 @@ body.light-board #fullscreen-nav-bar {
       </div>
 
       <div class="topbar-right">
-        <div id="account-sync-widget" style="display:inline-flex; align-items:center; gap:6px; padding:0 10px; height:34px; border-radius:8px; border:1px solid rgba(56,189,248,0.35); background:rgba(15,23,42,0.75); font-size:12px;">
-          <span id="account-user-badge" style="font-weight:600; color:#38bdf8;">⏳ บัญชี</span>
-          <span id="account-sync-status" style="font-size:11px; color:#94a3b8;"></span>
-        </div>
-        <button class="icon-btn responsive-compact" onclick="openIpadPWAGuide()" id="btn-ipad-guide" title="วิธีติดตั้งเป็นแอพ iPad เต็มจอ 100% ไร้แถบ Safari" style="display:none; color:#38bdf8; border-color:rgba(56,189,248,0.45); background:rgba(56,189,248,0.1);"><span>📲</span><span class="btn-text-responsive"> แอพ iPad</span></button>
-        <button class="icon-btn responsive-compact" onclick="toggleTheme()" id="btn-theme" title="สลับสีกระดาน มืด/สว่าง"><span>🌙</span><span class="btn-text-responsive"> กระดานดำ</span></button>
-        <button class="icon-btn responsive-compact" onclick="saveNotesJSON()" title="บันทึกไฟล์ลายมือ (.json) เก็บเข้าเครื่อง"><span>💾</span><span class="btn-text-responsive"> เซฟไฟล์</span></button>
-        <button class="icon-btn responsive-compact" onclick="document.getElementById('load-json-input').click()" title="โหลดไฟล์ลายมือ (.json)"><span>📂</span><span class="btn-text-responsive"> โหลดไฟล์</span></button>
+        <button class="icon-btn" onclick="toggleTheme()" id="btn-theme" title="สลับสีกระดาน มืด/สว่าง">🌙 กระดานดำ</button>
+        <button class="icon-btn" onclick="saveNotesJSON()" title="บันทึกไฟล์ลายมือ (.json) เก็บเข้าบัญชี">💾 เซฟโน้ต</button>
+        <button class="icon-btn" onclick="document.getElementById('load-json-input').click()" title="โหลดไฟล์ลายมือ (.json)">📂 โหลดโน้ต</button>
         <input type="file" id="load-json-input" accept=".json" style="display:none" onchange="loadNotesJSON(event)">
-        <button class="icon-btn responsive-compact" onclick="exportSlidePNG()" title="บันทึกรูปหน้ากระดานพร้อมลายมือ"><span>📸</span><span class="btn-text-responsive"> เซฟภาพ</span></button>
-        <button class="icon-btn responsive-compact" onclick="window.print()" title="พิมพ์ / บันทึกเป็น PDF"><span>📄</span><span class="btn-text-responsive"> PDF</span></button>
-        <button class="icon-btn primary responsive-compact" onclick="toggleFullScreen()" id="btn-fullscreen" title="ขยายเต็มจอ (F11)"><span id="btn-fullscreen-icon">⛶</span><span id="btn-fullscreen-text" class="btn-text-fullscreen"> เต็มจอ</span></button>
+        <button class="icon-btn" onclick="exportSlidePNG()" title="บันทึกรูปหน้ากระดานพร้อมลายมือ">📸 เซฟภาพ</button>
+        <button class="icon-btn" onclick="window.print()" title="พิมพ์ / บันทึกเป็น PDF">📄 PDF</button>
+        <button class="icon-btn primary" onclick="toggleFullScreen()" id="btn-fullscreen" title="ขยายเต็มจอ (F11)">⛶ เต็มจอ</button>
       </div>
     </header>
-
-    <!-- Floating Minimal Nav Pill (Active in Fullscreen Mode - Requirement 1) -->
-    <div id="fullscreen-nav-bar">
-      <button class="fs-nav-btn" onclick="prevSlide()" title="หน้าก่อนหน้า (←)">◀</button>
-      <span id="fs-page-indicator" onclick="promptJumpPage()" title="คลิกเพื่อระบุเลขหน้า">หน้า 1 / 1</span>
-      <button class="fs-nav-btn" onclick="nextSlide()" title="หน้าถัดไป (→)">▶</button>
-      <div class="fs-nav-divider"></div>
-      <button id="fs-btn-pwa" class="fs-nav-btn" onclick="openIpadPWAGuide()" title="วิธีใช้แบบแอพแท้ เต็มจอ 100% บน iPad" style="display:none; color:#38bdf8; border-color:rgba(56,189,248,0.4); background:rgba(56,189,248,0.1);">📲 แอพ iPad</button>
-      <button id="fs-btn-3d" class="fs-nav-btn" onclick="openCurrent3DLab()" title="เปิดห้องแล็บ 3D" style="display:none; color:#f472b6; border-color:rgba(244,114,182,0.4);">🎮 3D</button>
-      <button id="fs-btn-anim" class="fs-nav-btn" onclick="openCurrentAnimation()" title="เปิด Animation" style="display:none; color:#4ade80; border-color:rgba(74,222,128,0.4);">🎬 Anim</button>
-      <button class="fs-nav-btn exit-btn" onclick="toggleFullScreen()" title="ออกจากโหมดเต็มจอ">🗗 ย่อจอ</button>
-    </div>
 
     <!-- Single Question Navigation Bar (Automatically shown on Exercise & Real Exam slides) -->
     <div id="question-nav-bar">
@@ -1477,61 +1206,6 @@ body.light-board #fullscreen-nav-bar {
         <div id="anim-graphic-explanation" class="modal-explanation-bar"></div>
       </div>
       <div id="anim-graphic-controls" class="lab-controls"></div>
-    </div>
-  </div>
-
-  <!-- Modal 3: iPad PWA Guide (Add to Home Screen) -->
-  <div id="modal-ipad-pwa" class="pwa-modal-overlay" onclick="if(event.target===this) closeIpadPWAGuide()">
-    <div class="pwa-card">
-      <div class="modal-header" style="height:54px; background: linear-gradient(135deg, rgba(56,189,248,0.18), rgba(168,85,247,0.15)); border-bottom:1px solid rgba(56,189,248,0.3);">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="font-size:22px;">📲</span>
-          <span style="font-size:16.5px; font-weight:700; color:#38bdf8;">วิธีใช้งานเป็น "แอพ iPad เต็มจอ 100%" (ไร้แถบ Safari)</span>
-        </div>
-        <button class="icon-btn" style="width:32px; height:32px; padding:0; border-radius:50%;" onclick="closeIpadPWAGuide()">✕</button>
-      </div>
-      <div style="padding:22px 24px; font-size:14px; line-height:1.6; color:#e2e8f0; overflow-y:auto; max-height:80vh;">
-        <p style="margin-bottom:14px; color:#f1f5f9; font-weight:500;">
-          ไม่ต้องเขียนแอพใหม่ หรือโหลดจาก App Store เลยครับ! คุณเจ้านายสามารถเปลี่ยนเว็บนี้ให้เป็น <b>แอพประจำเครื่อง iPad</b> ได้ทันทีใน 3 สเต็ป (ใช้เวลาแค่ 5 วินาที):
-        </p>
-        
-        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;">
-          <div style="display:flex; gap:14px; align-items:flex-start; background:rgba(15,23,42,0.8); padding:12px 14px; border-radius:12px; border:1px solid rgba(56,189,248,0.25);">
-            <div style="width:28px; height:28px; border-radius:50%; background:#38bdf8; color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0;">1</div>
-            <div>
-              <div style="font-weight:700; color:#fff;">แตะปุ่ม "แชร์" (Share) ที่แถบขวาบนของ Safari</div>
-              <div style="color:#94a3b8; font-size:12.5px; margin-top:2px;">ไอคอนรูปสี่เหลี่ยมที่มีลูกศรชี้ขึ้น <b>[ ⎋ / 📤 ]</b></div>
-            </div>
-          </div>
-
-          <div style="display:flex; gap:14px; align-items:flex-start; background:rgba(15,23,42,0.8); padding:12px 14px; border-radius:12px; border:1px solid rgba(74,222,128,0.25);">
-            <div style="width:28px; height:28px; border-radius:50%; background:#4ade80; color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0;">2</div>
-            <div>
-              <div style="font-weight:700; color:#fff;">เลื่อนเมนูลงมาแล้วแตะ "เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</div>
-              <div style="color:#94a3b8; font-size:12.5px; margin-top:2px;">ไอคอนรูปสี่เหลี่ยมพร้อมเครื่องหมายบวก <b>[ ➕ เพิ่มไปยังหน้าจอโฮม ]</b></div>
-            </div>
-          </div>
-
-          <div style="display:flex; gap:14px; align-items:flex-start; background:rgba(15,23,42,0.8); padding:12px 14px; border-radius:12px; border:1px solid rgba(250,204,21,0.25);">
-            <div style="width:28px; height:28px; border-radius:50%; background:#facc15; color:#0f172a; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0;">3</div>
-            <div>
-              <div style="font-weight:700; color:#fff;">แตะ "เพิ่ม" (Add) ที่มุมขวาบนของหน้าต่าง</div>
-              <div style="color:#94a3b8; font-size:12.5px; margin-top:2px;">iPad จะสร้างไอคอนแอพ <b>SmartBoard เคมี</b> บนหน้าจอโฮมทันที</div>
-            </div>
-          </div>
-        </div>
-
-        <div style="background:rgba(56,189,248,0.08); border-left:3px solid #38bdf8; padding:12px 16px; border-radius:8px; font-size:13px; color:#bae6fd; margin-bottom:18px;">
-          ✨ <b>ข้อดีเมื่อเปิดใช้งานจากไอคอนบนหน้าจอโฮม:</b><br>
-          • <b>แถบแท็บ Safari ด้านบน และแถบพิมพ์ URL จะหายไปทั้งหมด 100%</b><br>
-          • <b>ปัดนิ้วขึ้น/ลง รูดหน้าจอ หรือเขียนกระดาน แถบเว็บจะไม่โผล่มาขัดจังหวะอีกต่อไป</b><br>
-          • หน้าจอแสดงผลเต็มขอบ (Edge-to-Edge) เสมือนแอพ GoodNotes / Procreate ตัวจริง!
-        </div>
-
-        <div style="text-align:right;">
-          <button class="icon-btn primary" onclick="closeIpadPWAGuide()" style="padding:8px 22px; font-size:13.5px; border-radius:8px;">รับทราบ เริ่มใช้งาน</button>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -1754,113 +1428,10 @@ function getStageCoords(e) {
   return { x, y, nx: x / stageW };
 }
 
-// Dedicated Hand / Pan & Two-Finger Smooth Scrolling Controller (iPad + Desktop)
-let isTouchPanning = false;
-let touchLastX = 0;
-let touchLastY = 0;
-
-let isMousePanning = false;
-let mouseLastX = 0;
-let mouseLastY = 0;
-
-function getViewportEl() {
-  return document.getElementById('board-viewport');
-}
-
-// Touch Handling on Canvas (1-finger in Pan mode, OR 2-fingers in ANY mode)
-drawCanvas.addEventListener('touchstart', (e) => {
-  if (currentDrawTool === 'pan' && e.touches.length === 1) {
-    isTouchPanning = true;
-    touchLastX = e.touches[0].clientX;
-    touchLastY = e.touches[0].clientY;
-    e.preventDefault(); // Stop native iOS bounce / exit fullscreen gesture
-  } else if (e.touches.length >= 2) {
-    // Two-finger scroll supported anytime without switching tools!
-    isTouchPanning = true;
-    touchLastX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-    touchLastY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-    e.preventDefault();
-  }
-}, { passive: false });
-
-drawCanvas.addEventListener('touchmove', (e) => {
-  if (!isTouchPanning) return;
-  let curX = 0, curY = 0;
-  if (e.touches.length === 1 && currentDrawTool === 'pan') {
-    curX = e.touches[0].clientX;
-    curY = e.touches[0].clientY;
-  } else if (e.touches.length >= 2) {
-    curX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-    curY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-  } else {
-    return;
-  }
-  const dx = curX - touchLastX;
-  const dy = curY - touchLastY;
-  touchLastX = curX;
-  touchLastY = curY;
-
-  const vp = getViewportEl();
-  if (vp) {
-    if (vp.scrollTop <= 0 && dy > 0) {
-      vp.scrollTop = 0;
-    } else {
-      vp.scrollTop -= dy;
-    }
-    vp.scrollLeft -= dx;
-  }
-  e.preventDefault();
-}, { passive: false });
-
-drawCanvas.addEventListener('touchend', (e) => {
-  if (e.touches.length === 0) {
-    isTouchPanning = false;
-  }
-});
-drawCanvas.addEventListener('touchcancel', () => {
-  isTouchPanning = false;
-});
-
-// Mouse Drag Handling for Desktop Hand Tool
-drawCanvas.addEventListener('mousedown', (e) => {
-  if (currentDrawTool === 'pan' && e.button === 0) {
-    isMousePanning = true;
-    mouseLastX = e.clientX;
-    mouseLastY = e.clientY;
-    drawCanvas.classList.add('panning');
-    e.preventDefault();
-  }
-});
-
-window.addEventListener('mousemove', (e) => {
-  if (isMousePanning) {
-    const dx = e.clientX - mouseLastX;
-    const dy = e.clientY - mouseLastY;
-    mouseLastX = e.clientX;
-    mouseLastY = e.clientY;
-    const vp = getViewportEl();
-    if (vp) {
-      vp.scrollTop -= dy;
-      vp.scrollLeft -= dx;
-    }
-    e.preventDefault();
-  }
-});
-
-window.addEventListener('mouseup', () => {
-  if (isMousePanning) {
-    isMousePanning = false;
-    drawCanvas.classList.remove('panning');
-  }
-});
-
-// Pointer down/move for Drawing Tools (Pen, Highlighter, Line, Rect, Eraser, Laser)
 drawCanvas.addEventListener('pointerdown', (e) => {
-  if (currentDrawTool === 'pan') return; // Handled by touch/mouse pan
+  if (currentDrawTool === 'pan') return;
   if (e.button !== 0 && e.pointerType === 'mouse') return;
-  try {
-    drawCanvas.setPointerCapture(e.pointerId);
-  } catch(err) {}
+  drawCanvas.setPointerCapture(e.pointerId);
   isDrawing = true;
   const pt = getStageCoords(e);
 
@@ -1880,7 +1451,6 @@ drawCanvas.addEventListener('pointerdown', (e) => {
 });
 
 drawCanvas.addEventListener('pointermove', (e) => {
-  if (currentDrawTool === 'pan') return;
   if (!isDrawing) return;
   const pt = getStageCoords(e);
 
@@ -1900,14 +1470,8 @@ drawCanvas.addEventListener('pointermove', (e) => {
 });
 
 function finishStroke(e) {
-  if (currentDrawTool === 'pan') return;
   if (!isDrawing) return;
   isDrawing = false;
-  try {
-    if (e && e.pointerId && drawCanvas.hasPointerCapture(e.pointerId)) {
-      drawCanvas.releasePointerCapture(e.pointerId);
-    }
-  } catch(err) {}
   if (currentDrawTool === 'laser') return;
   if (currentStroke) {
     const key = getSlideKey();
@@ -1963,20 +1527,10 @@ function updateLaserTrail() {
 function setDrawTool(tool) {
   SoundFX.click();
   currentDrawTool = tool;
-  isPanning = false;
-  isDrawing = false;
   document.querySelectorAll('#pen-toolbar .tool-btn[data-tool]').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.tool === tool);
   });
   drawCanvas.classList.toggle('pan-mode', tool === 'pan');
-  drawCanvas.classList.remove('panning');
-  if (tool === 'pan') {
-    drawCanvas.style.cursor = 'grab';
-  } else if (tool === 'laser') {
-    drawCanvas.style.cursor = 'none';
-  } else {
-    drawCanvas.style.cursor = 'crosshair';
-  }
 }
 
 function setPenColor(color, el) {
@@ -2027,19 +1581,13 @@ function clearCurrentSlideDrawing() {
   }
 }
 
-// LocalStorage / IndexedDB & Per-Account Cloud API Integration
-const LESSON_ID = 'chemistry-acid-base';
-let currentStorageKey = 'acid_base_smartboard_notes_v1_guest';
-let currentAccountUser = null;
-let cloudSyncTimer = null;
-let hasPendingCloudSync = false;
+// LocalStorage / IndexedDB & Account API Integration
+const STORAGE_KEY = 'acid_base_smartboard_notes_v1';
 
 function persistAnnotationsToStorage() {
   try {
-    localStorage.setItem(currentStorageKey, JSON.stringify(slideAnnotations));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(slideAnnotations));
   } catch(e) {}
-  // Schedule cloud sync for logged-in account
-  scheduleCloudAccountSync();
   // Trigger custom hook for backend user account integration
   if (typeof window.onSmartboardNotesChanged === 'function') {
     window.onSmartboardNotesChanged(slideAnnotations);
@@ -2048,165 +1596,22 @@ function persistAnnotationsToStorage() {
 
 function loadAnnotationsFromStorage() {
   try {
-    const raw = localStorage.getItem(currentStorageKey);
-    slideAnnotations = raw ? JSON.parse(raw) : {};
-  } catch(e) {
-    slideAnnotations = {};
-  }
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) slideAnnotations = JSON.parse(raw);
+  } catch(e) {}
 }
-
-function updateAccountSyncUI(state, detailText) {
-  const widget = document.getElementById('account-sync-widget');
-  const badgeEl = document.getElementById('account-user-badge');
-  const statusEl = document.getElementById('account-sync-status');
-  if (!widget || !badgeEl || !statusEl) return;
-
-  if (!currentAccountUser) {
-    widget.style.borderColor = 'rgba(251, 146, 60, 0.45)';
-    widget.style.cursor = 'default';
-    widget.onclick = null;
-    badgeEl.style.color = '#fb923c';
-    badgeEl.innerHTML = '👤 ผู้เยี่ยมชม';
-    statusEl.innerHTML = '<a href="/login?callbackUrl=/lessons/chemistry/acid-base/index.html" style="color:#facc15; font-weight:700; text-decoration:none; padding:2px 7px; border-radius:5px; background:rgba(250,204,21,0.15); border:1px solid rgba(250,204,21,0.4);">🔐 เข้าสู่ระบบเพื่อผูกโน้ต</a>';
-    return;
-  }
-
-  widget.style.cursor = 'pointer';
-  widget.title = `บัญชี: ${currentAccountUser.name} (คลิกเพื่อซิงก์โน้ตขึ้นระบบทันที)`;
-  widget.onclick = () => syncNotesToAccountNow(true);
-  badgeEl.style.color = '#38bdf8';
-  badgeEl.textContent = `👤 ${currentAccountUser.name}`;
-
-  if (state === 'saving') {
-    widget.style.borderColor = 'rgba(250, 204, 21, 0.5)';
-    statusEl.style.color = '#facc15';
-    statusEl.textContent = '• ⏳ กำลังบันทึก...';
-  } else if (state === 'saved') {
-    widget.style.borderColor = 'rgba(74, 222, 128, 0.45)';
-    statusEl.style.color = '#4ade80';
-    statusEl.textContent = `• ☁️ ${detailText || 'ซิงก์แล้ว'}`;
-  } else if (state === 'error') {
-    widget.style.borderColor = 'rgba(248, 113, 113, 0.5)';
-    statusEl.style.color = '#f87171';
-    statusEl.textContent = '• ⚠️ ออฟไลน์ (เซฟในเครื่อง)';
-  }
-}
-
-function scheduleCloudAccountSync() {
-  if (!currentAccountUser) return;
-  hasPendingCloudSync = true;
-  updateAccountSyncUI('saving');
-  if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
-  cloudSyncTimer = setTimeout(() => {
-    syncNotesToAccountNow(false);
-  }, 650);
-}
-
-async function syncNotesToAccountNow(manualClick) {
-  if (!currentAccountUser) return;
-  if (cloudSyncTimer) {
-    clearTimeout(cloudSyncTimer);
-    cloudSyncTimer = null;
-  }
-  updateAccountSyncUI('saving');
-  try {
-    const res = await fetch('/api/notes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        lessonId: LESSON_ID,
-        annotations: slideAnnotations
-      })
-    });
-    if (res.ok) {
-      hasPendingCloudSync = false;
-      const nowTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-      updateAccountSyncUI('saved', `บันทึกแล้ว ${nowTime}`);
-      if (manualClick && typeof SoundFX !== 'undefined') SoundFX.chime();
-    } else {
-      updateAccountSyncUI('error');
-    }
-  } catch (err) {
-    updateAccountSyncUI('error');
-  }
-}
-
-async function initAccountAndSmartboardNotes() {
-  try {
-    const res = await fetch(`/api/notes?lessonId=${encodeURIComponent(LESSON_ID)}`, {
-      method: 'GET',
-      cache: 'no-store'
-    });
-    const data = await res.json();
-
-    if (data && data.authenticated && data.user) {
-      currentAccountUser = data.user;
-      const cleanId = String(data.user.id || data.user.name || 'user').trim().toLowerCase();
-      currentStorageKey = `acid_base_smartboard_notes_v1_user_${cleanId}`;
-
-      const serverNotes = data.annotations;
-      const hasServerNotes = serverNotes && typeof serverNotes === 'object' && Object.keys(serverNotes).length > 0;
-
-      if (hasServerNotes) {
-        slideAnnotations = serverNotes;
-        try {
-          localStorage.setItem(currentStorageKey, JSON.stringify(slideAnnotations));
-        } catch(e) {}
-      } else {
-        // Check if this specific user had local notes cached on this browser
-        loadAnnotationsFromStorage();
-        if (slideAnnotations && Object.keys(slideAnnotations).length > 0) {
-          syncNotesToAccountNow(false);
-        }
-      }
-      renderCurrentSlideStrokes();
-      updateAccountSyncUI('saved', 'ซิงก์บัญชีแล้ว');
-    } else {
-      currentAccountUser = null;
-      currentStorageKey = 'acid_base_smartboard_notes_v1_guest';
-      loadAnnotationsFromStorage();
-      renderCurrentSlideStrokes();
-      updateAccountSyncUI('guest');
-    }
-  } catch (err) {
-    currentAccountUser = null;
-    currentStorageKey = 'acid_base_smartboard_notes_v1_guest';
-    loadAnnotationsFromStorage();
-    renderCurrentSlideStrokes();
-    updateAccountSyncUI('guest');
-  }
-}
-
-// Flush pending notes if user closes or switches tab immediately after writing
-window.addEventListener('beforeunload', () => {
-  if (currentAccountUser && hasPendingCloudSync) {
-    try {
-      fetch('/api/notes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lessonId: LESSON_ID,
-          annotations: slideAnnotations
-        }),
-        keepalive: true
-      });
-    } catch (e) {}
-  }
-});
 
 function saveNotesJSON() {
   SoundFX.click();
   const payload = {
     course: 'เคมี ม.5 : กรด-เบส',
-    account: currentAccountUser ? currentAccountUser.name : 'guest',
     savedAt: new Date().toISOString(),
     annotations: slideAnnotations
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  const userTag = currentAccountUser ? `_${currentAccountUser.name}` : '';
-  a.download = `โน้ตกรดเบส${userTag}_${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `โน้ตกรดเบส_${new Date().toISOString().slice(0,10)}.json`;
   a.click();
 }
 
@@ -2586,8 +1991,7 @@ const SLIDES = [
     id: 't1-5',
     group: '1. ความรู้เบื้องต้น',
     title: '1.5 สมบัติของกรด - เบส',
-    badge: 'เนื้อหา + แล็บ 3D',
-    lab3d: 'lab_conductivity',
+    badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title"><span class="slide-num-circle">4</span> สมบัติของกรด - เบส</div>
@@ -2933,8 +2337,8 @@ const SLIDES = [
     id: 't2-3',
     group: '2. ทฤษฎีกรด - เบส',
     title: '2.3 ทฤษฎีกรด - เบส ลิวอิส (Lewis)',
-    badge: 'เนื้อหา + แล็บ 3D',
-    lab3d: 'lab_lewis3d',
+    badge: 'เนื้อหา + Animation',
+    anim: 'anim_lewis',
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title"><span class="slide-num-circle">3</span> ทฤษฎีกรด - เบส ลิวอิส (Gilbert N. Lewis, ค.ศ. 1923)</div>
@@ -3178,8 +2582,7 @@ const SLIDES = [
     id: 't3-2',
     group: '3. ความแรงของกรด - เบส',
     title: '3.2 ดูจากค่าคงที่การแตกตัว (Ka , Kb)',
-    badge: 'เนื้อหา + Animation',
-    anim: 'anim_equilibrium',
+    badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title"><span class="slide-num-circle">2</span> ความแรงของกรด - เบส : ดูจากค่าคงที่การแตกตัว (K<sub>a</sub> , K<sub>b</sub>)</div>
@@ -3294,8 +2697,7 @@ const SLIDES = [
     id: 't4-2',
     group: '4. การแตกตัวของกรด - เบส',
     title: '4.2 การแตกตัวของกรดอ่อน - เบสอ่อน',
-    badge: 'เนื้อหา + Animation',
-    anim: 'anim_equilibrium',
+    badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title"><span class="slide-num-circle">2</span> การแตกตัวของกรดอ่อน - เบสอ่อน (สมดุลเคมี)</div>
@@ -3349,8 +2751,7 @@ const SLIDES = [
     id: 't4-3',
     group: '4. การแตกตัวของกรด - เบส',
     title: '4.3 การแตกตัวของกรดพอลิโปรติก (Polyprotic Acid)',
-    badge: 'เนื้อหา + Animation',
-    anim: 'anim_equilibrium',
+    badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title"><span class="slide-num-circle">3</span> การแตกตัวของกรดพอลิโปรติก (Polyprotic Acid)</div>
@@ -3378,8 +2779,7 @@ const SLIDES = [
     id: 't4-4',
     group: '4. การแตกตัวของกรด - เบส',
     title: '4.4 การแตกตัวของน้ำ (Kw)',
-    badge: 'เนื้อหา + Animation',
-    anim: 'anim_equilibrium',
+    badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title"><span class="slide-num-circle">4</span> การแตกตัวของน้ำบริสุทธิ์ และ ค่าคงที่การแตกตัวของน้ำ (K<sub>w</sub>)</div>
@@ -4729,8 +4129,7 @@ const SLIDES = [
     id: 't5-4',
     group: '5. เกลือ',
     title: '5.4 เกลือจากกรดอ่อน - เบสอ่อน',
-    badge: 'เนื้อหา + แล็บ 3D + Animation',
-    lab3d: 'lab_salt3d',
+    badge: 'เนื้อหา + Animation',
     anim: 'anim_hydrolysis',
     html: `
       <div class="slide-header-box">
@@ -7292,14 +6691,7 @@ function goToSlide(idx) {
   document.getElementById('slide-content-layer').innerHTML = slide.html;
   document.getElementById('page-indicator').textContent = `หน้า ${idx + 1} / ${SLIDES.length}`;
   document.getElementById('current-section-badge').textContent = `${slide.group} • ${slide.badge || ''}`;
-
-  // Sync floating fullscreen navbar
-  const fsPageInd = document.getElementById('fs-page-indicator');
-  if (fsPageInd) fsPageInd.textContent = `หน้า ${idx + 1} / ${SLIDES.length}`;
-  const fsBtn3d = document.getElementById('fs-btn-3d');
-  const fsBtnAnim = document.getElementById('fs-btn-anim');
-  if (fsBtn3d) fsBtn3d.style.display = slide.lab3d ? 'inline-flex' : 'none';
-  if (fsBtnAnim) fsBtnAnim.style.display = slide.anim ? 'inline-flex' : 'none';
+  try { history.replaceState(null, '', '#page=' + (idx + 1)); } catch(e) {}
 
   // Show/hide small feature buttons on topbar
   const btn3d = document.getElementById('btn-open-3d');
@@ -7365,148 +6757,14 @@ function toggleTheme() {
   }
 }
 
-function isFullscreenActive() {
-  return document.body.classList.contains('immersive-fullscreen');
-}
-
-function updateFullscreenButtonUI() {
-  const btn = document.getElementById('btn-fullscreen');
-  const icon = document.getElementById('btn-fullscreen-icon');
-  const txt = document.getElementById('btn-fullscreen-text');
-  const active = isFullscreenActive();
-  if (btn) {
-    btn.title = active ? 'ออกจากโหมดเต็มจอ (Esc)' : 'ขยายเต็มจอ (F11)';
-  }
-  if (icon) icon.textContent = active ? '🗗' : '⛶';
-  if (txt) txt.textContent = active ? ' ย่อจอ' : ' เต็มจอ';
-
-  // Sync floating fullscreen navbar page indicator
-  const fsPageInd = document.getElementById('fs-page-indicator');
-  if (fsPageInd) {
-    fsPageInd.textContent = `หน้า ${currentSlideIndex + 1} / ${SLIDES.length}`;
-  }
-}
-
-function enterFullscreenMode() {
-  document.body.classList.add('immersive-fullscreen');
-  updateFullscreenButtonUI();
-
-  // On iPadOS Safari in a standard browser tab, calling docEl.webkitRequestFullscreen()
-  // activates Apple's fragile system gesture where pulling or swiping down from the top edge
-  // automatically exits fullscreen and reveals the URL bar and tabs.
-  // By avoiding native webkitRequestFullscreen on iOS Safari, our pure App-Level immersive fullscreen
-  // stays 100% active and rock-solid without iOS Safari gesture interruptions!
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-  if (!isIOS) {
-    const docEl = document.documentElement;
-    const req = docEl.requestFullscreen ||
-                docEl.webkitRequestFullscreen ||
-                docEl.webkitRequestFullScreen;
-    if (req) {
-      try {
-        const p = req.call(docEl);
-        if (p && p.catch) p.catch(() => {});
-      } catch(e) {}
-    }
-  }
-  setTimeout(resizeBoardCanvases, 250);
-}
-
-function exitFullscreenMode() {
-  document.body.classList.remove('immersive-fullscreen');
-  updateFullscreenButtonUI();
-
-  const doc = document;
-  const exit = doc.exitFullscreen ||
-               doc.webkitExitFullscreen ||
-               doc.webkitCancelFullScreen ||
-               doc.mozCancelFullScreen ||
-               doc.msExitFullscreen;
-  if (exit && (doc.fullscreenElement || doc.webkitFullscreenElement)) {
-    try {
-      const p = exit.call(doc);
-      if (p && p.catch) p.catch(() => {});
-    } catch(e) {}
-  }
-  setTimeout(resizeBoardCanvases, 250);
-}
-
-// Keep desktop Esc key sync without breaking iPad
-document.addEventListener('fullscreenchange', () => {
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  if (!document.fullscreenElement && !document.webkitFullscreenElement && !isIOS) {
-    document.body.classList.remove('immersive-fullscreen');
-    updateFullscreenButtonUI();
-    setTimeout(resizeBoardCanvases, 200);
-  }
-});
-
 function toggleFullScreen() {
   SoundFX.click();
-  if (!isFullscreenActive()) {
-    enterFullscreenMode();
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
   } else {
-    exitFullscreenMode();
+    document.exitFullscreen().catch(() => {});
   }
 }
-
-// iPad PWA Help Guide Handlers
-function openIpadPWAGuide() {
-  SoundFX.click();
-  const m = document.getElementById('modal-ipad-pwa');
-  if (m) m.classList.add('open');
-}
-
-function closeIpadPWAGuide() {
-  SoundFX.click();
-  const m = document.getElementById('modal-ipad-pwa');
-  if (m) m.classList.remove('open');
-}
-
-function checkIpadEnvironment() {
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const isStandalone = Boolean(window.navigator.standalone) || 
-                       window.matchMedia('(display-mode: standalone)').matches ||
-                       window.matchMedia('(display-mode: fullscreen)').matches;
-
-  const btnTopbar = document.getElementById('btn-ipad-guide');
-  const btnFs = document.getElementById('fs-btn-pwa');
-
-  if (isIOS && !isStandalone) {
-    if (btnTopbar) btnTopbar.style.display = 'inline-flex';
-    if (btnFs) btnFs.style.display = 'inline-flex';
-  } else {
-    if (btnTopbar) btnTopbar.style.display = 'none';
-    if (btnFs) btnFs.style.display = 'none';
-  }
-}
-
-// Guard viewport touch boundaries on iPad to prevent native rubber-band bounce
-const vpEl = document.getElementById('board-viewport');
-if (vpEl) {
-  vpEl.addEventListener('touchstart', (e) => {
-    if (vpEl.scrollTop <= 0) {
-      vpEl.scrollTop = 1;
-    }
-    const maxScroll = vpEl.scrollHeight - vpEl.clientHeight;
-    if (vpEl.scrollTop >= maxScroll) {
-      vpEl.scrollTop = maxScroll - 1;
-    }
-  }, { passive: true });
-}
-
-// Global touchmove guard to stop iOS Safari pull-down address bar bounce and pull-to-refresh
-document.addEventListener('touchmove', (e) => {
-  if (isTouchPanning || isDrawing || isFullscreenActive()) {
-    const scrollable = e.target.closest('#toc-list, .modal-body, .calc-display, #account-modal, #modal-ipad-pwa');
-    if (!scrollable) {
-      e.preventDefault();
-    }
-  }
-}, { passive: false });
 
 window.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
@@ -8520,6 +7778,7 @@ function openCurrentAnimation() {
   const animType = slide.anim;
   if (animType === 'anim_electrolyte') setupAnim1Electrolyte();
   else if (animType === 'anim_bronsted') setupAnim2Bronsted();
+  else if (animType === 'anim_lewis') setupAnimLewis();
   else if (animType === 'anim_equilibrium') setupAnim3Equilibrium();
   else if (animType === 'anim_hydrolysis') setupAnim4Hydrolysis();
   else if (animType === 'anim_buffer') setupAnim5Buffer();
@@ -8732,6 +7991,678 @@ function setupAnim2Bronsted() {
     ctx.font = 'bold 19px Prompt';
     ctx.fillText('H⁺', hx - 12, hy + 7);
   };
+}
+
+// ----------------------------------------------------
+// Animation: ทฤษฎีกรด - เบส ลิวอิส (Lewis Acid - Base)
+// ฉาก: สมการเต็ม ⟶ แปลงเป็นรูปร่างโมเลกุล ⟶ ให้/รับคู่อิเล็กตรอน (Lone Pair vs Vacant Orbital) ⟶ Coordinate Covalent Bond
+// ----------------------------------------------------
+function setupAnimLewis() {
+  document.getElementById('modal-anim-title').textContent = '🎬 Animation Graphic : ทฤษฎีกรด - เบส ลิวอิส (การให้-รับคู่อิเล็กตรอน & การเกิดพันธะโคออร์ดิเนตโคเวเลนต์)';
+  const canvas = document.getElementById('anim-graphic-canvas');
+  const ctx = canvas.getContext('2d');
+
+  let currentRxnIdx = 0;
+  let currentStage = 0; // 0: สมการเคมีเต็ม, 1: รูปร่างโมเลกุล & อิเล็กตรอน, 2: รวมตัวสร้างพันธะ
+  let isAutoPlay = true;
+  let stageTimer = 0;
+  let lastFrameTime = performance.now() * 0.001;
+
+  const reactions = [
+    {
+      id: 'nh3_bf3',
+      name: 'NH₃ + BF₃ ⟶ H₃N—BF₃ (คลาสสิก)',
+      baseFormula: 'NH₃',
+      baseName: 'แอมโมเนีย (เบสลิวอิส)',
+      baseRole: 'เบสลิวอิส (Lewis Base)',
+      baseDesc: 'อะตอม N มีเวเลนซ์ครบ 8 และมีคู่อิเล็กตรอนโดดเดี่ยว (Lone Pair ••) 1 คู่ พร้อมจ่าย',
+      baseCentral: 'N',
+      baseLigands: ['H', 'H', 'H'],
+      baseColor: '#38bdf8',
+      acidFormula: 'BF₃',
+      acidName: 'โบรอนไตรฟลูออไรด์ (กรดลิวอิส)',
+      acidRole: 'กรดลิวอิส (Lewis Acid)',
+      acidDesc: 'อะตอม B มีเวเลนซ์ e⁻ เพียง 6 ตัว (ขาดอีก 2 e⁻ ครบออกเตต) มี 2p ออร์บิทัลว่าง พร้อมรับ e⁻',
+      acidCentral: 'B',
+      acidLigands: ['F', 'F', 'F'],
+      acidColor: '#f472b6',
+      productFormula: 'H₃N ⟶ BF₃',
+      productName: 'แอมโมเนียมไตรฟลูออโรบอเรต (Adduct)',
+      productBond: 'N ⟶ B (โคออร์ดิเนตโคเวเลนต์)',
+      productDesc: 'N ใช้ Lone Pair ร่วมกับ B เกิดพันธะโคออร์ดิเนตโคเวเลนต์ ทั้ง N และ B ครบออกเตต 8 ตัวสมบูรณ์!'
+    },
+    {
+      id: 'nh3_h',
+      name: 'NH₃ + H⁺ ⟶ NH₄⁺ (แอมโมเนียมไอออน)',
+      baseFormula: 'NH₃',
+      baseName: 'แอมโมเนีย (เบสลิวอิส)',
+      baseRole: 'เบสลิวอิส (Lewis Base)',
+      baseDesc: 'อะตอม N มีคู่อิเล็กตรอนโดดเดี่ยว 1 คู่ พร้อมจ่ายให้โปรตอนที่ว่างเปล่า',
+      baseCentral: 'N',
+      baseLigands: ['H', 'H', 'H'],
+      baseColor: '#38bdf8',
+      acidFormula: 'H⁺',
+      acidName: 'โปรตอน / ไฮโดรเจนไอออน (กรดลิวอิส)',
+      acidRole: 'กรดลิวอิส (Lewis Acid)',
+      acidDesc: 'H⁺ ไม่มีอิเล็กตรอนเลย (1s ออร์บิทัลว่างเปล่า) พร้อมรับคู่อิเล็กตรอน',
+      acidCentral: 'H⁺',
+      acidLigands: [],
+      acidColor: '#facc15',
+      productFormula: '[NH₄]⁺',
+      productName: 'แอมโมเนียมไอออน (Ammonium ion)',
+      productBond: 'N ⟶ H⁺ (โคออร์ดิเนตโคเวเลนต์)',
+      productDesc: 'เกิดพันธะที่ 4 ระหว่าง N กับ H⁺ โดยอิเล็กตรอนทั้งคู่มาจาก N กลายเป็นไอออนรูปทรงสี่หน้า'
+    },
+    {
+      id: 'alcl3_cl',
+      name: 'AlCl₃ + Cl⁻ ⟶ [AlCl₄]⁻ (โลหะขาด e⁻)',
+      baseFormula: 'Cl⁻',
+      baseName: 'คลอไรด์ไอออน (เบสลิวอิส)',
+      baseRole: 'เบสลิวอิส (Lewis Base)',
+      baseDesc: 'ไอออน Cl⁻ มีเวเลนซ์ครบ 8 (มีคู่โดดเดี่ยวถึง 4 คู่) พร้อมบริจาคคู่อิเล็กตรอน 1 คู่',
+      baseCentral: 'Cl⁻',
+      baseLigands: [],
+      baseColor: '#4ade80',
+      acidFormula: 'AlCl₃',
+      acidName: 'อะลูมิเนียมไตรคลอไรด์ (กรดลิวอิส)',
+      acidRole: 'กรดลิวอิส (Lewis Acid)',
+      acidDesc: 'อะตอม Al มีเวเลนซ์ e⁻ 6 ตัว (ขาดอีก 2 ตัว) มี 3p ออร์บิทัลว่าง พร้อมรับคู่อิเล็กตรอน',
+      acidCentral: 'Al',
+      acidLigands: ['Cl', 'Cl', 'Cl'],
+      acidColor: '#fb923c',
+      productFormula: '[AlCl₄]⁻',
+      productName: 'เตตระคลอโรอะลูมิเนตไอออน',
+      productBond: 'Cl⁻ ⟶ Al (โคออร์ดิเนตโคเวเลนต์)',
+      productDesc: 'Al รับคู่อิเล็กตรอนจาก Cl⁻ เกิดพันธะใหม่ ทำให้ Al ถูกล้อมรอบด้วย Cl 4 อะตอม ครบออกเตต'
+    }
+  ];
+
+  function updateLewisExplanation() {
+    const rxn = reactions[currentRxnIdx];
+    let col2Title = '';
+    let col2Html = '';
+
+    if (currentStage === 0) {
+      col2Title = `ขั้นที่ 1: สมการเคมีภาพรวม (${rxn.baseFormula} + ${rxn.acidFormula} ⟶ ${rxn.productFormula})`;
+      col2Html = `สังเกตสมการเคมี: <b>${rxn.baseName}</b> ทำปฏิกิริยากับ <b>${rxn.acidName}</b> ได้ผลิตภัณฑ์ <b>${rxn.productName}</b><br>• ทฤษฎีลิวอิสไม่ได้มองที่การให้-รับโปรตอน (H⁺) แต่มองลึกลงไปที่ <b>"การเคลื่อนที่ของคู่อิเล็กตรอน"</b>`;
+    } else if (currentStage === 1) {
+      col2Title = `ขั้นที่ 2: รูปร่างโมเลกุล & อิเล็กตรอนคู่โดดเดี่ยว vs ออร์บิทัลว่าง`;
+      col2Html = `• ฝั่งซ้าย <b>${rxn.baseName}</b>: มีคู่อิเล็กตรอนโดดเดี่ยว (Lone Pair •• สีทอง) ยื่นออกมาพร้อมจ่าย เป็น <b>เบสลิวอิส (Electron-pair Donor)</b><br>• ฝั่งขวา <b>${rxn.acidName}</b>: อะตอมกลางมีออร์บิทัลว่าง (Vacant Orbital เส้นประ) ขาดอีก 2 e⁻ จะครบออกเตต เป็น <b>กรดลิวอิส (Electron-pair Acceptor)</b>`;
+    } else {
+      col2Title = `ขั้นที่ 3: รวมตัวสร้างพันธะโคออร์ดิเนตโคเวเลนต์ (${rxn.productBond})`;
+      col2Html = `${rxn.productDesc}<br>• พันธะที่เกิดขึ้นเรียกว่า <b>พันธะโคออร์ดิเนตโคเวเลนต์ (Coordinate Covalent Bond)</b> แทนด้วยลูกศร ⟶ ชี้จากผู้ให้ไปยังผู้รับ`;
+    }
+
+    setModalExplanation(
+      'anim-graphic-explanation',
+      'ทฤษฎีกรด - เบสของลิวอิส (Gilbert N. Lewis, 1923)',
+      `• <b>กรดลิวอิส (Lewis Acid)</b> = สารที่สามารถ<b>รับคู่อิเล็กตรอน</b> (Electron-pair Acceptor)<br>• <b>เบสลิวอิส (Lewis Base)</b> = สารที่สามารถ<b>ให้คู่อิเล็กตรอน</b> (Electron-pair Donor)<br>• สารประกอบที่ได้จากการรวมตัวเรียกว่า <b>สารแอดดักต์ (Adduct)</b> หรือสารประกอบโคออร์ดิเนชัน`,
+      col2Title,
+      col2Html,
+      'จุดเน้นสำคัญในข้อสอบ A-Level เคมี',
+      `1. กรดลิวอิส<b>ไม่จำเป็นต้องมี H ในสูตรโมเลกุล!</b><br>2. มองหาสารที่<b>อะตอมกลางมีเวเลนซ์ e⁻ ไม่ครบ 8</b> เช่น BF₃, BCl₃, AlCl₃, BeCl₂ (เป็นกรดลิวอิสยอดฮิต)<br>3. <b>ไอออนบวกของโลหะ</b> (Cu²⁺, Fe³⁺, Ag⁺, Zn²⁺) ล้วนเป็นกรดลิวอิส เพราะมีออร์บิทัลว่างพร้อมรับ e⁻ จากลิแกนด์`
+    );
+  }
+
+  function renderLewisControls() {
+    const rxn = reactions[currentRxnIdx];
+    const ctrl = document.getElementById('anim-graphic-controls');
+    ctrl.innerHTML = `
+      <div class="lab-control-card">
+        <h4>🧪 เลือกปฏิกิริยากรด-เบสตามทฤษฎีลิวอิส</h4>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+          ${reactions.map((r, i) => `
+            <button class="lab-btn ${i === currentRxnIdx ? 'active' : ''}" onclick="setLewisRxn(${i})" style="font-size:13px; padding:6px 12px;">
+              ${r.name}
+            </button>
+          `).join('')}
+        </div>
+
+        <h4>🎬 ขั้นตอนการจำลอง (ฉากการเคลื่อนไหว)</h4>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+          <button class="lab-btn ${currentStage === 0 ? 'active' : ''}" onclick="setLewisStg(0)" style="font-size:13px; padding:6px 12px;">
+            1️⃣ สมการเคมีเต็ม
+          </button>
+          <button class="lab-btn ${currentStage === 1 ? 'active' : ''}" onclick="setLewisStg(1)" style="font-size:13px; padding:6px 12px;">
+            2️⃣ แปลงเป็นรูปร่างโมเลกุล & อิเล็กตรอน
+          </button>
+          <button class="lab-btn ${currentStage === 2 ? 'active' : ''}" onclick="setLewisStg(2)" style="font-size:13px; padding:6px 12px;">
+            3️⃣ รวมตัวสร้างพันธะโคออร์ดิเนต
+          </button>
+          <button class="lab-btn" onclick="toggleLewisAutoplay()" style="font-size:13px; padding:6px 14px; background:${isAutoPlay ? '#059669' : '#334155'}; color:#fff; border-color:${isAutoPlay ? '#10b981' : '#64748b'};">
+            ${isAutoPlay ? '⏸️ หยุดเล่นอัตโนมัติ' : '▶️ เล่นวนอัตโนมัติ'}
+          </button>
+        </div>
+      </div>
+    `;
+    updateLewisExplanation();
+  }
+
+  window.setLewisRxn = (idx) => {
+    SoundFX.click();
+    currentRxnIdx = idx;
+    currentStage = 0;
+    stageTimer = 0;
+    renderLewisControls();
+  };
+
+  window.setLewisStg = (st) => {
+    SoundFX.drop();
+    isAutoPlay = false;
+    currentStage = st;
+    stageTimer = 0;
+    renderLewisControls();
+  };
+
+  window.toggleLewisAutoplay = () => {
+    SoundFX.click();
+    isAutoPlay = !isAutoPlay;
+    stageTimer = 0;
+    renderLewisControls();
+  };
+
+  renderLewisControls();
+
+  currentAnimRenderFn = (t) => {
+    const dt = Math.min(0.06, t - lastFrameTime);
+    lastFrameTime = t;
+
+    if (isAutoPlay) {
+      stageTimer += dt;
+      const stageDurations = [4.2, 4.8, 5.5];
+      if (stageTimer >= stageDurations[currentStage]) {
+        stageTimer = 0;
+        currentStage = (currentStage + 1) % 3;
+        renderLewisControls();
+      }
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const rxn = reactions[currentRxnIdx];
+
+    // Background Styling
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    bgGrad.addColorStop(0, '#090d16');
+    bgGrad.addColorStop(1, '#0f172a');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Top Header & Step Progress
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 22px Prompt';
+    ctx.fillText('🎬 ทฤษฎีกรด - เบส ลิวอิส : ' + rxn.name, 40, 42);
+
+    // Breadcrumb Steps Bar
+    const steps = [
+      { num: '1', label: 'สมการเคมีเต็ม' },
+      { num: '2', label: 'รูปร่างโมเลกุล & อิเล็กตรอน' },
+      { num: '3', label: 'รวมตัวสร้างพันธะโคออร์ดิเนต' }
+    ];
+    steps.forEach((st, idx) => {
+      const sx = 620 + idx * 165;
+      const sy = 24;
+      const isActive = currentStage === idx;
+      ctx.fillStyle = isActive ? 'rgba(56, 189, 248, 0.25)' : 'rgba(255,255,255,0.05)';
+      ctx.strokeStyle = isActive ? '#38bdf8' : '#334155';
+      ctx.lineWidth = isActive ? 2 : 1;
+      ctx.beginPath();
+      ctx.roundRect(sx, sy, 155, 30, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = isActive ? '#38bdf8' : '#94a3b8';
+      ctx.font = (isActive ? 'bold' : 'normal') + ' 13px Prompt';
+      ctx.fillText(st.num + '. ' + st.label, sx + 10, sy + 20);
+    });
+
+    // ====================================================
+    // STAGE 0 : สมการเคมีเต็ม (Full Equation View)
+    // ====================================================
+    if (currentStage === 0) {
+      // Glow card for equation
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(50, 85, 1040, 475, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      // Title instruction inside card
+      ctx.fillStyle = '#facc15';
+      ctx.font = 'bold 20px Prompt';
+      ctx.fillText('📌 ขั้นที่ 1 : สังเกตสมการเคมีก่อนทำปฏิกิริยา (Macro Level ⟶ Micro Level)', 80, 130);
+
+      // Box 1 : Base
+      const b1x = 80, b1y = 160, bw = 280, bh = 300;
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(b1x, b1y, bw, bh, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 50px Prompt';
+      ctx.textAlign = 'center';
+      ctx.fillText(rxn.baseFormula, b1x + bw/2, b1y + 80);
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 19px Prompt';
+      ctx.fillText(rxn.baseRole, b1x + bw/2, b1y + 130);
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '15px Prompt';
+      ctx.fillText('(' + rxn.baseName + ')', b1x + bw/2, b1y + 160);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '14px Prompt';
+      ctx.fillText('• ผู้ให้คู่อิเล็กตรอน (Donor)', b1x + bw/2, b1y + 205);
+      ctx.fillText('• มี Lone Pair e⁻ พร้อมจ่าย', b1x + bw/2, b1y + 235);
+      ctx.fillText('• อะตอมกลางมี e⁻ ครบ 8', b1x + bw/2, b1y + 265);
+
+      // Symbol '+'
+      ctx.fillStyle = '#facc15';
+      ctx.font = 'bold 44px Prompt';
+      ctx.fillText('+', 400, 320);
+
+      // Box 2 : Acid
+      const b2x = 440, b2y = 160;
+      ctx.fillStyle = 'rgba(244, 114, 182, 0.08)';
+      ctx.strokeStyle = '#f472b6';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(b2x, b2y, bw, bh, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f472b6';
+      ctx.font = 'bold 50px Prompt';
+      ctx.fillText(rxn.acidFormula, b2x + bw/2, b2y + 80);
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 19px Prompt';
+      ctx.fillText(rxn.acidRole, b2x + bw/2, b2y + 130);
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '15px Prompt';
+      ctx.fillText('(' + rxn.acidName + ')', b2x + bw/2, b2y + 160);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '14px Prompt';
+      ctx.fillText('• ผู้รับคู่อิเล็กตรอน (Acceptor)', b2x + bw/2, b2y + 205);
+      ctx.fillText('• อะตอมกลางมีออร์บิทัลว่าง', b2x + bw/2, b2y + 235);
+      ctx.fillText('• เวเลนซ์ e⁻ ไม่ครบออกเตต', b2x + bw/2, b2y + 265);
+
+      // Symbol '⟶'
+      ctx.fillStyle = '#4ade80';
+      ctx.font = 'bold 44px Prompt';
+      ctx.fillText('⟶', 760, 320);
+
+      // Box 3 : Product Adduct
+      const b3x = 800, b3y = 160;
+      ctx.fillStyle = 'rgba(74, 222, 128, 0.08)';
+      ctx.strokeStyle = '#4ade80';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(b3x, b3y, bw, bh, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#4ade80';
+      ctx.font = 'bold 36px Prompt';
+      ctx.fillText(rxn.productFormula, b3x + bw/2, b3y + 80);
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 18px Prompt';
+      ctx.fillText('สารแอดดักต์ (Lewis Adduct)', b3x + bw/2, b3y + 130);
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '14px Prompt';
+      ctx.fillText(rxn.productBond, b3x + bw/2, b3y + 160);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '14px Prompt';
+      ctx.fillText('• พันธะโคออร์ดิเนตโคเวเลนต์', b3x + bw/2, b3y + 205);
+      ctx.fillText('• คู่อิเล็กตรอนมาจากเบส', b3x + bw/2, b3y + 235);
+      ctx.fillText('• ทั้งสองอะตอมครบ 8 ตัว', b3x + bw/2, b3y + 265);
+
+      ctx.textAlign = 'left';
+
+      // Footer prompt
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '16px Prompt';
+      ctx.fillText('💡 กำลังเตรียมแปลงสมการเป็น "โครงสร้างลิวอิส & รูปร่างโมเลกุล 3D/2D" เพื่อดูคู่อิเล็กตรอนโดดเดี่ยวและออร์บิทัลว่าง...', 80, 505);
+    }
+
+    // ====================================================
+    // STAGE 1 : รูปร่างโมเลกุล & คู่อิเล็กตรอน (Molecular Structure)
+    // ====================================================
+    else if (currentStage === 1) {
+      const baseCenterX = 300, acidCenterX = 840, molCenterY = 300;
+
+      // Card 1 : Lewis Base Structure
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(50, 85, 500, 475, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      // Card 2 : Lewis Acid Structure
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
+      ctx.strokeStyle = '#f472b6';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(590, 85, 500, 475, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      // Titles for both cards
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 20px Prompt';
+      ctx.fillText('⚡ เบสลิวอิส : ' + rxn.baseName, 80, 125);
+
+      ctx.fillStyle = '#f472b6';
+      ctx.font = 'bold 20px Prompt';
+      ctx.fillText('🕳️ กรดลิวอิส : ' + rxn.acidName, 620, 125);
+
+      // --- Draw Base Molecule ---
+      drawLewisMolecule(ctx, rxn.baseCentral, rxn.baseLigands, baseCenterX, molCenterY, rxn.baseColor, true, false, t);
+
+      // Callout for Lone Pair
+      const lpX = baseCenterX + 62;
+      const lpY = molCenterY;
+      ctx.strokeStyle = '#facc15';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(lpX + 15, lpY);
+      ctx.lineTo(lpX + 60, lpY - 45);
+      ctx.lineTo(lpX + 160, lpY - 45);
+      ctx.stroke();
+
+      ctx.fillStyle = '#facc15';
+      ctx.font = 'bold 15px Prompt';
+      ctx.fillText('⚡ คู่อิเล็กตรอนโดดเดี่ยว (Lone Pair)', lpX + 40, lpY - 55);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '13px Prompt';
+      ctx.fillText('พร้อมบริจาค 1 คู่ (Donor)', lpX + 40, lpY - 26);
+
+      // Base bottom description
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '15px Prompt';
+      ctx.fillText('• อะตอม ' + rxn.baseCentral + ' มีเวเลนซ์อิเล็กตรอนครบ 8 (กฎออกเตต)', 80, 475);
+      ctx.fillText('• มีอิเล็กตรอนคู่โดดเดี่ยวที่ไม่ได้สร้างพันธะ ยื่นออกมาพร้อมทำปฏิกิริยา', 80, 505);
+
+      // --- Draw Acid Molecule ---
+      drawLewisMolecule(ctx, rxn.acidCentral, rxn.acidLigands, acidCenterX, molCenterY, rxn.acidColor, false, true, t);
+
+      // Callout for Vacant Orbital
+      const voX = acidCenterX - 62;
+      const voY = molCenterY;
+      ctx.strokeStyle = '#f472b6';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(voX - 15, voY);
+      ctx.lineTo(voX - 60, voY - 45);
+      ctx.lineTo(voX - 170, voY - 45);
+      ctx.stroke();
+
+      ctx.fillStyle = '#f472b6';
+      ctx.font = 'bold 15px Prompt';
+      ctx.fillText('🕳️ ออร์บิทัลว่าง (Vacant Orbital)', voX - 165, voY - 55);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '13px Prompt';
+      ctx.fillText('ขาด 2 e⁻ ครบออกเตต พร้อมรับ e⁻', voX - 165, voY - 26);
+
+      // Acid bottom description
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '15px Prompt';
+      ctx.fillText('• อะตอม ' + rxn.acidCentral + ' มีเวเลนซ์ e⁻ ไม่ครบ 8 (Incomplete Octet)', 620, 475);
+      ctx.fillText('• มีออร์บิทัลว่าง 1 ช่อง พร้อมรองรับการซ้อนทับของคู่อิเล็กตรอน', 620, 505);
+    }
+
+    // ====================================================
+    // STAGE 2 : รวมตัวสร้างพันธะโคออร์ดิเนตโคเวเลนต์ (Bonding & Adduct)
+    // ====================================================
+    else if (currentStage === 2) {
+      // Progress from 0 to 1 over first 2.0 seconds
+      const prog = Math.min(1, stageTimer / 2.0);
+      const ease = prog * prog * (3 - 2 * prog); // easeInOut
+
+      // Molecules glide towards center
+      const startBaseX = 260, targetBaseX = 430;
+      const startAcidX = 880, targetAcidX = 710;
+      const curBaseX = startBaseX + ease * (targetBaseX - startBaseX);
+      const curAcidX = startAcidX - ease * (startAcidX - targetAcidX);
+      const molY = 285;
+
+      // Glow card enclosing the whole reaction
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+      ctx.strokeStyle = ease > 0.8 ? '#4ade80' : '#334155';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.roundRect(50, 85, 1040, 475, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = ease > 0.8 ? '#4ade80' : '#facc15';
+      ctx.font = 'bold 21px Prompt';
+      ctx.fillText(
+        ease > 0.8
+          ? '✨ เกิดสารประกอบแอดดักต์ (Lewis Adduct) : พันธะโคออร์ดิเนตโคเวเลนต์สมบูรณ์'
+          : '⚡ คู่อิเล็กตรอนกำลังเคลื่อนที่เข้าซ้อนทับในออร์บิทัลว่าง...',
+        80, 125
+      );
+
+      // Draw Base and Acid molecules
+      drawLewisMolecule(ctx, rxn.baseCentral, rxn.baseLigands, curBaseX, molY, rxn.baseColor, true, false, t, ease);
+      drawLewisMolecule(ctx, rxn.acidCentral, rxn.acidLigands, curAcidX, molY, rxn.acidColor, false, true, t, ease);
+
+      // Coordinate bond / electron pair between molecules
+      const midX = (curBaseX + curAcidX) / 2;
+      if (ease < 0.75) {
+        // Floating lone pair moving across gap
+        const pairX = curBaseX + 50 + (curAcidX - 50 - curBaseX - 50) * ease;
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath();
+        ctx.arc(pairX, molY - 8, 7, 0, Math.PI * 2);
+        ctx.arc(pairX, molY + 8, 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(curBaseX + 45, molY);
+        ctx.lineTo(curAcidX - 45, molY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      } else {
+        // Coordinate covalent bond arrow forms
+        const bondAlpha = Math.min(1, (ease - 0.75) / 0.25);
+        ctx.save();
+        ctx.globalAlpha = bondAlpha;
+
+        // Glowing bond line
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(curBaseX + 38, molY);
+        ctx.lineTo(curAcidX - 38, molY);
+        ctx.stroke();
+
+        // Arrow head pointing towards the acid (electron-pair acceptor)
+        const arrowX = (curBaseX + curAcidX) / 2 + 10;
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath();
+        ctx.moveTo(arrowX + 16, molY);
+        ctx.lineTo(arrowX - 4, molY - 12);
+        ctx.lineTo(arrowX, molY);
+        ctx.lineTo(arrowX - 4, molY + 12);
+        ctx.closePath();
+        ctx.fill();
+
+        // Bond label
+        ctx.fillStyle = '#facc15';
+        ctx.font = 'bold 16px Prompt';
+        ctx.textAlign = 'center';
+        ctx.fillText('พันธะโคออร์ดิเนตโคเวเลนต์ (' + rxn.productBond + ')', midX, molY - 26);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '13px Prompt';
+        ctx.fillText('(อิเล็กตรอน 2 ตัว มาจาก ' + rxn.baseCentral + ' ฝ่ายเดียว)', midX, molY + 36);
+        ctx.textAlign = 'left';
+
+        // Sparkle particles around bond
+        for (let s = 0; s < 6; s++) {
+          const spAngle = t * 3 + s * (Math.PI / 3);
+          const spR = 24 + Math.sin(t * 6 + s) * 10;
+          const spX = midX + Math.cos(spAngle) * spR;
+          const spY = molY + Math.sin(spAngle) * spR;
+          ctx.fillStyle = s % 2 === 0 ? '#4ade80' : '#facc15';
+          ctx.beginPath();
+          ctx.arc(spX, spY, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // Bottom info card
+      const infY = 430;
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(80, infY, 980, 105, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#4ade80';
+      ctx.font = 'bold 17px Prompt';
+      ctx.fillText('ผลลัพธ์ของปฏิกิริยาตามทฤษฎีลิวอิส :', 105, infY + 32);
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '15px Prompt';
+      ctx.fillText('1. เกิดสารประกอบแอดดักต์ (Adduct) ' + rxn.productFormula + ' ที่เชื่อมด้วยพันธะโคออร์ดิเนตโคเวเลนต์', 105, infY + 62);
+      ctx.fillText('2. ทั้ง ' + rxn.baseCentral + ' (เบส) และ ' + rxn.acidCentral + ' (กรด) บรรลุการจัดเรียงเวเลนซ์อิเล็กตรอนครบ 8 ตัว (เสถียรตามกฎออกเตต)', 105, infY + 90);
+    }
+  };
+
+  // Helper to draw 2D Lewis Molecular Structure
+  function drawLewisMolecule(ctx, centralSymbol, ligands, cx, cy, col, isBase, isAcid, t, bondProgress = 0) {
+    ctx.save();
+
+    // Ligand bonds
+    const numLigands = ligands.length;
+    ligands.forEach((lig, i) => {
+      let angle = 0;
+      if (isBase) {
+        // Ligands point left / away from reacting center
+        const angles = [Math.PI * 0.72, Math.PI, Math.PI * 1.28];
+        angle = angles[i] || Math.PI;
+      } else {
+        // Ligands point right / away from reacting center
+        const angles = [-Math.PI * 0.28, 0, Math.PI * 0.28];
+        angle = angles[i] || 0;
+      }
+      const bondLen = 78;
+      const lx = cx + Math.cos(angle) * bondLen;
+      const ly = cy + Math.sin(angle) * bondLen;
+
+      // Bond Line
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(lx, ly);
+      ctx.stroke();
+
+      // Ligand atom circle
+      ctx.fillStyle = '#1e293b';
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(lx, ly, 22, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 16px Prompt';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(lig, lx, ly);
+    });
+
+    // Central Atom Circle
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 4;
+    ctx.shadowColor = col;
+    ctx.shadowBlur = 15;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 38, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Central Atom Label
+    ctx.fillStyle = col;
+    ctx.font = 'bold 24px Prompt';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(centralSymbol, cx, cy);
+
+    // If Base: Draw Lone Pair Orbital & Dots on the right side
+    if (isBase && bondProgress < 0.7) {
+      const lobeX = cx + 46;
+      const lobeY = cy;
+      const pulse = Math.sin(t * 4) * 3;
+
+      // Orbital Lobe
+      ctx.fillStyle = 'rgba(250, 204, 21, 0.18)';
+      ctx.strokeStyle = '#facc15';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(lobeX, lobeY, 22 + pulse, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Lone Pair dots
+      ctx.fillStyle = '#facc15';
+      ctx.beginPath();
+      ctx.arc(lobeX, lobeY - 6, 4.5, 0, Math.PI * 2);
+      ctx.arc(lobeX, lobeY + 6, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // If Acid: Draw Vacant Orbital slot on the left side
+    if (isAcid && bondProgress < 0.7) {
+      const lobeX = cx - 46;
+      const lobeY = cy;
+      const pulse = Math.sin(t * 4) * 2;
+
+      // Vacant Orbital (dashed outline)
+      ctx.strokeStyle = '#f472b6';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.fillStyle = 'rgba(244, 114, 182, 0.1)';
+      ctx.beginPath();
+      ctx.ellipse(lobeX, lobeY, 22 + pulse, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#f472b6';
+      ctx.font = '10px Prompt';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('ว่าง', lobeX, lobeY);
+    }
+
+    ctx.restore();
+  }
 }
 
 // ----------------------------------------------------
@@ -9678,10 +9609,27 @@ function setupAnim5Buffer() {
 
 // Initialize Application on Load
 window.addEventListener('DOMContentLoaded', () => {
+  loadAnnotationsFromStorage();
   buildSidebarTOC();
-  goToSlide(0);
-  initAccountAndSmartboardNotes();
-  checkIpadEnvironment();
+  let startIdx = 0;
+  try {
+    const hash = window.location.hash || '';
+    const m = hash.match(/page=(\d+)/);
+    if (m) {
+      const p = parseInt(m[1], 10) - 1;
+      if (p >= 0 && p < SLIDES.length) startIdx = p;
+    }
+    const params = new URLSearchParams(window.location.search);
+    const qp = params.get('page');
+    if (qp) {
+      const p = parseInt(qp, 10) - 1;
+      if (p >= 0 && p < SLIDES.length) startIdx = p;
+    }
+  } catch(e) {}
+  goToSlide(startIdx);
+  if (window.location.hash.includes('anim=1') || window.location.search.includes('anim=1')) {
+    setTimeout(openCurrentAnimation, 150);
+  }
 });
 </script>
 </body>
