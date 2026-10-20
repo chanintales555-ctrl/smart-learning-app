@@ -455,10 +455,35 @@ body.light-board .slide-nav-pill {
   height: 100%;
   z-index: 20;
   touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
   cursor: crosshair;
 }
 
 #drawing-canvas.pan-mode {
+  pointer-events: none;
+  touch-action: pan-y;
+}
+
+/* Active Stroke Overlay Canvas (Zero-latency incremental rendering for Apple Pencil) */
+#active-stroke-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 22;
+  pointer-events: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Prevent resting palm from clicking floating toolbar while actively drawing a stroke */
+body.is-drawing #pen-toolbar {
   pointer-events: none;
 }
 
@@ -1127,6 +1152,7 @@ body.light-board .qnav-select {
       <div id="board-stage">
         <div id="slide-content-layer"></div>
         <canvas id="drawing-canvas"></canvas>
+        <canvas id="active-stroke-canvas"></canvas>
         <canvas id="laser-canvas"></canvas>
       </div>
     </div>
@@ -1140,6 +1166,12 @@ body.light-board .qnav-select {
       <button class="tool-btn" data-tool="eraser" onclick="setDrawTool('eraser')" title="ยางลบ (E)">🧽</button>
       <button class="tool-btn" data-tool="laser" onclick="setDrawTool('laser')" title="เลเซอร์พอยเตอร์ชี้กระดาน (Q)">🔴</button>
       <button class="tool-btn" data-tool="pan" onclick="setDrawTool('pan')" title="โหมดเลื่อนหน้าจอ / มือจับ (Space)">✋</button>
+
+      <div class="tool-divider"></div>
+
+      <button id="btn-palm-reject" class="tool-btn active" onclick="togglePalmRejection()" title="โหมดกันอุ้งมือ (เขียนเฉพาะ Apple Pencil / เมาส์) — คลิกเพื่อสลับเขียนด้วยนิ้ว" style="width:auto; padding:0 10px; font-size:12px; font-weight:600; gap:5px;">
+        <span id="palm-reject-icon">🧤</span><span id="palm-reject-label">กันอุ้งมือ</span>
+      </button>
 
       <div class="tool-divider"></div>
 
@@ -1311,17 +1343,76 @@ let currentPenSize = 3;
 let isDrawing = false;
 let currentStroke = null;
 
+// Apple Pencil & Palm Rejection State
+let palmRejectionEnabled = true; // เปิดโหมดกันอุ้งมือเป็นค่าเริ่มต้นสำหรับผู้ใช้ Apple Pencil
+let activePointerId = null;
+let activePointerType = null;
+let lastPenTimestamp = 0;
+
+// Cached Canvas Metrics & Dirty-Rect State (Zero-Reflow & O(1) Incremental Rendering)
+let cachedCanvasRect = null;
+let cachedStageW = 1400;
+let lastCanvasW = 0;
+let lastCanvasH = 0;
+let lastCanvasDpr = 0;
+let activeDirtyBox = null;
+
 // Per-slide vector stroke storage: { [slideId]: [ strokeObj, ... ] }
 let slideAnnotations = {};
 let redoStacks = {};
 
 const drawCanvas = document.getElementById('drawing-canvas');
 const drawCtx = drawCanvas.getContext('2d');
+const activeCanvas = document.getElementById('active-stroke-canvas');
+const activeCtx = activeCanvas.getContext('2d');
 const laserCanvas = document.getElementById('laser-canvas');
 const laserCtx = laserCanvas.getContext('2d');
 let laserPoints = [];
+let laserDirtyBox = null;
 
-function resizeBoardCanvases() {
+function updateCanvasMetrics() {
+  cachedCanvasRect = drawCanvas.getBoundingClientRect();
+  cachedStageW = drawCanvas.clientWidth || cachedCanvasRect.width || 1400;
+}
+
+const boardViewportEl = document.getElementById('board-viewport');
+if (boardViewportEl) {
+  boardViewportEl.addEventListener('scroll', updateCanvasMetrics, { passive: true });
+}
+
+function expandActiveDirtyBox(x, y, pad) {
+  const minX = x - pad;
+  const minY = y - pad;
+  const maxX = x + pad;
+  const maxY = y + pad;
+  if (!activeDirtyBox) {
+    activeDirtyBox = { minX, minY, maxX, maxY };
+  } else {
+    if (minX < activeDirtyBox.minX) activeDirtyBox.minX = minX;
+    if (minY < activeDirtyBox.minY) activeDirtyBox.minY = minY;
+    if (maxX > activeDirtyBox.maxX) activeDirtyBox.maxX = maxX;
+    if (maxY > activeDirtyBox.maxY) activeDirtyBox.maxY = maxY;
+  }
+}
+
+function clearActiveDirtyBox() {
+  if (!activeDirtyBox) return;
+  const x = Math.max(0, Math.floor(activeDirtyBox.minX - 6));
+  const y = Math.max(0, Math.floor(activeDirtyBox.minY - 6));
+  const w = Math.ceil(activeDirtyBox.maxX - x + 12);
+  const h = Math.ceil(activeDirtyBox.maxY - y + 12);
+  activeCtx.clearRect(x, y, w, h);
+  activeDirtyBox = null;
+}
+
+function getStrokePadding(s) {
+  if (!s) return 16;
+  if (s.tool === 'eraser') return s.size * 5.5 + 8;
+  if (s.tool === 'highlighter') return s.size * 4.2 + 8;
+  return s.size + 8;
+}
+
+function resizeBoardCanvases(forceRedraw = false) {
   const stage = document.getElementById('board-stage');
   const contentLayer = document.getElementById('slide-content-layer');
   const targetHeight = Math.max(1180, contentLayer.scrollHeight + 180, window.innerHeight - 52);
@@ -1329,22 +1420,50 @@ function resizeBoardCanvases() {
 
   const rect = stage.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
-  drawCanvas.width = rect.width * dpr;
-  drawCanvas.height = targetHeight * dpr;
-  drawCanvas.style.width = rect.width + 'px';
-  drawCanvas.style.height = targetHeight + 'px';
-  drawCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const newW = Math.round(rect.width);
+  const newH = Math.round(targetHeight);
 
-  laserCanvas.width = rect.width * dpr;
-  laserCanvas.height = targetHeight * dpr;
-  laserCanvas.style.width = rect.width + 'px';
-  laserCanvas.style.height = targetHeight + 'px';
-  laserCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const dimsChanged = (
+    Math.abs(newW - lastCanvasW) > 1 ||
+    Math.abs(newH - lastCanvasH) > 2 ||
+    dpr !== lastCanvasDpr
+  );
 
-  renderCurrentSlideStrokes();
+  if (dimsChanged) {
+    lastCanvasW = newW;
+    lastCanvasH = newH;
+    lastCanvasDpr = dpr;
+
+    drawCanvas.width = newW * dpr;
+    drawCanvas.height = newH * dpr;
+    drawCanvas.style.width = newW + 'px';
+    drawCanvas.style.height = newH + 'px';
+    drawCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    activeCanvas.width = newW * dpr;
+    activeCanvas.height = newH * dpr;
+    activeCanvas.style.width = newW + 'px';
+    activeCanvas.style.height = newH + 'px';
+    activeCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    activeDirtyBox = null;
+
+    laserCanvas.width = newW * dpr;
+    laserCanvas.height = newH * dpr;
+    laserCanvas.style.width = newW + 'px';
+    laserCanvas.style.height = newH + 'px';
+    laserCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    updateCanvasMetrics();
+    renderCurrentSlideStrokes();
+  } else {
+    updateCanvasMetrics();
+    if (forceRedraw && !isDrawing) {
+      renderCurrentSlideStrokes();
+    }
+  }
 }
 
-window.addEventListener('resize', resizeBoardCanvases);
+window.addEventListener('resize', () => resizeBoardCanvases(false));
 
 function getSlideKey(idx = currentSlideIndex) {
   const s = SLIDES[idx];
@@ -1353,86 +1472,242 @@ function getSlideKey(idx = currentSlideIndex) {
 
 function renderStroke(ctx, s, stageW) {
   if (!s || !s.points || s.points.length === 0) return;
+  const pts = s.points;
+  const len = pts.length;
   ctx.save();
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
+  let lw = s.size;
   if (s.tool === 'eraser') {
     ctx.globalCompositeOperation = 'destination-out';
-    ctx.lineWidth = s.size * 5.5;
+    lw = s.size * 5.5;
+    ctx.lineWidth = lw;
+    ctx.fillStyle = '#000000';
   } else if (s.tool === 'highlighter') {
     ctx.globalCompositeOperation = 'source-over';
     ctx.strokeStyle = s.color;
+    ctx.fillStyle = s.color;
     ctx.globalAlpha = 0.34;
-    ctx.lineWidth = s.size * 4.2;
+    lw = s.size * 4.2;
+    ctx.lineWidth = lw;
   } else {
     ctx.globalCompositeOperation = 'source-over';
     ctx.strokeStyle = s.color;
+    ctx.fillStyle = s.color;
     ctx.globalAlpha = 1.0;
-    ctx.lineWidth = s.size;
+    lw = s.size;
+    ctx.lineWidth = lw;
   }
 
-  const pts = s.points.map(p => ({
-    x: p.nx ? p.nx * stageW : p.x,
-    y: p.y
-  }));
+  const x0 = pts[0].nx ? pts[0].nx * stageW : pts[0].x;
+  const y0 = pts[0].y;
 
   if (s.tool === 'line') {
-    const p0 = pts[0];
-    const p1 = pts[pts.length - 1];
+    const last = pts[len - 1];
+    const x1 = last.nx ? last.nx * stageW : last.x;
+    const y1 = last.y;
     ctx.beginPath();
-    ctx.moveTo(p0.x, p0.y);
-    ctx.lineTo(p1.x, p1.y);
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
     ctx.stroke();
   } else if (s.tool === 'rect') {
-    const p0 = pts[0];
-    const p1 = pts[pts.length - 1];
-    ctx.strokeRect(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
+    const last = pts[len - 1];
+    const x1 = last.nx ? last.nx * stageW : last.x;
+    const y1 = last.y;
+    ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+  } else if (len === 1) {
+    ctx.beginPath();
+    ctx.arc(x0, y0, lw / 2, 0, Math.PI * 2);
+    ctx.fill();
   } else {
     ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) {
-      const midX = (pts[i - 1].x + pts[i].x) / 2;
-      const midY = (pts[i - 1].y + pts[i].y) / 2;
-      ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, midX, midY);
+    ctx.moveTo(x0, y0);
+    let prevX = x0;
+    let prevY = y0;
+    for (let i = 1; i < len; i++) {
+      const cx = pts[i].nx ? pts[i].nx * stageW : pts[i].x;
+      const cy = pts[i].y;
+      const midX = (prevX + cx) * 0.5;
+      const midY = (prevY + cy) * 0.5;
+      ctx.quadraticCurveTo(prevX, prevY, midX, midY);
+      prevX = cx;
+      prevY = cy;
     }
-    if (pts.length > 1) {
-      const last = pts[pts.length - 1];
-      ctx.lineTo(last.x, last.y);
-    } else {
-      ctx.arc(pts[0].x, pts[0].y, s.size / 2, 0, Math.PI * 2);
-    }
+    ctx.lineTo(prevX, prevY);
     ctx.stroke();
   }
   ctx.restore();
 }
 
+function renderEraserTailSegment(ctx, s, stageW) {
+  const pts = s.points;
+  const len = pts.length;
+  if (len === 0) return;
+  const lw = s.size * 5.5;
+  ctx.save();
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = lw;
+  ctx.fillStyle = '#000000';
+
+  if (len === 1) {
+    const x0 = pts[0].nx ? pts[0].nx * stageW : pts[0].x;
+    ctx.beginPath();
+    ctx.arc(x0, pts[0].y, lw / 2, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    const pPrev = pts[len - 2];
+    const pCurr = pts[len - 1];
+    const x1 = pPrev.nx ? pPrev.nx * stageW : pPrev.x;
+    const y1 = pPrev.y;
+    const x2 = pCurr.nx ? pCurr.nx * stageW : pCurr.x;
+    const y2 = pCurr.y;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawActiveStrokePreview() {
+  if (!currentStroke || currentStroke.points.length === 0) return;
+  const stageW = cachedStageW || drawCanvas.clientWidth || 1400;
+  const pad = getStrokePadding(currentStroke);
+
+  clearActiveDirtyBox();
+
+  if (currentStroke.tool === 'eraser') {
+    const last = currentStroke.points[currentStroke.points.length - 1];
+    const rx = last.nx ? last.nx * stageW : last.x;
+    const ry = last.y;
+    const radius = (currentStroke.size * 5.5) * 0.5;
+    expandActiveDirtyBox(rx, ry, radius + 6);
+    activeCtx.save();
+    activeCtx.beginPath();
+    activeCtx.arc(rx, ry, radius, 0, Math.PI * 2);
+    activeCtx.strokeStyle = 'rgba(248, 113, 113, 0.85)';
+    activeCtx.lineWidth = 2;
+    activeCtx.stroke();
+    activeCtx.restore();
+    return;
+  }
+
+  const pts = currentStroke.points;
+  for (let i = 0; i < pts.length; i++) {
+    const px = pts[i].nx ? pts[i].nx * stageW : pts[i].x;
+    expandActiveDirtyBox(px, pts[i].y, pad);
+  }
+  renderStroke(activeCtx, currentStroke, stageW);
+}
+
 function renderCurrentSlideStrokes() {
-  const stageW = drawCanvas.clientWidth || 1400;
-  drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+  const stageW = cachedStageW || drawCanvas.clientWidth || 1400;
+  drawCtx.clearRect(0, 0, lastCanvasW || drawCanvas.width, lastCanvasH || drawCanvas.height);
+  clearActiveDirtyBox();
   const key = getSlideKey();
   const strokes = slideAnnotations[key] || [];
-  for (const s of strokes) {
-    renderStroke(drawCtx, s, stageW);
+  for (let i = 0; i < strokes.length; i++) {
+    renderStroke(drawCtx, strokes[i], stageW);
   }
   if (currentStroke) {
-    renderStroke(drawCtx, currentStroke, stageW);
+    drawActiveStrokePreview();
   }
 }
 
 function getStageCoords(e) {
-  const rect = drawCanvas.getBoundingClientRect();
-  const stageW = drawCanvas.clientWidth || 1400;
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  return { x, y, nx: x / stageW };
+  if (!cachedCanvasRect) updateCanvasMetrics();
+  const x = e.clientX - cachedCanvasRect.left;
+  const y = e.clientY - cachedCanvasRect.top;
+  return { x, y, nx: x / cachedStageW };
 }
+
+function shouldRejectTouchAsPalm(e) {
+  if (e.pointerType !== 'touch') return false;
+  // 1) If Palm Rejection mode is ON, reject all finger/palm touches on drawing canvas
+  if (palmRejectionEnabled) return true;
+  // 2) Even if finger drawing is enabled, reject touch if Apple Pencil is currently drawing or just lifted (<650ms)
+  if (isDrawing && activePointerType === 'pen') return true;
+  if (performance.now() - lastPenTimestamp < 650) return true;
+  // 3) Reject large contact patch (palm resting on screen)
+  if ((e.width && e.width > 28) || (e.height && e.height > 28)) return true;
+  return false;
+}
+
+function commitCurrentStrokeImmediate() {
+  if (!currentStroke) return;
+  const stageW = cachedStageW || drawCanvas.clientWidth || 1400;
+  clearActiveDirtyBox();
+  renderStroke(drawCtx, currentStroke, stageW);
+  const key = getSlideKey();
+  if (!slideAnnotations[key]) slideAnnotations[key] = [];
+  slideAnnotations[key].push(currentStroke);
+  redoStacks[key] = [];
+  currentStroke = null;
+  schedulePersistAnnotations();
+}
+
+// Suppress iPadOS Scribble (UIScribbleInteraction), double-tap zoom delay, and touch callouts on canvas
+drawCanvas.addEventListener('touchstart', (e) => {
+  if (currentDrawTool === 'pan') return;
+  if (e.cancelable) e.preventDefault();
+}, { passive: false });
+
+drawCanvas.addEventListener('touchmove', (e) => {
+  if (currentDrawTool === 'pan') return;
+  if (e.cancelable) e.preventDefault();
+}, { passive: false });
+
+drawCanvas.addEventListener('touchend', (e) => {
+  if (currentDrawTool === 'pan') return;
+  if (e.cancelable) e.preventDefault();
+}, { passive: false });
+
+drawCanvas.addEventListener('contextmenu', (e) => e.preventDefault());
+drawCanvas.addEventListener('dblclick', (e) => e.preventDefault());
+drawCanvas.addEventListener('selectstart', (e) => e.preventDefault());
 
 drawCanvas.addEventListener('pointerdown', (e) => {
   if (currentDrawTool === 'pan') return;
-  if (e.button !== 0 && e.pointerType === 'mouse') return;
-  drawCanvas.setPointerCapture(e.pointerId);
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+  // Palm & Secondary Touch Rejection
+  if (shouldRejectTouchAsPalm(e)) {
+    if (e.cancelable) e.preventDefault();
+    return;
+  }
+
+  if (e.cancelable) e.preventDefault();
+
+  if (e.pointerType === 'pen') {
+    lastPenTimestamp = performance.now();
+    // If an accidental finger/palm stroke was in progress, abort and discard it immediately
+    if (isDrawing && activePointerType === 'touch') {
+      clearActiveDirtyBox();
+      currentStroke = null;
+      isDrawing = false;
+      activePointerId = null;
+    }
+  }
+
+  // If a secondary finger touch arrives while already drawing with another finger, ignore it
+  if (isDrawing && e.pointerType === 'touch' && activePointerId !== null && e.pointerId !== activePointerId) {
+    return;
+  }
+
+  // If a rapid new pen stroke arrives before the previous pen stroke closed, commit the previous stroke cleanly
+  if (isDrawing && currentStroke) {
+    commitCurrentStrokeImmediate();
+  }
+
+  updateCanvasMetrics();
   isDrawing = true;
+  activePointerId = e.pointerId;
+  activePointerType = e.pointerType;
+  document.body.classList.add('is-drawing');
+
   const pt = getStageCoords(e);
 
   if (currentDrawTool === 'laser') {
@@ -1447,50 +1722,128 @@ drawCanvas.addEventListener('pointerdown', (e) => {
     size: Number(currentPenSize),
     points: [pt]
   };
-  renderCurrentSlideStrokes();
+
+  if (currentDrawTool === 'eraser') {
+    renderEraserTailSegment(drawCtx, currentStroke, cachedStageW);
+  }
+  drawActiveStrokePreview();
 });
 
-drawCanvas.addEventListener('pointermove', (e) => {
-  if (!isDrawing) return;
-  const pt = getStageCoords(e);
+function handlePointerMove(e) {
+  if (!isDrawing || e.pointerId !== activePointerId) return;
+  if (e.cancelable) e.preventDefault();
+
+  if (e.pointerType === 'pen') {
+    lastPenTimestamp = performance.now();
+  }
 
   if (currentDrawTool === 'laser') {
+    const pt = getStageCoords(e);
     laserPoints.push({ x: pt.x, y: pt.y, t: performance.now() });
     requestAnimationFrame(updateLaserTrail);
     return;
   }
 
   if (!currentStroke) return;
-  if (currentDrawTool === 'line' || currentDrawTool === 'rect') {
-    currentStroke.points[1] = pt;
-  } else {
-    currentStroke.points.push(pt);
-  }
-  renderCurrentSlideStrokes();
-});
 
-function finishStroke(e) {
-  if (!isDrawing) return;
-  isDrawing = false;
-  if (currentDrawTool === 'laser') return;
-  if (currentStroke) {
-    const key = getSlideKey();
-    if (!slideAnnotations[key]) slideAnnotations[key] = [];
-    slideAnnotations[key].push(currentStroke);
-    redoStacks[key] = [];
-    currentStroke = null;
-    renderCurrentSlideStrokes();
-    persistAnnotationsToStorage();
+  if (currentDrawTool === 'line' || currentDrawTool === 'rect') {
+    currentStroke.points[1] = getStageCoords(e);
+    drawActiveStrokePreview();
+    return;
+  }
+
+  // Use coalesced events on iPad Pro (240Hz Apple Pencil sampling) for ultra-smooth rapid strokes
+  const coalesced = (e.getCoalescedEvents && typeof e.getCoalescedEvents === 'function')
+    ? e.getCoalescedEvents()
+    : null;
+  const events = (coalesced && coalesced.length > 0) ? coalesced : [e];
+  const pts = currentStroke.points;
+  let added = false;
+
+  for (let i = 0; i < events.length; i++) {
+    const pt = getStageCoords(events[i]);
+    const last = pts[pts.length - 1];
+    const dx = pt.x - last.x;
+    const dy = pt.y - last.y;
+    // Skip sub-pixel noise (< 0.6px) to keep curve control points clean and fast
+    if (dx * dx + dy * dy >= 0.36) {
+      pts.push(pt);
+      added = true;
+      if (currentDrawTool === 'eraser') {
+        renderEraserTailSegment(drawCtx, currentStroke, cachedStageW);
+      }
+    }
+  }
+
+  if (added) {
+    drawActiveStrokePreview();
   }
 }
 
-drawCanvas.addEventListener('pointerup', finishStroke);
-drawCanvas.addEventListener('pointercancel', finishStroke);
+function finishStroke(e) {
+  if (!isDrawing) return;
+  // Critical: Ignore pointerup/pointercancel from palm or non-active pointers!
+  if (e && e.pointerId !== undefined && activePointerId !== null && e.pointerId !== activePointerId) {
+    return;
+  }
+  if (e && e.pointerType === 'pen') {
+    lastPenTimestamp = performance.now();
+  }
+
+  isDrawing = false;
+  activePointerId = null;
+  activePointerType = null;
+  document.body.classList.remove('is-drawing');
+
+  if (currentDrawTool === 'laser') return;
+  if (currentStroke) {
+    commitCurrentStrokeImmediate();
+  }
+}
+
+window.addEventListener('pointermove', handlePointerMove, { passive: false });
+window.addEventListener('pointerup', finishStroke, { passive: false });
+window.addEventListener('pointercancel', finishStroke, { passive: false });
+
+function togglePalmRejection() {
+  SoundFX.click();
+  palmRejectionEnabled = !palmRejectionEnabled;
+  const btn = document.getElementById('btn-palm-reject');
+  const icon = document.getElementById('palm-reject-icon');
+  const label = document.getElementById('palm-reject-label');
+  if (btn) btn.classList.toggle('active', palmRejectionEnabled);
+  if (icon) icon.textContent = palmRejectionEnabled ? '🧤' : '👆';
+  if (label) label.textContent = palmRejectionEnabled ? 'กันอุ้งมือ' : 'เขียนด้วยนิ้ว';
+}
 
 function updateLaserTrail() {
   const now = performance.now();
   laserPoints = laserPoints.filter(p => now - p.t < 420);
-  laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
+
+  if (laserDirtyBox) {
+    laserCtx.clearRect(
+      Math.max(0, Math.floor(laserDirtyBox.minX - 24)),
+      Math.max(0, Math.floor(laserDirtyBox.minY - 24)),
+      Math.ceil(laserDirtyBox.maxX - laserDirtyBox.minX + 48),
+      Math.ceil(laserDirtyBox.maxY - laserDirtyBox.minY + 48)
+    );
+    laserDirtyBox = null;
+  } else {
+    laserCtx.clearRect(0, 0, lastCanvasW || laserCanvas.width, lastCanvasH || laserCanvas.height);
+  }
+
+  if (laserPoints.length > 0) {
+    let minX = laserPoints[0].x, maxX = laserPoints[0].x;
+    let minY = laserPoints[0].y, maxY = laserPoints[0].y;
+    for (let i = 0; i < laserPoints.length; i++) {
+      const p = laserPoints[i];
+      if (p.x < minX) minX = p.x;
+      if (p.x > maxX) maxX = p.x;
+      if (p.y < minY) minY = p.y;
+      if (p.y > maxY) maxY = p.y;
+    }
+    laserDirtyBox = { minX, minY, maxX, maxY };
+  }
 
   if (laserPoints.length > 1) {
     for (let i = 1; i < laserPoints.length; i++) {
@@ -1581,10 +1934,17 @@ function clearCurrentSlideDrawing() {
   }
 }
 
-// LocalStorage / IndexedDB & Account API Integration
+// LocalStorage / IndexedDB & Account API Integration (Debounced during fast writing!)
 const STORAGE_KEY = 'acid_base_smartboard_notes_v1';
+let persistTimer = null;
+let hasUnsavedAnnotations = false;
 
 function persistAnnotationsToStorage() {
+  if (persistTimer) {
+    clearTimeout(persistTimer);
+    persistTimer = null;
+  }
+  hasUnsavedAnnotations = false;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(slideAnnotations));
   } catch(e) {}
@@ -1593,6 +1953,30 @@ function persistAnnotationsToStorage() {
     window.onSmartboardNotesChanged(slideAnnotations);
   }
 }
+
+function schedulePersistAnnotations() {
+  hasUnsavedAnnotations = true;
+  if (persistTimer) clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    if (isDrawing) {
+      schedulePersistAnnotations();
+      return;
+    }
+    persistAnnotationsToStorage();
+  }, 650);
+}
+
+window.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden' && hasUnsavedAnnotations) {
+    persistAnnotationsToStorage();
+  }
+});
+window.addEventListener('pagehide', () => {
+  if (hasUnsavedAnnotations) persistAnnotationsToStorage();
+});
+window.addEventListener('beforeunload', () => {
+  if (hasUnsavedAnnotations) persistAnnotationsToStorage();
+});
 
 function loadAnnotationsFromStorage() {
   try {
@@ -6685,6 +7069,9 @@ function randomQuestionInDeck() {
 
 function goToSlide(idx) {
   if (idx < 0 || idx >= SLIDES.length) return;
+  if (isDrawing && currentStroke) {
+    finishStroke();
+  }
   currentSlideIndex = idx;
   const slide = SLIDES[idx];
 
@@ -6712,7 +7099,8 @@ function goToSlide(idx) {
   }
 
   document.getElementById('board-viewport').scrollTop = 0;
-  setTimeout(resizeBoardCanvases, 30);
+  resizeBoardCanvases(true);
+  setTimeout(() => resizeBoardCanvases(true), 30);
 }
 
 function prevSlide() {
