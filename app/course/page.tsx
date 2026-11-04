@@ -7,11 +7,11 @@ export default function CourseSelection() {
 
   // รายการวิชาที่มีให้เลือก
   const subjects = [
-    { id: 'physics', name: 'PHYSICS', color: 'from-blue-600 to-blue-400', icon: '⚛️', subtitle: 'Explore Lessons →' },
-    { id: 'chemistry', name: 'CHEMISTRY', color: 'from-orange-600 to-orange-400', icon: '🧪', subtitle: 'Explore 13 Chapters →' },
-    { id: 'english', name: 'ENGLISH', color: 'from-violet-600 to-cyan-400', icon: '🌐', subtitle: 'Start 60-Question Pre-Test →', badge: 'PRE-TEST 60 ข้อ' },
-    { id: 'biology', name: 'BIOLOGY', color: 'from-green-600 to-green-400', icon: '🧬', subtitle: 'Explore Lessons →' },
-    { id: 'math', name: 'MATHEMATICS', color: 'from-purple-600 to-purple-400', icon: '📐', subtitle: 'Explore Lessons →' }
+    { id: 'physics', name: 'PHYSICS', color: 'from-blue-600 to-blue-400', icon: '⚛️' },
+    { id: 'chemistry', name: 'CHEMISTRY', color: 'from-orange-600 to-orange-400', icon: '🧪' },
+    { id: 'english', name: 'ENGLISH', color: 'from-sky-600 to-sky-400', icon: '🌐' },
+    { id: 'biology', name: 'BIOLOGY', color: 'from-green-600 to-green-400', icon: '🧬' },
+    { id: 'math', name: 'MATHEMATICS', color: 'from-purple-600 to-purple-400', icon: '📐' }
   ];
 
   return (
@@ -22,7 +22,7 @@ export default function CourseSelection() {
           Select <span className="text-blue-500">Course</span>
         </h1>
         <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">
-          เลือกวิชาที่คุณต้องการเข้าเรียนเพื่อเริ่มบทเรียนหรือทำแบบทดสอบวัดพื้นฐาน
+          เลือกวิชาที่คุณต้องการเข้าเรียนเพื่อเริ่มบทเรียน
         </p>
       </div>
 
@@ -39,19 +39,12 @@ export default function CourseSelection() {
             
             <div className="flex items-center justify-between relative z-10">
               <div className="flex flex-col items-start">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-4xl group-hover:scale-125 transition-transform duration-500">{subject.icon}</span>
-                  {subject.badge && (
-                    <span className="px-3 py-1 rounded-full bg-violet-500/20 border border-violet-400/30 text-[10px] font-mono uppercase tracking-wider text-violet-300 font-bold">
-                      {subject.badge}
-                    </span>
-                  )}
-                </div>
+                <span className="text-4xl mb-4 group-hover:scale-125 transition-transform duration-500">{subject.icon}</span>
                 <h2 className="text-3xl font-black italic uppercase tracking-tighter group-hover:text-white transition-colors">
                   {subject.name}
                 </h2>
                 <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-2 group-hover:text-zinc-300">
-                  {subject.subtitle}
+                  Explore Lessons →
                 </span>
               </div>
               
