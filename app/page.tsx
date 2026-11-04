@@ -30,12 +30,22 @@ export default function Home() {
   const { data: session } = useSession();
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isWarping, setIsWarping] = useState(false);
+  const [warpSubject, setWarpSubject] = useState<'chemistry' | 'english'>('chemistry');
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleWarpToChemistry = () => {
+    setWarpSubject('chemistry');
     setIsWarping(true);
     setTimeout(() => {
       router.push('/course/chemistry');
+    }, 650);
+  };
+
+  const handleWarpToEnglish = () => {
+    setWarpSubject('english');
+    setIsWarping(true);
+    setTimeout(() => {
+      router.push('/course/english');
     }, 650);
   };
 
@@ -92,18 +102,30 @@ export default function Home() {
       <div
         className={`fixed inset-0 z-50 pointer-events-none transition-all duration-700 ease-in flex items-center justify-center ${
           isWarping 
-            ? 'opacity-100 bg-emerald-950/20 backdrop-blur-xl scale-105' 
+            ? warpSubject === 'english'
+              ? 'opacity-100 bg-violet-950/25 backdrop-blur-xl scale-105'
+              : 'opacity-100 bg-emerald-950/20 backdrop-blur-xl scale-105' 
             : 'opacity-0 pointer-events-none'
         }`}
       >
-        <div className={`w-96 h-96 rounded-full bg-emerald-400/30 blur-[120px] transition-all duration-700 ${
+        <div className={`w-96 h-96 rounded-full ${
+          warpSubject === 'english' ? 'bg-violet-400/30' : 'bg-emerald-400/30'
+        } blur-[120px] transition-all duration-700 ${
           isWarping ? 'scale-[8] opacity-100' : 'scale-0 opacity-0'
         }`} />
         <div className="relative text-center space-y-3 animate-pulse">
-          <span className="text-xs sm:text-sm font-mono uppercase tracking-[0.4em] text-emerald-300 drop-shadow-[0_0_15px_rgba(52,211,153,0.8)]">
-            WARPING TO CHEMISTRY CURRICULUM
+          <span className={`text-xs sm:text-sm font-mono uppercase tracking-[0.4em] ${
+            warpSubject === 'english'
+              ? 'text-violet-300 drop-shadow-[0_0_15px_rgba(167,139,250,0.8)]'
+              : 'text-emerald-300 drop-shadow-[0_0_15px_rgba(52,211,153,0.8)]'
+          }`}>
+            {warpSubject === 'english'
+              ? 'WARPING TO ENGLISH PRE-TEST (60 QUESTIONS)'
+              : 'WARPING TO CHEMISTRY CURRICULUM'}
           </span>
-          <div className="w-56 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent mx-auto" />
+          <div className={`w-56 h-0.5 bg-gradient-to-r from-transparent ${
+            warpSubject === 'english' ? 'via-violet-400' : 'via-emerald-400'
+          } to-transparent mx-auto`} />
         </div>
       </div>
 
@@ -150,6 +172,12 @@ export default function Home() {
               className="px-4 py-2 text-sm font-semibold text-white/80 hover:text-white rounded-full hover:bg-white/[0.08] transition-all"
             >
               Courses
+            </Link>
+            <Link 
+              href="/course/english" 
+              className="px-4 py-2 text-sm font-semibold text-violet-300 hover:text-white rounded-full bg-violet-500/15 hover:bg-violet-500/25 border border-violet-500/30 transition-all"
+            >
+              English Pre-Test
             </Link>
             <Link 
               href="/admin" 
@@ -399,15 +427,80 @@ export default function Home() {
       </section>
 
       {/* ========================================================================= */}
+      {/* SECTION 3.5: 🌐 ENGLISH REALM (Foundation & Pre-Test 60 Questions) */}
+      {/* ========================================================================= */}
+      <section className="h-screen w-full flex items-center justify-start px-6 md:px-24 relative z-10">
+        <div className="max-w-xl md:max-w-2xl bg-black/40 backdrop-blur-3xl border border-white/[0.1] p-10 md:p-12 rounded-[2.5rem] shadow-[0_20px_70px_rgba(0,0,0,0.7)] relative group hover:border-violet-500/40 transition-all duration-500">
+          <div className="space-y-7 relative z-10">
+            {/* Header Telemetry Badge */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-violet-500/[0.12] border border-violet-500/35 text-violet-300 text-xs sm:text-sm font-mono tracking-wider uppercase">
+              <Sparkles className="w-4 h-4 text-violet-400" />
+              <span>03 // LINGUISTIC COSMOS · NEW SUBJECT</span>
+            </div>
+
+            {/* Title & Description */}
+            <div className="space-y-3">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white">
+                ENGLISH <span className="text-white/30 font-light">PRE-TEST</span>
+              </h2>
+              <p className="text-white/70 text-base md:text-lg leading-relaxed">
+                วัดพื้นฐานภาษาอังกฤษรอบด้านด้วยข้อสอบมาตรฐาน 60 ข้อ (4 ตัวเลือก) แบ่งออกเป็น Vocabulary, Grammar, Reading และ Conversation พร้อม Dashboard วิเคราะห์คะแนนรายพาร์ทและเฉลยละเอียดทันทีหลังทำเสร็จ
+              </p>
+            </div>
+
+            {/* Premium Metrics Cards */}
+            <div className="space-y-3 pt-1">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+                <div className="w-11 h-11 rounded-xl bg-violet-500/15 flex items-center justify-center text-violet-400">
+                  <Layers className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-white/95">60 Questions · 4 Core Parts</h4>
+                  <p className="text-xs sm:text-sm text-white/50">Vocab 15 · Grammar 20 · Reading 10 · Conversation 15</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+                <div className="w-11 h-11 rounded-xl bg-violet-500/15 flex items-center justify-center text-violet-400">
+                  <Cpu className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-white/95">Part-by-Part Score Dashboard</h4>
+                  <p className="text-xs sm:text-sm text-white/50">วิเคราะห์จุดแข็ง-จุดอ่อนรายพาร์ท พร้อมเฉลยละเอียดครบ 60 ข้อ</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center gap-3.5 pt-2">
+              <button
+                onClick={handleWarpToEnglish}
+                className="w-full sm:w-auto px-8 py-4.5 rounded-full bg-gradient-to-r from-violet-400 to-cyan-400 hover:from-violet-300 hover:to-cyan-300 text-black font-bold text-sm sm:text-base tracking-wider uppercase transition-all flex items-center justify-center gap-2.5 hover:scale-[1.03] shadow-[0_0_30px_rgba(167,139,250,0.4)] cursor-pointer"
+              >
+                <GraduationCap className="w-5 h-5" />
+                <span>เริ่มทำ Pre-Test 60 ข้อ</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <Link
+                href="/course"
+                className="w-full sm:w-auto px-8 py-4.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.12] text-white/80 hover:text-white font-semibold text-sm sm:text-base tracking-wider uppercase transition-all flex items-center justify-center"
+              >
+                All Courses
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
       {/* SECTION 4: 🌌 MISSION CONTROL / NEXUS (Scroll 85% - 100%) */}
       {/* ========================================================================= */}
       <section className="h-screen w-full flex flex-col justify-center items-center px-6 relative z-10 text-center">
-        <div className="max-w-5xl mx-auto space-y-12">
+        <div className="max-w-6xl mx-auto space-y-12">
           {/* Header */}
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.1] text-xs sm:text-sm font-mono tracking-wider uppercase text-white/60">
               <Sparkles className="w-4 h-4 text-cyan-400" />
-              <span>03 // ACADEMY NEXUS</span>
+              <span>04 // ACADEMY NEXUS</span>
             </div>
             <h2 className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tight text-white">
               SELECT YOUR TRACK
@@ -418,7 +511,7 @@ export default function Home() {
           </div>
 
           {/* Clean Glass Cards Grid (Larger Typography & Padding) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Physics Card */}
             <Link
               href="/quizzes/physics"
@@ -467,10 +560,41 @@ export default function Home() {
               </div>
             </div>
 
+            {/* English Card */}
+            <div
+              className="p-8 rounded-3xl bg-black/40 backdrop-blur-2xl border border-white/[0.1] hover:border-violet-500/50 transition-all hover:-translate-y-1.5 group text-left space-y-4 shadow-xl flex flex-col justify-between"
+            >
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-violet-500/[0.15] border border-violet-500/30 flex items-center justify-center text-violet-300 group-hover:scale-105 transition-transform">
+                    <GraduationCap className="w-6 h-6" />
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-violet-500/20 border border-violet-400/30 text-[10px] font-mono uppercase tracking-wider text-violet-300 font-bold">
+                    PRE-TEST 60 ข้อ
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white group-hover:text-violet-300 transition-colors">
+                  English Foundation
+                </h3>
+                <p className="text-sm text-white/50 leading-relaxed">
+                  วัดพื้นฐาน 60 ข้อ (Vocab · Grammar · Reading · Conversation) พร้อม Dashboard วิเคราะห์คะแนนรายพาร์ท
+                </p>
+              </div>
+              <div className="pt-2 flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleWarpToEnglish}
+                  className="px-4 py-2 rounded-full bg-violet-400 hover:bg-violet-300 text-black font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:scale-[1.02]"
+                >
+                  <span>เริ่มทำ Pre-Test</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
             {/* Course Hub Card */}
             <Link
               href="/course"
-              className="p-8 rounded-3xl bg-black/40 backdrop-blur-2xl border border-white/[0.1] hover:border-white/35 transition-all hover:-translate-y-1.5 group text-left space-y-4 sm:col-span-2 md:col-span-1 shadow-xl"
+              className="p-8 rounded-3xl bg-black/40 backdrop-blur-2xl border border-white/[0.1] hover:border-white/35 transition-all hover:-translate-y-1.5 group text-left space-y-4 shadow-xl"
             >
               <div className="w-12 h-12 rounded-2xl bg-white/[0.06] border border-white/[0.12] flex items-center justify-center text-white/85 group-hover:scale-105 transition-transform">
                 <BookOpen className="w-6 h-6" />
@@ -479,7 +603,7 @@ export default function Home() {
                 All Curriculum
               </h3>
               <p className="text-sm text-white/50 leading-relaxed">
-                ภาพรวมวิชาทั้งหมด ฟิสิกส์ เคมี ชีววิทยา และคณิตศาสตร์
+                ภาพรวมวิชาทั้งหมด ฟิสิกส์ เคมี ภาษาอังกฤษ ชีววิทยา และคณิตศาสตร์
               </p>
             </Link>
           </div>
