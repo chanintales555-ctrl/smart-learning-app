@@ -1120,6 +1120,10 @@ body.light-board .qnav-select {
       </div>
 
       <div class="topbar-right">
+        <div id="account-sync-widget" style="display:inline-flex; align-items:center; gap:6px; padding:0 10px; height:34px; border-radius:8px; border:1px solid rgba(56,189,248,0.35); background:rgba(15,23,42,0.75); font-size:12px; transition:border-color 0.2s; white-space:nowrap;">
+          <span id="account-user-badge" style="font-weight:600; color:#38bdf8;">⏳ ตรวจสอบบัญชี...</span>
+          <span id="account-sync-status" style="font-size:11px; color:#94a3b8;"></span>
+        </div>
         <button class="icon-btn" onclick="toggleTheme()" id="btn-theme" title="สลับสีกระดาน มืด/สว่าง">🌙 กระดานดำ</button>
         <button class="icon-btn" onclick="saveNotesJSON()" title="บันทึกไฟล์ลายมือ (.json) เก็บเข้าบัญชี">💾 เซฟโน้ต</button>
         <button class="icon-btn" onclick="document.getElementById('load-json-input').click()" title="โหลดไฟล์ลายมือ (.json)">📂 โหลดโน้ต</button>
@@ -1934,10 +1938,15 @@ function clearCurrentSlideDrawing() {
   }
 }
 
-// LocalStorage / IndexedDB & Account API Integration (Debounced during fast writing!)
+// LocalStorage / IndexedDB & Per-Account Cloud API Integration (Debounced & Auto-Migrated)
+const LESSON_ID = 'chemistry-acid-base';
 const STORAGE_KEY = 'acid_base_smartboard_notes_v1';
+let currentStorageKey = STORAGE_KEY;
+let currentAccountUser = null;
 let persistTimer = null;
+let cloudSyncTimer = null;
 let hasUnsavedAnnotations = false;
+let hasPendingCloudSync = false;
 
 function persistAnnotationsToStorage() {
   if (persistTimer) {
@@ -1946,8 +1955,15 @@ function persistAnnotationsToStorage() {
   }
   hasUnsavedAnnotations = false;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(slideAnnotations));
+    localStorage.setItem(currentStorageKey, JSON.stringify(slideAnnotations));
+    if (currentStorageKey !== STORAGE_KEY) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(slideAnnotations));
+    }
   } catch(e) {}
+
+  // Trigger debounced cloud synchronization if user is logged in
+  scheduleCloudAccountSync();
+
   // Trigger custom hook for backend user account integration
   if (typeof window.onSmartboardNotesChanged === 'function') {
     window.onSmartboardNotesChanged(slideAnnotations);
@@ -1966,24 +1982,215 @@ function schedulePersistAnnotations() {
   }, 650);
 }
 
+function updateAccountSyncUI(state, detailText) {
+  const widget = document.getElementById('account-sync-widget');
+  const badgeEl = document.getElementById('account-user-badge');
+  const statusEl = document.getElementById('account-sync-status');
+  if (!widget || !badgeEl || !statusEl) return;
+
+  if (!currentAccountUser) {
+    widget.style.borderColor = 'rgba(251, 146, 60, 0.45)';
+    widget.style.cursor = 'pointer';
+    widget.title = 'คุณกำลังใช้งานในโหมดผู้เยี่ยมชม (คลิกเพื่อเข้าสู่ระบบและซิงก์ข้ามเครื่อง iPad ⇄ คอม)';
+    widget.onclick = () => {
+      window.location.href = '/login?callbackUrl=' + encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
+    };
+    badgeEl.style.color = '#fb923c';
+    badgeEl.innerHTML = '👤 ผู้เยี่ยมชม';
+    statusEl.innerHTML = '<span style="color:#facc15; font-weight:700; padding:2px 7px; border-radius:5px; background:rgba(250,204,21,0.15); border:1px solid rgba(250,204,21,0.4);">🔐 เข้าสู่ระบบเพื่อซิงก์ข้ามเครื่อง</span>';
+    return;
+  }
+
+  widget.style.cursor = 'pointer';
+  widget.title = `บัญชี: ${currentAccountUser.name} (คลิกเพื่อบันทึกซิงก์ทันที)`;
+  widget.onclick = () => syncNotesToAccountNow(true);
+  badgeEl.style.color = '#38bdf8';
+  badgeEl.textContent = `👤 ${currentAccountUser.name}`;
+
+  if (state === 'saving') {
+    widget.style.borderColor = 'rgba(250, 204, 21, 0.6)';
+    statusEl.style.color = '#facc15';
+    statusEl.textContent = '• ⏳ กำลังซิงก์...';
+  } else if (state === 'saved') {
+    widget.style.borderColor = 'rgba(74, 222, 128, 0.55)';
+    statusEl.style.color = '#4ade80';
+    statusEl.textContent = detailText ? `• ✓ ${detailText}` : '• ✓ คลาวด์ซิงก์แล้ว';
+  } else if (state === 'error' || state === 'offline') {
+    widget.style.borderColor = 'rgba(248, 113, 113, 0.5)';
+    statusEl.style.color = '#f87171';
+    statusEl.textContent = '• ⚠️ ออฟไลน์ (เซฟในเครื่อง)';
+  }
+}
+
+function scheduleCloudAccountSync() {
+  if (!currentAccountUser) return;
+  hasPendingCloudSync = true;
+  updateAccountSyncUI('saving');
+  if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(() => {
+    syncNotesToAccountNow(false);
+  }, 750);
+}
+
+async function syncNotesToAccountNow(manualClick = false) {
+  if (!currentAccountUser) return;
+  if (cloudSyncTimer) {
+    clearTimeout(cloudSyncTimer);
+    cloudSyncTimer = null;
+  }
+  updateAccountSyncUI('saving');
+  try {
+    const res = await fetch('/api/notes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        lessonId: LESSON_ID,
+        annotations: slideAnnotations
+      })
+    });
+    if (res.ok) {
+      hasPendingCloudSync = false;
+      const nowTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+      updateAccountSyncUI('saved', `ซิงก์แล้ว ${nowTime}`);
+      if (manualClick && typeof SoundFX !== 'undefined' && SoundFX.chime) {
+        SoundFX.chime();
+      }
+    } else {
+      updateAccountSyncUI('error');
+    }
+  } catch (err) {
+    updateAccountSyncUI('error');
+  }
+}
+
+function flushCloudSyncKeepalive() {
+  if (!currentAccountUser) return;
+  try {
+    fetch('/api/notes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        lessonId: LESSON_ID,
+        annotations: slideAnnotations
+      }),
+      keepalive: true
+    });
+    hasPendingCloudSync = false;
+  } catch (e) {}
+}
+
 window.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden' && hasUnsavedAnnotations) {
-    persistAnnotationsToStorage();
+  if (document.visibilityState === 'hidden') {
+    if (hasUnsavedAnnotations) persistAnnotationsToStorage();
+    if (currentAccountUser && hasPendingCloudSync) flushCloudSyncKeepalive();
   }
 });
 window.addEventListener('pagehide', () => {
   if (hasUnsavedAnnotations) persistAnnotationsToStorage();
+  if (currentAccountUser && hasPendingCloudSync) flushCloudSyncKeepalive();
 });
 window.addEventListener('beforeunload', () => {
   if (hasUnsavedAnnotations) persistAnnotationsToStorage();
+  if (currentAccountUser && hasPendingCloudSync) flushCloudSyncKeepalive();
 });
 
 function loadAnnotationsFromStorage() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) slideAnnotations = JSON.parse(raw);
-  } catch(e) {}
+    const raw = localStorage.getItem(currentStorageKey) || localStorage.getItem(STORAGE_KEY);
+    slideAnnotations = raw ? JSON.parse(raw) : {};
+  } catch(e) {
+    slideAnnotations = {};
+  }
 }
+
+async function initAccountAndSmartboardNotes() {
+  // 1. Gather all existing local notes from localStorage across legacy & user keys
+  let localNotes = {};
+  try {
+    const rawLegacy = localStorage.getItem(STORAGE_KEY);
+    if (rawLegacy) {
+      const parsed = JSON.parse(rawLegacy);
+      if (parsed && typeof parsed === 'object') {
+        localNotes = parsed;
+      }
+    }
+  } catch(e) {}
+
+  try {
+    const res = await fetch(`/api/notes?lessonId=${encodeURIComponent(LESSON_ID)}`, {
+      method: 'GET',
+      cache: 'no-store'
+    });
+    const data = await res.json();
+
+    if (data && data.authenticated && data.user) {
+      currentAccountUser = data.user;
+      const cleanId = String(data.user.id || data.user.name || 'user').trim().toLowerCase();
+      currentStorageKey = `acid_base_smartboard_notes_v1_user_${cleanId}`;
+
+      // Check if user has notes under their own key on this browser
+      try {
+        const rawUser = localStorage.getItem(currentStorageKey);
+        if (rawUser) {
+          const parsedUser = JSON.parse(rawUser);
+          if (parsedUser && typeof parsedUser === 'object') {
+            localNotes = { ...localNotes, ...parsedUser };
+          }
+        }
+      } catch(e) {}
+
+      const serverNotes = data.annotations;
+      const hasServerNotes = serverNotes && typeof serverNotes === 'object' && Object.keys(serverNotes).length > 0;
+      const hasLocalNotes = localNotes && typeof localNotes === 'object' && Object.keys(localNotes).length > 0;
+
+      if (hasLocalNotes && !hasServerNotes) {
+        // [AUTO-MIGRATE] iPad had notes locally, Cloud DB was empty!
+        // Push all existing local notes directly to Cloud DB immediately!
+        slideAnnotations = localNotes;
+        syncNotesToAccountNow(false);
+      } else if (hasLocalNotes && hasServerNotes) {
+        // [SMART MERGE] Both exist: combine them so no slide is ever lost!
+        const merged = { ...serverNotes };
+        for (const k of Object.keys(localNotes)) {
+          if (!merged[k] || merged[k].length === 0) {
+            merged[k] = localNotes[k];
+          }
+        }
+        slideAnnotations = merged;
+        syncNotesToAccountNow(false);
+      } else if (hasServerNotes) {
+        // [CLOUD LOAD] Fresh device/PC: load user's strokes from Cloud DB!
+        slideAnnotations = serverNotes;
+      } else {
+        slideAnnotations = {};
+      }
+
+      // Save merged/latest notes to local storage
+      try {
+        localStorage.setItem(currentStorageKey, JSON.stringify(slideAnnotations));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(slideAnnotations));
+      } catch(e) {}
+
+      renderCurrentSlideStrokes();
+      updateAccountSyncUI('saved', 'ซิงก์คลาวด์แล้ว');
+    } else {
+      // Guest mode
+      currentAccountUser = null;
+      currentStorageKey = STORAGE_KEY;
+      loadAnnotationsFromStorage();
+      renderCurrentSlideStrokes();
+      updateAccountSyncUI('guest');
+    }
+  } catch (err) {
+    console.warn('Init account notes network warning:', err);
+    currentAccountUser = null;
+    currentStorageKey = STORAGE_KEY;
+    loadAnnotationsFromStorage();
+    renderCurrentSlideStrokes();
+    updateAccountSyncUI('offline');
+  }
+}
+
 
 function saveNotesJSON() {
   SoundFX.click();
@@ -10517,6 +10724,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   } catch(e) {}
   goToSlide(startIdx);
+  initAccountAndSmartboardNotes();
   if (initialHash.includes('anim') || initialSearch.includes('anim')) {
     setTimeout(() => {
       openCurrentAnimation();
