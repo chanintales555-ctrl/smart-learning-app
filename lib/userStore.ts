@@ -16,6 +16,7 @@ export interface StoredUser {
 const LOCAL_DATA_DIR = path.join(process.cwd(), 'data');
 const LOCAL_USERS_FILE = path.join(LOCAL_DATA_DIR, 'users.json');
 const LOCAL_NOTES_FILE = path.join(LOCAL_DATA_DIR, 'smartboard_notes.json');
+const LOCAL_ENGLISH_PRETEST_FILE = path.join(LOCAL_DATA_DIR, 'english_pretest_scores.json');
 
 function sanitizeDocId(input: string): string {
   return input
@@ -398,4 +399,156 @@ export async function saveUserSmartboardNotes(
   }
 
   return { ok: saved, updatedAt };
+}
+
+// ==========================================
+// 3. ENGLISH PRE-TEST SCORE & TIME RECORD PER ACCOUNT
+// ==========================================
+
+export interface EnglishPretestAttemptSummary {
+  attemptId: string;
+  submittedAt: string;
+  totalScore: number;
+  totalQuestions: number;
+  percentage: number;
+  elapsedSeconds: number;
+  partScores: {
+    id: string;
+    title: string;
+    correct: number;
+    total: number;
+    percentage: number;
+    timeSeconds: number;
+  }[];
+}
+
+export interface EnglishPretestUserData {
+  userId: string;
+  userName?: string;
+  answers: Record<number, 'A' | 'B' | 'C' | 'D'>;
+  questionTimes: Record<number, number>;
+  flagged: number[];
+  isSubmitted: boolean;
+  elapsedSeconds: number;
+  latestSummary?: EnglishPretestAttemptSummary | null;
+  history?: EnglishPretestAttemptSummary[];
+  updatedAt: string;
+}
+
+export async function getUserEnglishPretest(
+  userId: string
+): Promise<EnglishPretestUserData | null> {
+  const docKey = sanitizeDocId(userId);
+  if (!docKey) return null;
+
+  // 1) Try Firebase Firestore (`english_pretest_scores` collection)
+  try {
+    const ref = doc(db, 'english_pretest_scores', docKey);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data && typeof data.payloadJson === 'string') {
+        return JSON.parse(data.payloadJson) as EnglishPretestUserData;
+      }
+    }
+  } catch (err) {
+    console.warn('Firestore getUserEnglishPretest warning:', err);
+  }
+
+  // 2) Try Local JSON Fallback
+  try {
+    const localMap = readLocalJson<Record<string, EnglishPretestUserData>>(
+      LOCAL_ENGLISH_PRETEST_FILE,
+      {}
+    );
+    if (localMap[docKey]) {
+      return localMap[docKey];
+    }
+  } catch (err) {
+    console.warn('Local getUserEnglishPretest warning:', err);
+  }
+
+  return null;
+}
+
+export async function saveUserEnglishPretest(
+  userId: string,
+  payload: Omit<EnglishPretestUserData, 'userId' | 'updatedAt'>
+): Promise<{ ok: boolean; data: EnglishPretestUserData }> {
+  const docKey = sanitizeDocId(userId);
+  const updatedAt = new Date().toISOString();
+
+  // Merge history if previous record exists
+  let existingHistory: EnglishPretestAttemptSummary[] = [];
+  try {
+    const prev = await getUserEnglishPretest(userId);
+    if (prev && Array.isArray(prev.history)) {
+      existingHistory = prev.history;
+    }
+  } catch (e) {}
+
+  let mergedHistory = Array.isArray(payload.history) && payload.history.length > 0
+    ? payload.history
+    : existingHistory;
+
+  if (payload.latestSummary) {
+    const existsAlready = mergedHistory.some(
+      (h) => h.attemptId === payload.latestSummary?.attemptId
+    );
+    if (!existsAlready) {
+      mergedHistory = [payload.latestSummary, ...mergedHistory].slice(0, 20);
+    }
+  }
+
+  const record: EnglishPretestUserData = {
+    userId: userId.trim(),
+    userName: payload.userName,
+    answers: payload.answers || {},
+    questionTimes: payload.questionTimes || {},
+    flagged: payload.flagged || [],
+    isSubmitted: Boolean(payload.isSubmitted),
+    elapsedSeconds: Number(payload.elapsedSeconds) || 0,
+    latestSummary: payload.latestSummary || mergedHistory[0] || null,
+    history: mergedHistory,
+    updatedAt,
+  };
+
+  let saved = false;
+
+  // 1) Save to Firebase Firestore (`english_pretest_scores` collection)
+  try {
+    const ref = doc(db, 'english_pretest_scores', docKey);
+    await setDoc(
+      ref,
+      {
+        userId: record.userId,
+        userName: record.userName || record.userId,
+        isSubmitted: record.isSubmitted,
+        latestScore: record.latestSummary?.totalScore ?? null,
+        latestPercentage: record.latestSummary?.percentage ?? null,
+        latestTimeSeconds: record.latestSummary?.elapsedSeconds ?? record.elapsedSeconds,
+        payloadJson: JSON.stringify(record),
+        updatedAt,
+      },
+      { merge: true }
+    );
+    saved = true;
+  } catch (err) {
+    console.error('Firestore saveUserEnglishPretest error:', err);
+  }
+
+  // 2) Save to Local JSON Fallback
+  try {
+    const localMap = readLocalJson<Record<string, EnglishPretestUserData>>(
+      LOCAL_ENGLISH_PRETEST_FILE,
+      {}
+    );
+    localMap[docKey] = record;
+    writeLocalJson(LOCAL_ENGLISH_PRETEST_FILE, localMap);
+    saved = true;
+  } catch (err) {
+    console.warn('Local saveUserEnglishPretest warning:', err);
+  }
+
+  return { ok: saved, data: record };
 }

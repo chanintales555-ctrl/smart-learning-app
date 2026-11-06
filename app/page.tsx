@@ -438,7 +438,7 @@ export default function Home() {
                 ENGLISH <span className="text-white/30 font-light">A-LEVEL</span>
               </h2>
               <p className="text-white/70 text-base md:text-lg leading-relaxed">
-                เริ่มต้นด้วยการวัดพื้นฐานภาษาอังกฤษ 60 ข้อ แบ่งเป็น Vocabulary, Grammar, Reading และ Conversation พร้อม Dashboard วิเคราะห์คะแนนรายพาร์ทและเฉลยละเอียด
+                หลักสูตรภาษาอังกฤษครบวงจร 12 บทเรียน เริ่มต้นด้วยการวัดพื้นฐาน Pre-Test 100 ข้อ (Vocabulary, Grammar, Reading และ Conversation) พร้อมระบบจับเวลาและจดจำคะแนนรายแอคเคาท์
               </p>
             </div>
 
@@ -449,8 +449,8 @@ export default function Home() {
                   <Layers className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-white/95">60-Question Pre-Test</h4>
-                  <p className="text-xs sm:text-sm text-white/50">Vocab 15 · Grammar 20 · Reading 10 · Conversation 15</p>
+                  <h4 className="text-base font-bold text-white/95">12 Chapters & 100-Item Pre-Test</h4>
+                  <p className="text-xs sm:text-sm text-white/50">Vocab 25 · Grammar 30 · Reading 20 · Conversation 25</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
@@ -458,8 +458,8 @@ export default function Home() {
                   <Cpu className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-white/95">Part-by-Part Score Dashboard</h4>
-                  <p className="text-xs sm:text-sm text-white/50">ประเมินผลคะแนนแยกแต่ละพาร์ท พร้อมเฉลยตอนท้าย</p>
+                  <h4 className="text-base font-bold text-white/95">Account Score & Time Telemetry</h4>
+                  <p className="text-xs sm:text-sm text-white/50">จดจำสถิติคะแนนและเวลาแยกแต่ละพาร์ทผูกกับบัญชีผู้ใช้</p>
                 </div>
               </div>
             </div>
@@ -565,7 +565,7 @@ export default function Home() {
                 English A-Level
               </h3>
               <p className="text-sm text-white/50 leading-relaxed">
-                แบบทดสอบวัดพื้นฐาน Pre-Test 60 ข้อ พร้อม Dashboard แสดงคะแนนแต่ละพาร์ท
+                หลักสูตร 12 บทเรียน พร้อมแบบทดสอบวัดพื้นฐาน Pre-Test 100 ข้อ และสถิติเวลารายพาร์ท
               </p>
             </Link>
 

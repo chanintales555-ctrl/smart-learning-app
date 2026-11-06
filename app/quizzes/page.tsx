@@ -47,14 +47,14 @@ export default function QuizzesPage() {
 
         {/* English Card */}
         <button 
-          onClick={() => router.push('/course/english')}
-          className="group relative p-[1px] rounded-[3rem] overflow-hidden transition-all duration-500 hover:scale-[1.05] hover:shadow-[0_0_50px_rgba(167,139,250,0.3)] cursor-pointer"
+          onClick={() => router.push('/quizzes/english')}
+          className="group relative p-[1px] rounded-[3rem] overflow-hidden transition-all duration-500 hover:scale-[1.05] hover:shadow-[0_0_50px_rgba(255,255,255,0.2)] cursor-pointer"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-600 to-cyan-400 opacity-20 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-500 to-zinc-300 opacity-20 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div className="relative bg-[#0d0d0f] rounded-[2.9rem] p-12 h-full border border-white/5 flex flex-col items-center text-center transition-colors duration-500 group-hover:bg-[#0d0d0f]/80">
-            <div className="text-7xl mb-6 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 drop-shadow-[0_0_15px_rgba(167,139,250,0.5)]">🌐</div>
-            <h2 className="text-4xl font-black italic tracking-tight text-violet-400 mb-4 uppercase drop-shadow-[0_0_10px_rgba(167,139,250,0.5)]">English</h2>
-            <p className="text-gray-500 text-sm font-bold uppercase tracking-widest group-hover:text-violet-100 transition-colors">Pre-Test 60 ข้อ · Vocab · Grammar · Reading · Conv</p>
+            <div className="text-7xl mb-6 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">🌐</div>
+            <h2 className="text-4xl font-black italic tracking-tight text-white mb-4 uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]">English</h2>
+            <p className="text-gray-500 text-sm font-bold uppercase tracking-widest group-hover:text-zinc-200 transition-colors">Pre-Test 100 ข้อ · Vocab · Grammar · Reading · Conv</p>
           </div>
         </button>
       </div>

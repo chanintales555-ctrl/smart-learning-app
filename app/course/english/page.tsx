@@ -1,1397 +1,456 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
+import Lenis from 'lenis';
 import {
   ArrowLeft,
   ArrowRight,
-  CheckCircle2,
-  Clock,
-  BookOpen,
   GraduationCap,
-  Cpu,
+  Clock,
+  Sparkles,
+  ChevronDown,
+  CheckCircle2,
+  Box,
   LogOut,
+  Layers,
 } from 'lucide-react';
-import {
-  ENGLISH_PARTS,
-  ENGLISH_PRETEST_QUESTIONS,
-  EnglishPartId,
-  EnglishQuestion,
-} from '@/lib/englishPretestData';
+import { ENGLISH_CHAPTERS } from '@/lib/englishPretestData';
 
-type OptionKey = 'A' | 'B' | 'C' | 'D';
+const EnglishCourseCanvas = dynamic(
+  () => import('@/components/canvas/EnglishCourseCanvas'),
+  {
+    ssr: false,
+    loading: () => <div className="fixed inset-0 bg-[#030306]" />,
+  }
+);
 
-interface SavedPretestState {
-  answers: Record<number, OptionKey>;
-  flagged: number[];
-  isSubmitted: boolean;
+interface SavedPretestSummary {
+  totalScore: number;
+  totalQuestions: number;
+  percentage: number;
   elapsedSeconds: number;
+  submittedAt?: string;
 }
 
-const STORAGE_KEY = 'nj_english_pretest_v1';
+export default function EnglishCoursePage() {
+  const { data: session, status: sessionStatus } = useSession();
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [latestScore, setLatestScore] = useState<SavedPretestSummary | null>(null);
+  const [inProgressCount, setInProgressCount] = useState<number>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-export default function EnglishPretestPage() {
-  const { data: session } = useSession();
-
-  // Exam State
-  const [answers, setAnswers] = useState<Record<number, OptionKey>>({});
-  const [flagged, setFlagged] = useState<number[]>([]);
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [viewMode, setViewMode] = useState<'single' | 'list'>('single');
-  const [activeListPart, setActiveListPart] = useState<EnglishPartId | 'all'>('all');
-  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
-  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
-  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
-  const [hydrated, setHydrated] = useState<boolean>(false);
-
-  // Dashboard Review Filter State
-  const [reviewPartFilter, setReviewPartFilter] = useState<EnglishPartId | 'all'>('all');
-  const [reviewStatusFilter, setReviewStatusFilter] = useState<'all' | 'wrong' | 'correct'>('all');
-
-  // Load saved progress from localStorage
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed: SavedPretestState = JSON.parse(raw);
-        if (parsed.answers) setAnswers(parsed.answers);
-        if (parsed.flagged) setFlagged(parsed.flagged);
-        if (typeof parsed.isSubmitted === 'boolean') setIsSubmitted(parsed.isSubmitted);
-        if (typeof parsed.elapsedSeconds === 'number') setElapsedSeconds(parsed.elapsedSeconds);
-      }
-    } catch (err) {
-      console.error('Failed to load saved English pretest state:', err);
-    } finally {
-      setHydrated(true);
+  const accountKey = useMemo(() => {
+    if (session?.user) {
+      const rawId =
+        (session.user as any).id || session.user.email || session.user.name || 'user';
+      return String(rawId).trim().toLowerCase();
     }
+    return 'guest';
+  }, [session]);
+
+  // Smooth Lenis Scrollytelling
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.25,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+    });
+
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalScroll > 0) {
+        const progress = Math.min(1, Math.max(0, window.scrollY / totalScroll));
+        setScrollProgress(progress);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', handleScroll);
+      lenis.destroy();
+    };
   }, []);
 
-  // Save progress to localStorage
+  // Load Account's Latest Pre-Test Score Summary (from LocalStorage & Cloud API)
   useEffect(() => {
-    if (!hydrated) return;
+    if (sessionStatus === 'loading') return;
+
+    const localKey = `nj_english_pretest_100_${accountKey}`;
     try {
-      const stateToSave: SavedPretestState = {
-        answers,
-        flagged,
-        isSubmitted,
-        elapsedSeconds,
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-    } catch (err) {
-      console.error('Failed to save English pretest state:', err);
+      const raw = localStorage.getItem(localKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const ansCount = Object.keys(parsed.answers || {}).length;
+        setInProgressCount(ansCount);
+        if (Array.isArray(parsed.history) && parsed.history.length > 0) {
+          setLatestScore(parsed.history[0]);
+        }
+      } else {
+        setInProgressCount(0);
+        setLatestScore(null);
+      }
+    } catch (e) {}
+
+    if (session?.user) {
+      fetch('/api/english-pretest', { cache: 'no-store' })
+        .then((r) => r.json())
+        .then((json) => {
+          if (json.authenticated && json.data) {
+            const ansCount = Object.keys(json.data.answers || {}).length;
+            setInProgressCount(ansCount);
+            if (json.data.latestSummary) {
+              setLatestScore(json.data.latestSummary);
+            } else if (Array.isArray(json.data.history) && json.data.history.length > 0) {
+              setLatestScore(json.data.history[0]);
+            }
+          }
+        })
+        .catch(() => {});
     }
-  }, [answers, flagged, isSubmitted, elapsedSeconds, hydrated]);
+  }, [accountKey, session?.user, sessionStatus]);
 
-  // Timer when taking the test
-  useEffect(() => {
-    if (!hydrated || isSubmitted) return;
-    const timer = setInterval(() => {
-      setElapsedSeconds((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [hydrated, isSubmitted]);
-
-  const currentQuestion: EnglishQuestion = ENGLISH_PRETEST_QUESTIONS[currentIndex];
-  const currentPartMeta = useMemo(
-    () => ENGLISH_PARTS.find((p) => p.id === currentQuestion.part) || ENGLISH_PARTS[0],
-    [currentQuestion]
-  );
-
-  const totalQuestions = ENGLISH_PRETEST_QUESTIONS.length;
-  const answeredCount = Object.keys(answers).length;
-
-  // Format MM:SS
   const formatTime = (secs: number) => {
     const mins = Math.floor(secs / 60);
     const rem = secs % 60;
     return `${String(mins).padStart(2, '0')}:${String(rem).padStart(2, '0')}`;
   };
 
-  // Select Option
-  const handleSelectOption = (questionId: number, option: OptionKey) => {
-    if (isSubmitted) return;
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: option,
-    }));
-  };
+  const totalChapters = ENGLISH_CHAPTERS.length;
+  const activeChapterIndex = Math.min(
+    totalChapters,
+    Math.max(1, Math.floor(scrollProgress * totalChapters) + 1)
+  );
 
-  // Toggle Flag for Review
-  const handleToggleFlag = (questionId: number) => {
-    setFlagged((prev) =>
-      prev.includes(questionId) ? prev.filter((id) => id !== questionId) : [...prev, questionId]
-    );
-  };
-
-  // Jump to first question of a Part
-  const handleJumpToPart = (partId: EnglishPartId) => {
-    if (viewMode === 'list') {
-      setActiveListPart(partId);
-      return;
-    }
-    const idx = ENGLISH_PRETEST_QUESTIONS.findIndex((q) => q.part === partId);
-    if (idx !== -1) {
-      setCurrentIndex(idx);
-    }
-  };
-
-  // Compute Analytics & Scores per Part
-  const analytics = useMemo(() => {
-    let totalCorrect = 0;
-    let totalWrong = 0;
-    let totalUnanswered = 0;
-
-    const partStats = ENGLISH_PARTS.map((part) => {
-      const questionsInPart = ENGLISH_PRETEST_QUESTIONS.filter((q) => q.part === part.id);
-      let correct = 0;
-      let wrong = 0;
-      let unanswered = 0;
-      let answered = 0;
-
-      questionsInPart.forEach((q) => {
-        const userAns = answers[q.id];
-        if (!userAns) {
-          unanswered++;
-          totalUnanswered++;
-        } else {
-          answered++;
-          if (userAns === q.correct) {
-            correct++;
-            totalCorrect++;
-          } else {
-            wrong++;
-            totalWrong++;
-          }
-        }
-      });
-
-      const percentage = Math.round((correct / part.questionCount) * 100);
-      let statusLabel = 'ควรเสริมพื้นฐาน';
-      if (percentage >= 80) {
-        statusLabel = 'ดีเยี่ยม (Strong)';
-      } else if (percentage >= 55) {
-        statusLabel = 'ปานกลาง (Fair)';
-      }
-
-      return {
-        ...part,
-        correct,
-        wrong,
-        unanswered,
-        answered,
-        percentage,
-        statusLabel,
-      };
+  const scrollToChapter1 = () => {
+    window.scrollTo({
+      top: window.innerHeight,
+      behavior: 'smooth',
     });
-
-    const totalPercentage = Math.round((totalCorrect / totalQuestions) * 100);
-
-    let levelTitle = 'Foundation Builder (A1–A2)';
-    let levelAdvice =
-      'แนะนำให้เริ่มต้นปูพื้นฐานคำศัพท์หลักและโครงสร้างประโยคพื้นฐาน (Tenses & Sentence Structure) อย่างเป็นระบบ';
-
-    if (totalPercentage >= 80) {
-      levelTitle = 'Upper-Intermediate / Advanced (B2–C1)';
-      levelAdvice =
-        'พื้นฐานภาษาอังกฤษของคุณแข็งแกร่งมาก พร้อมสำหรับการตะลุยโจทย์ข้อสอบแข่งขันและ A-Level ความยากระดับสูงได้ทันที';
-    } else if (totalPercentage >= 60) {
-      levelTitle = 'Intermediate Achiever (B1–B2)';
-      levelAdvice =
-        'พื้นฐานโดยรวมอยู่ในเกณฑ์ดี เข้าใจบริบทการสื่อสารและโครงสร้างหลัก แนะนำให้เก็บตกพาร์ทที่ได้คะแนนน้อยกว่า 70%';
-    } else if (totalPercentage >= 45) {
-      levelTitle = 'Pre-Intermediate (A2–B1)';
-      levelAdvice =
-        'มีพื้นฐานระดับปานกลาง แนะนำให้ทบทวนหลัก Grammar ที่ออกสอบบ่อยและฝึกสะสมคำศัพท์จากบทความสั้น';
-    }
-
-    const sortedByAccuracy = [...partStats].sort((a, b) => b.percentage - a.percentage);
-    const strongestPart = sortedByAccuracy[0];
-    const weakestPart = sortedByAccuracy[sortedByAccuracy.length - 1];
-
-    return {
-      totalCorrect,
-      totalWrong,
-      totalUnanswered,
-      totalPercentage,
-      partStats,
-      levelTitle,
-      levelAdvice,
-      strongestPart,
-      weakestPart,
-    };
-  }, [answers, totalQuestions]);
-
-  // Submit Pretest Handler
-  const handleConfirmSubmit = async () => {
-    setShowConfirmModal(false);
-    setIsSubmitted(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    if (session?.user) {
-      try {
-        const resultsPayload = ENGLISH_PRETEST_QUESTIONS.map((q) => ({
-          questionId: q.code,
-          part: q.part,
-          userAnswer: answers[q.id] || 'NONE',
-          isCorrect: answers[q.id] === q.correct,
-          timeSpent: (elapsedSeconds / 60).toFixed(2),
-        }));
-
-        await fetch('/api/submit-answer', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            subject: 'english',
-            chapter: 'pretest-60',
-            results: resultsPayload,
-          }),
-        });
-      } catch (e) {
-        console.warn('Cloud sync skipped:', e);
-      }
-    }
   };
-
-  // Reset / Retake Pretest
-  const handleResetPretest = () => {
-    setAnswers({});
-    setFlagged([]);
-    setCurrentIndex(0);
-    setElapsedSeconds(0);
-    setIsSubmitted(false);
-    setShowConfirmModal(false);
-    localStorage.removeItem(STORAGE_KEY);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Filtered Questions for Review Answer Key
-  const filteredReviewQuestions = useMemo(() => {
-    return ENGLISH_PRETEST_QUESTIONS.filter((q) => {
-      const matchPart = reviewPartFilter === 'all' || q.part === reviewPartFilter;
-      if (!matchPart) return false;
-
-      const userAns = answers[q.id];
-      const isCorrect = userAns === q.correct;
-      if (reviewStatusFilter === 'correct') return isCorrect;
-      if (reviewStatusFilter === 'wrong') return !isCorrect;
-      return true;
-    });
-  }, [reviewPartFilter, reviewStatusFilter, answers]);
-
-  // Filtered Questions for All-in-One List Mode
-  const listModeQuestions = useMemo(() => {
-    if (activeListPart === 'all') return ENGLISH_PRETEST_QUESTIONS;
-    return ENGLISH_PRETEST_QUESTIONS.filter((q) => q.part === activeListPart);
-  }, [activeListPart]);
-
-  // Radar / Polygon SVG Coordinates for 4 Parts
-  const radarPoints = useMemo(() => {
-    const center = 110;
-    const maxRadius = 80;
-    const pVocab = (analytics.partStats[0]?.percentage || 0) / 100;
-    const pGrammar = (analytics.partStats[1]?.percentage || 0) / 100;
-    const pReading = (analytics.partStats[2]?.percentage || 0) / 100;
-    const pConv = (analytics.partStats[3]?.percentage || 0) / 100;
-
-    const r0 = Math.max(0.12, pVocab) * maxRadius;
-    const r1 = Math.max(0.12, pGrammar) * maxRadius;
-    const r2 = Math.max(0.12, pReading) * maxRadius;
-    const r3 = Math.max(0.12, pConv) * maxRadius;
-
-    const top = `${center},${center - r0}`;
-    const right = `${center + r1},${center}`;
-    const bottom = `${center},${center + r2}`;
-    const left = `${center - r3},${center}`;
-
-    return {
-      polygon: `${top} ${right} ${bottom} ${left}`,
-      dots: [
-        { x: center, y: center - r0 },
-        { x: center + r1, y: center },
-        { x: center, y: center + r2 },
-        { x: center - r3, y: center },
-      ],
-    };
-  }, [analytics.partStats]);
 
   return (
-    <div className="min-h-screen bg-[#030306] text-white selection:bg-white/20 selection:text-white relative overflow-x-hidden pb-24">
-      {/* Top Progress Hairline (Clean Single Tone) */}
+    <div
+      ref={containerRef}
+      className="relative bg-[#030306] text-white min-h-[1300vh] selection:bg-white/20 selection:text-white"
+    >
+      {/* 3D WebGL Linguistic Cosmos Scrollytelling Background */}
+      <EnglishCourseCanvas scrollProgress={scrollProgress} />
+
+      {/* Top Hairline Progress (Clean Single Tone) */}
       <div className="fixed top-0 left-0 w-full h-[2px] z-50 bg-white/[0.06]">
         <div
-          className="h-full bg-white/80 transition-all duration-300"
-          style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
+          className="h-full bg-white/85 shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-75"
+          style={{ width: `${scrollProgress * 100}%` }}
         />
       </div>
 
-      {/* Header Navigation Bar */}
-      <header className="sticky top-0 z-40 backdrop-blur-2xl bg-[#030306]/85 border-b border-white/[0.08] px-4 sm:px-8 py-4">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          {/* Left: Back & Subject Brand */}
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-xs sm:text-sm font-semibold text-white/80 hover:text-white transition-all"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Academy</span>
-            </Link>
-            <Link
-              href="/course"
-              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-mono uppercase tracking-wider text-white/60 hover:text-white transition-all"
-            >
-              <span>All Courses</span>
-            </Link>
-            <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.1] text-white/70 text-xs font-mono uppercase tracking-wider">
-              <span>ENGLISH A-LEVEL · PRE-TEST</span>
-            </div>
+      {/* Fixed Header Bar */}
+      <header className="fixed top-6 left-0 w-full px-6 md:px-14 z-50 flex items-center justify-between pointer-events-none">
+        {/* Back Button & Title */}
+        <div className="pointer-events-auto flex items-center gap-4">
+          <Link
+            href="/"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-black/50 backdrop-blur-2xl border border-white/[0.1] text-sm font-semibold text-white/80 hover:text-white hover:border-white/30 transition-all hover:scale-[1.02] shadow-xl"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Academy</span>
+          </Link>
+          <div className="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/[0.1] text-xs font-mono uppercase text-white/80 tracking-wider">
+            <GraduationCap className="w-4 h-4 text-white/80" />
+            <span>English A-Level · Course Curriculum</span>
+          </div>
+        </div>
+
+        {/* Right Active Chapter Counter & Account */}
+        <div className="pointer-events-auto flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-black/50 backdrop-blur-3xl px-4 py-2 rounded-full border border-white/[0.1] shadow-2xl">
+            <span className="text-[11px] font-mono text-white/40 uppercase tracking-wider">
+              Chapter
+            </span>
+            <span className="text-sm font-mono font-bold text-white">
+              {String(activeChapterIndex).padStart(2, '0')} / {String(totalChapters).padStart(2, '0')}
+            </span>
           </div>
 
-          {/* Right: Live Telemetry, Timer & Submit */}
-          <div className="flex items-center gap-3">
-            {/* Timer Pill */}
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.1] text-xs font-mono">
-              <Clock className="w-3.5 h-3.5 text-white/60" />
-              <span className="text-white/45 hidden sm:inline">TIME</span>
-              <span className="font-bold text-white/90">{formatTime(elapsedSeconds)}</span>
-            </div>
-
-            {/* Answered Counter Pill */}
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.1] text-xs font-mono">
-              <span className="text-white/45 hidden sm:inline">ANSWERED</span>
-              <span className="font-bold text-white/90">
-                {answeredCount} / {totalQuestions}
+          {session?.user ? (
+            <div className="hidden md:flex items-center gap-2.5 bg-black/50 backdrop-blur-3xl pl-3.5 pr-2 py-1.5 rounded-full border border-white/[0.15]">
+              <span className="text-xs font-semibold text-white/90 max-w-[110px] truncate">
+                👤 {session.user.name}
               </span>
+              <button
+                onClick={() => signOut()}
+                className="text-white/40 hover:text-red-400 p-1 transition-colors"
+                title="ออกจากระบบ"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
             </div>
+          ) : (
+            <Link
+              href="/login?callbackUrl=/course/english"
+              className="hidden md:inline-flex px-4 py-2 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.15] text-white font-semibold text-xs uppercase tracking-wider transition-all"
+            >
+              เข้าสู่ระบบ (จำคะแนน)
+            </Link>
+          )}
 
-            {/* Toggle Exam / Dashboard */}
-            {isSubmitted ? (
-              <button
-                onClick={handleResetPretest}
-                className="px-4 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.15] text-xs font-bold uppercase tracking-wider text-white transition-all cursor-pointer"
-              >
-                สอบใหม่อีกครั้ง
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowConfirmModal(true)}
-                className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
-              >
-                ส่งข้อสอบดูคะแนน
-              </button>
-            )}
-
-            {/* User Session */}
-            {session ? (
-              <div className="hidden lg:flex items-center gap-2 pl-3 pr-2 py-1 rounded-full bg-white/[0.04] border border-white/[0.1]">
-                <span className="text-xs font-semibold text-white/80 max-w-[100px] truncate">
-                  {session.user?.name}
-                </span>
-                <button
-                  onClick={() => signOut()}
-                  className="text-white/40 hover:text-red-400 p-1 transition-colors"
-                  title="Sign Out"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ) : null}
-          </div>
+          <Link
+            href="/course/english/pretest"
+            className="hidden sm:inline-flex px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all hover:scale-[1.02]"
+          >
+            Pre-Test 100 ข้อ
+          </Link>
         </div>
       </header>
 
-      {/* Main Content Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-8 relative z-10 space-y-8">
-        {/* Clean Minimalist Subject Header Banner */}
-        <section className="rounded-[2.5rem] bg-black/50 border border-white/[0.1] p-6 sm:p-10 backdrop-blur-3xl shadow-2xl">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-            <div className="space-y-4 max-w-3xl">
-              <div className="inline-flex flex-wrap items-center gap-2">
-                <span className="px-3.5 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-white/70 text-xs font-mono uppercase tracking-wider">
-                  ENGLISH FOUNDATION & A-LEVEL
-                </span>
-                <span className="px-3.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-white/50 text-xs font-mono uppercase tracking-wider">
-                  60 QUESTIONS · 4 CHOICES
-                </span>
-              </div>
-
-              {/* Clean Single-Tone Heading matching Physics & Chemistry */}
-              <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-                ENGLISH <span className="text-white/30 font-light">PRE-TEST</span>
-              </h1>
-
-              {/* Clean Single-Tone Description */}
-              <p className="text-sm sm:text-base text-white/60 leading-relaxed">
-                แบบทดสอบวัดพื้นฐานภาษาอังกฤษระดับกลาง จำนวน 60 ข้อ (4 ตัวเลือก) แบ่งออกเป็น Vocabulary 15 ข้อ · Grammar 20 ข้อ · Reading 10 ข้อ · Conversation 15 ข้อ พร้อมระบบประมวลผลคะแนนแยกแต่ละพาร์ทและเฉลยละเอียดตอนท้าย
-              </p>
-            </div>
-
-            {/* Unified Monochrome Part Summary Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-3 shrink-0">
-              {ENGLISH_PARTS.map((p) => {
-                const stat = analytics.partStats.find((s) => s.id === p.id);
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => {
-                      if (!isSubmitted) handleJumpToPart(p.id);
-                      else setReviewPartFilter(p.id);
-                    }}
-                    className="p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.08] hover:border-white/[0.2] text-left transition-all cursor-pointer group"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-[11px] font-mono uppercase tracking-wider text-white/40">
-                        PART {p.partNumber}
-                      </span>
-                      <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/[0.1] text-white/85">
-                        {isSubmitted
-                          ? `${stat?.correct}/${p.questionCount}`
-                          : `${stat?.answered}/${p.questionCount}`}
-                      </span>
-                    </div>
-                    <div className="text-sm font-bold text-white mt-1.5">
-                      {p.title}
-                    </div>
-                    <div className="text-[11px] text-white/45 truncate">{p.thaiTitle}</div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* ===================================================================== */}
-        {/* VIEW 1: END-OF-TEST ANALYTICS DASHBOARD & ANSWER KEY */}
-        {/* ===================================================================== */}
-        {isSubmitted ? (
-          <div className="space-y-10 animate-in fade-in duration-500">
-            {/* Top Score & Skill Radar Overview */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Total Score Card (7 Cols) */}
-              <div className="lg:col-span-7 rounded-[2.5rem] bg-black/50 backdrop-blur-3xl border border-white/[0.1] p-8 sm:p-10 flex flex-col justify-between shadow-2xl">
-                <div className="space-y-6">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.12] text-white/85 text-xs font-mono uppercase tracking-wider">
-                      <CheckCircle2 className="w-4 h-4 text-white" />
-                      <span>PRE-TEST COMPLETED · SCORE REPORT</span>
-                    </div>
-                    <span className="text-xs font-mono text-white/45">
-                      ผู้เข้าสอบ: {session?.user?.name || 'นักเรียน NJ Academy'}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row items-center gap-8 py-2">
-                    {/* Circular Score Gauge (Clean White) */}
-                    <div className="relative w-44 h-44 flex items-center justify-center shrink-0">
-                      <svg className="w-full h-full -rotate-90" viewBox="0 0 160 160">
-                        <circle
-                          cx="80"
-                          cy="80"
-                          r="68"
-                          fill="none"
-                          stroke="rgba(255,255,255,0.08)"
-                          strokeWidth="12"
-                        />
-                        <circle
-                          cx="80"
-                          cy="80"
-                          r="68"
-                          fill="none"
-                          stroke="#ffffff"
-                          strokeWidth="12"
-                          strokeLinecap="round"
-                          strokeDasharray={2 * Math.PI * 68}
-                          strokeDashoffset={
-                            2 * Math.PI * 68 * (1 - analytics.totalPercentage / 100)
-                          }
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                        <span className="text-4xl font-black text-white leading-none">
-                          {analytics.totalCorrect}
-                          <span className="text-lg text-white/40 font-semibold">/60</span>
-                        </span>
-                        <span className="text-sm font-mono font-bold text-white/75 mt-1">
-                          {analytics.totalPercentage}%
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Level & Feedback (Single Font Color) */}
-                    <div className="space-y-3 text-center sm:text-left">
-                      <div className="text-xs font-mono uppercase tracking-widest text-white/45">
-                        ระดับพื้นฐานของคุณ (Estimated Level)
-                      </div>
-                      <h2 className="text-2xl sm:text-3xl font-black text-white">
-                        {analytics.levelTitle}
-                      </h2>
-                      <p className="text-sm text-white/65 leading-relaxed">
-                        {analytics.levelAdvice}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick Metric Pills */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-white/[0.08] mt-6">
-                  <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-                    <div className="text-[11px] font-mono text-white/50 uppercase">ตอบถูก</div>
-                    <div className="text-xl font-black text-white">
-                      {analytics.totalCorrect} ข้อ
-                    </div>
-                  </div>
-                  <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-                    <div className="text-[11px] font-mono text-white/50 uppercase">ตอบผิด</div>
-                    <div className="text-xl font-black text-white/80">{analytics.totalWrong} ข้อ</div>
-                  </div>
-                  <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-                    <div className="text-[11px] font-mono text-white/50 uppercase">ไม่ได้ตอบ</div>
-                    <div className="text-xl font-black text-white/80">
-                      {analytics.totalUnanswered} ข้อ
-                    </div>
-                  </div>
-                  <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-                    <div className="text-[11px] font-mono text-white/50 uppercase">เวลาที่ใช้</div>
-                    <div className="text-xl font-black text-white">
-                      {formatTime(elapsedSeconds)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Skill Balance Radar & Diagnostic Card (5 Cols) */}
-              <div className="lg:col-span-5 rounded-[2.5rem] bg-black/50 backdrop-blur-3xl border border-white/[0.1] p-8 flex flex-col justify-between shadow-2xl">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-mono uppercase tracking-widest text-white/45 block">
-                      SKILL RADAR ANALYSIS
-                    </span>
-                    <h3 className="text-xl font-black text-white">สมดุลทักษะทั้ง 4 พาร์ท</h3>
-                  </div>
-                  <Cpu className="w-6 h-6 text-white/60" />
-                </div>
-
-                {/* SVG Diamond Radar Chart (Clean Monochrome) */}
-                <div className="flex items-center justify-center my-4">
-                  <svg className="w-60 h-60" viewBox="0 0 220 220">
-                    {[0.25, 0.5, 0.75, 1].map((scale) => {
-                      const r = 80 * scale;
-                      const pts = `110,${110 - r} ${110 + r},110 110,${110 + r} ${110 - r},110`;
-                      return (
-                        <polygon
-                          key={scale}
-                          points={pts}
-                          fill="none"
-                          stroke="rgba(255,255,255,0.1)"
-                          strokeWidth="1"
-                        />
-                      );
-                    })}
-                    <line
-                      x1="110"
-                      y1="30"
-                      x2="110"
-                      y2="190"
-                      stroke="rgba(255,255,255,0.1)"
-                      strokeWidth="1"
-                    />
-                    <line
-                      x1="30"
-                      y1="110"
-                      x2="190"
-                      y2="110"
-                      stroke="rgba(255,255,255,0.1)"
-                      strokeWidth="1"
-                    />
-
-                    <polygon
-                      points={radarPoints.polygon}
-                      fill="rgba(255, 255, 255, 0.14)"
-                      stroke="#ffffff"
-                      strokeWidth="2"
-                    />
-
-                    {radarPoints.dots.map((d, i) => (
-                      <circle key={i} cx={d.x} cy={d.y} r="4" fill="#ffffff" />
-                    ))}
-
-                    <text
-                      x="110"
-                      y="18"
-                      textAnchor="middle"
-                      fill="rgba(255,255,255,0.8)"
-                      fontSize="11"
-                      fontWeight="bold"
-                    >
-                      Vocab ({analytics.partStats[0]?.percentage}%)
-                    </text>
-                    <text
-                      x="215"
-                      y="114"
-                      textAnchor="end"
-                      fill="rgba(255,255,255,0.8)"
-                      fontSize="11"
-                      fontWeight="bold"
-                    >
-                      Grammar ({analytics.partStats[1]?.percentage}%)
-                    </text>
-                    <text
-                      x="110"
-                      y="210"
-                      textAnchor="middle"
-                      fill="rgba(255,255,255,0.8)"
-                      fontSize="11"
-                      fontWeight="bold"
-                    >
-                      Reading ({analytics.partStats[2]?.percentage}%)
-                    </text>
-                    <text
-                      x="5"
-                      y="114"
-                      textAnchor="start"
-                      fill="rgba(255,255,255,0.8)"
-                      fontSize="11"
-                      fontWeight="bold"
-                    >
-                      Conv ({analytics.partStats[3]?.percentage}%)
-                    </text>
-                  </svg>
-                </div>
-
-                {/* Strengths & Priority Focus */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-white/[0.08]">
-                  <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-white/50">
-                      พาร์ทที่ทำได้ดีที่สุด
-                    </span>
-                    <div className="text-sm font-bold text-white mt-1">
-                      {analytics.strongestPart?.title} ({analytics.strongestPart?.percentage}%)
-                    </div>
-                  </div>
-                  <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-white/50">
-                      พาร์ทที่ควรเน้นเสริม
-                    </span>
-                    <div className="text-sm font-bold text-white mt-1">
-                      {analytics.weakestPart?.title} ({analytics.weakestPart?.percentage}%)
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ================================================================= */}
-            {/* PART-BY-PART SCORE DASHBOARD CARDS */}
-            {/* ================================================================= */}
-            <section className="space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div>
-                  <span className="text-xs font-mono uppercase tracking-widest text-white/45">
-                    PART-BY-PART PERFORMANCE DASHBOARD
-                  </span>
-                  <h3 className="text-2xl sm:text-3xl font-black text-white">
-                    คะแนนแยกตามพาร์ท (60 ข้อ)
-                  </h3>
-                </div>
-                <button
-                  onClick={handleResetPretest}
-                  className="self-start sm:self-auto px-5 py-2.5 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
-                >
-                  ทำแบบทดสอบ Pre-Test ใหม่
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                {analytics.partStats.map((part) => (
-                  <div
-                    key={part.id}
-                    className="rounded-3xl bg-black/50 backdrop-blur-2xl border border-white/[0.1] hover:border-white/[0.22] p-6 flex flex-col justify-between transition-all shadow-xl space-y-5"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.12] text-white/85">
-                          PART {part.partNumber}
-                        </span>
-                        <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.1] text-white/70">
-                          {part.statusLabel}
-                        </span>
-                      </div>
-
-                      <div>
-                        <h4 className="text-xl font-black text-white">{part.title}</h4>
-                        <p className="text-xs text-white/50">{part.thaiTitle}</p>
-                      </div>
-
-                      {/* Score Big Number */}
-                      <div className="flex items-baseline justify-between pt-2">
-                        <div>
-                          <span className="text-4xl font-black text-white">
-                            {part.correct}
-                          </span>
-                          <span className="text-lg text-white/40 font-bold">
-                            {' '}
-                            / {part.questionCount}
-                          </span>
-                        </div>
-                        <span className="text-lg font-mono font-bold text-white/80">
-                          {part.percentage}%
-                        </span>
-                      </div>
-
-                      {/* Clean White Progress Bar */}
-                      <div className="w-full h-2 rounded-full bg-white/[0.08] overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-white transition-all duration-700"
-                          style={{ width: `${part.percentage}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 pt-3 border-t border-white/[0.08]">
-                      <div className="flex items-center justify-between text-xs text-white/55">
-                        <span>ถูก: {part.correct}</span>
-                        <span>ผิด: {part.wrong}</span>
-                        <span>ว่าง: {part.unanswered}</span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setReviewPartFilter(part.id);
-                          const el = document.getElementById('answer-key-section');
-                          el?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="w-full py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-xs font-semibold text-white/80 hover:text-white transition-all cursor-pointer"
-                      >
-                        ดูเฉลยพาร์ทนี้ ({part.questionCount} ข้อ) →
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* ================================================================= */}
-            {/* COMPLETE ANSWER KEY & EXPLANATIONS (เฉลยละเอียด 60 ข้อ) */}
-            {/* ================================================================= */}
-            <section id="answer-key-section" className="space-y-6 pt-4">
-              <div className="rounded-3xl bg-black/50 backdrop-blur-2xl border border-white/[0.1] p-6 sm:p-8 space-y-6">
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                  <div>
-                    <span className="text-xs font-mono uppercase tracking-widest text-white/45">
-                      COMPLETE ANSWER KEY & EXPLANATIONS
-                    </span>
-                    <h3 className="text-2xl sm:text-3xl font-black text-white">
-                      เฉลยละเอียดพร้อมคำอธิบายครบทั้ง 60 ข้อ
-                    </h3>
-                  </div>
-
-                  {/* Status Filter */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    {[
-                      { id: 'all', label: `ทั้งหมด (${totalQuestions})` },
-                      {
-                        id: 'wrong',
-                        label: `เฉพาะข้อที่ผิด/ไม่ได้ตอบ (${
-                          analytics.totalWrong + analytics.totalUnanswered
-                        })`,
-                      },
-                      { id: 'correct', label: `เฉพาะข้อที่ถูก (${analytics.totalCorrect})` },
-                    ].map((st) => (
-                      <button
-                        key={st.id}
-                        onClick={() => setReviewStatusFilter(st.id as any)}
-                        className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer border ${
-                          reviewStatusFilter === st.id
-                            ? 'bg-white text-black border-white'
-                            : 'bg-white/[0.04] text-white/70 border-white/[0.1] hover:bg-white/[0.08]'
-                        }`}
-                      >
-                        {st.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Part Filter Tabs */}
-                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/[0.08]">
-                  <button
-                    onClick={() => setReviewPartFilter('all')}
-                    className={`px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer border ${
-                      reviewPartFilter === 'all'
-                        ? 'bg-white text-black font-bold border-white'
-                        : 'bg-white/[0.04] text-white/60 border-white/[0.1] hover:text-white'
-                    }`}
-                  >
-                    All Parts (60)
-                  </button>
-                  {ENGLISH_PARTS.map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => setReviewPartFilter(p.id)}
-                      className={`px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer border ${
-                        reviewPartFilter === p.id
-                          ? 'bg-white text-black font-bold border-white'
-                          : 'bg-white/[0.04] text-white/60 border-white/[0.1] hover:text-white'
-                      }`}
-                    >
-                      Part {p.partNumber}: {p.title} ({p.questionCount})
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Answer Key Question Cards */}
-              {filteredReviewQuestions.length === 0 ? (
-                <div className="rounded-3xl bg-black/40 border border-white/[0.08] p-12 text-center text-white/60">
-                  ไม่พบข้อสอบในหมวดหมู่ที่เลือก
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {filteredReviewQuestions.map((q) => {
-                    const userAns = answers[q.id];
-                    const isCorrect = userAns === q.correct;
-                    const partInfo = ENGLISH_PARTS.find((p) => p.id === q.part);
-
-                    return (
-                      <div
-                        key={q.id}
-                        className="rounded-3xl bg-black/50 backdrop-blur-2xl border border-white/[0.1] p-6 sm:p-8 space-y-5 transition-all"
-                      >
-                        {/* Top Bar */}
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex items-center gap-2.5">
-                            <span className="px-3 py-1 rounded-xl bg-white/[0.08] font-mono font-bold text-sm text-white">
-                              ข้อที่ {q.id}
-                            </span>
-                            <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-white/75">
-                              Part {partInfo?.partNumber}: {partInfo?.title}
-                            </span>
-                          </div>
-
-                          <div>
-                            {isCorrect ? (
-                              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
-                                ✓ ตอบถูก (เลือก {userAns})
-                              </span>
-                            ) : userAns ? (
-                              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-bold">
-                                ✕ ตอบผิด (คุณเลือก {userAns} · เฉลย {q.correct})
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/[0.06] border border-white/[0.15] text-white/70 text-xs font-bold">
-                                ไม่ได้เลือกคำตอบ (เฉลย {q.correct})
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Passage if Reading */}
-                        {q.passageText && (
-                          <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.1] space-y-2">
-                            <div className="text-xs font-mono uppercase tracking-wider text-white/70 font-bold">
-                              {q.passageTitle}
-                            </div>
-                            <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
-                              {q.passageText}
-                            </p>
-                          </div>
-                        )}
-
-                        {/* Question Text */}
-                        <div className="text-base sm:text-lg font-bold text-white whitespace-pre-line leading-relaxed">
-                          {q.question}
-                        </div>
-
-                        {/* 4 Choices Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {(['A', 'B', 'C', 'D'] as OptionKey[]).map((opt) => {
-                            const isThisCorrect = q.correct === opt;
-                            const isThisSelected = userAns === opt;
-
-                            let optionStyle =
-                              'bg-white/[0.03] border-white/[0.08] text-white/70';
-                            if (isThisCorrect) {
-                              optionStyle =
-                                'bg-emerald-500/15 border-emerald-500/40 text-white font-semibold';
-                            } else if (isThisSelected && !isThisCorrect) {
-                              optionStyle =
-                                'bg-rose-500/15 border-rose-500/40 text-white/90 font-medium';
-                            }
-
-                            return (
-                              <div
-                                key={opt}
-                                className={`p-4 rounded-2xl border flex items-center justify-between gap-3 ${optionStyle}`}
-                              >
-                                <div className="flex items-center gap-3">
-                                  <span
-                                    className={`w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs shrink-0 ${
-                                      isThisCorrect
-                                        ? 'bg-emerald-400 text-black'
-                                        : isThisSelected
-                                        ? 'bg-rose-400 text-black'
-                                        : 'bg-white/[0.08] text-white/60'
-                                    }`}
-                                  >
-                                    {opt}
-                                  </span>
-                                  <span className="text-sm sm:text-base">{q.options[opt]}</span>
-                                </div>
-                                {isThisCorrect && (
-                                  <span className="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-emerald-400/20 text-emerald-300 shrink-0">
-                                    เฉลย
-                                  </span>
-                                )}
-                                {isThisSelected && !isThisCorrect && (
-                                  <span className="text-[11px] font-mono uppercase px-2 py-0.5 rounded bg-rose-400/20 text-rose-300 shrink-0">
-                                    ที่คุณเลือก
-                                  </span>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {/* Explanation Box */}
-                        <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/[0.1] text-sm text-white/80 leading-relaxed">
-                          <span className="font-bold text-white mr-2">คำอธิบายเฉลย:</span>
-                          {q.explanation}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </section>
-          </div>
-        ) : (
-          /* =================================================================== */
-          /* VIEW 2: ACTIVE PRE-TEST EXAM INTERFACE (60 QUESTIONS) */
-          /* =================================================================== */
-          <div className="space-y-6">
-            {/* Part Switcher & View Mode Controls */}
-            <div className="rounded-3xl bg-black/50 backdrop-blur-2xl border border-white/[0.1] p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-              {/* 4 Part Tabs */}
-              <div className="flex flex-wrap items-center gap-2">
-                {ENGLISH_PARTS.map((part) => {
-                  const isCurrentPart =
-                    viewMode === 'single'
-                      ? currentQuestion.part === part.id
-                      : activeListPart === part.id;
-                  const stat = analytics.partStats.find((s) => s.id === part.id);
-
-                  return (
-                    <button
-                      key={part.id}
-                      onClick={() => handleJumpToPart(part.id)}
-                      className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2.5 border ${
-                        isCurrentPart
-                          ? 'bg-white text-black border-white'
-                          : 'bg-white/[0.04] text-white/70 border-white/[0.08] hover:bg-white/[0.08] hover:text-white'
-                      }`}
-                    >
-                      <span>
-                        Part {part.partNumber}: {part.title}
-                      </span>
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-[11px] font-mono ${
-                          isCurrentPart
-                            ? 'bg-black/15 text-black'
-                            : 'bg-white/[0.08] text-white/60'
-                        }`}
-                      >
-                        {stat?.answered}/{part.questionCount}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* View Mode Switcher (Clean Monochrome) */}
-              <div className="flex items-center gap-2 self-end lg:self-auto">
-                <button
-                  onClick={() => setViewMode('single')}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
-                    viewMode === 'single'
-                      ? 'bg-white text-black border-white font-bold'
-                      : 'bg-white/[0.04] text-white/55 border-white/[0.08] hover:text-white'
-                  }`}
-                >
-                  ทำทีละข้อ (Focus)
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
-                    viewMode === 'list'
-                      ? 'bg-white text-black border-white font-bold'
-                      : 'bg-white/[0.04] text-white/55 border-white/[0.08] hover:text-white'
-                  }`}
-                >
-                  แสดงเรียงทุกข้อ (List)
-                </button>
-              </div>
-            </div>
-
-            {viewMode === 'single' ? (
-              /* ---------------- SINGLE QUESTION FOCUS MODE ---------------- */
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                {/* Active Question Card (8 Cols) */}
-                <div className="lg:col-span-8 rounded-[2.5rem] bg-black/55 backdrop-blur-3xl border border-white/[0.1] p-6 sm:p-10 shadow-2xl space-y-7 relative overflow-hidden">
-                  {/* Question Top Meta */}
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-xs font-mono font-bold px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.12] text-white/85">
-                        PART {currentPartMeta.partNumber} · {currentPartMeta.title.toUpperCase()}
-                      </span>
-                      <span className="text-xs font-mono text-white/45 hidden sm:inline">
-                        ({currentPartMeta.thaiTitle})
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2.5">
-                      <button
-                        onClick={() => handleToggleFlag(currentQuestion.id)}
-                        className={`px-3.5 py-1.5 rounded-full text-xs font-mono border transition-all cursor-pointer ${
-                          flagged.includes(currentQuestion.id)
-                            ? 'bg-white text-black border-white font-bold'
-                            : 'bg-white/[0.04] border-white/[0.1] text-white/55 hover:text-white'
-                        }`}
-                      >
-                        {flagged.includes(currentQuestion.id) ? '★ ติดดาวทบทวนแล้ว' : '☆ ติดดาวทบทวน'}
-                      </button>
-                      <div className="px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.12] font-mono font-bold text-sm text-white/90">
-                        ข้อที่ {currentQuestion.id} / {totalQuestions}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Reading Passage Card (Only for Part 3 Reading) */}
-                  {currentQuestion.passageText && (
-                    <div className="p-5 sm:p-6 rounded-3xl bg-white/[0.03] border border-white/[0.12] space-y-2.5">
-                      <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-white/75 font-bold">
-                        <BookOpen className="w-4 h-4 text-white/75" />
-                        <span>{currentQuestion.passageTitle}</span>
-                      </div>
-                      <p className="text-sm sm:text-base text-white/85 leading-relaxed">
-                        {currentQuestion.passageText}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Question Prompt */}
-                  <div className="text-xl sm:text-2xl font-bold text-white leading-relaxed whitespace-pre-line">
-                    {currentQuestion.question}
-                  </div>
-
-                  {/* 4 Multiple Choice Buttons */}
-                  <div className="grid grid-cols-1 gap-3.5">
-                    {(['A', 'B', 'C', 'D'] as OptionKey[]).map((opt) => {
-                      const isSelected = answers[currentQuestion.id] === opt;
-                      return (
-                        <button
-                          key={opt}
-                          onClick={() => handleSelectOption(currentQuestion.id, opt)}
-                          className={`group p-4 sm:p-5 rounded-2xl border text-left transition-all duration-200 flex items-center gap-4 cursor-pointer ${
-                            isSelected
-                              ? 'bg-white/[0.12] border-white/60 shadow-[0_0_20px_rgba(255,255,255,0.08)]'
-                              : 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.08] hover:border-white/[0.2]'
-                          }`}
-                        >
-                          <span
-                            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center font-mono font-black text-sm sm:text-base shrink-0 transition-all ${
-                              isSelected
-                                ? 'bg-white text-black'
-                                : 'bg-white/[0.07] text-white/60 group-hover:text-white'
-                            }`}
-                          >
-                            {opt}
-                          </span>
-                          <span
-                            className={`text-base sm:text-lg font-medium ${
-                              isSelected ? 'text-white font-semibold' : 'text-white/80'
-                            }`}
-                          >
-                            {currentQuestion.options[opt]}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Bottom Prev / Next / Submit Navigation */}
-                  <div className="pt-6 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-4">
-                    <button
-                      onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
-                      disabled={currentIndex === 0}
-                      className="px-6 py-3.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] disabled:opacity-25 border border-white/[0.1] text-xs sm:text-sm font-bold uppercase tracking-wider text-white transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                      <span>ข้อก่อนหน้า</span>
-                    </button>
-
-                    <div className="flex items-center gap-3">
-                      {currentIndex < totalQuestions - 1 ? (
-                        <button
-                          onClick={() =>
-                            setCurrentIndex((prev) => Math.min(totalQuestions - 1, prev + 1))
-                          }
-                          className="px-8 py-3.5 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-xs sm:text-sm uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer"
-                        >
-                          <span>ข้อถัดไป</span>
-                          <ArrowRight className="w-4 h-4" />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => setShowConfirmModal(true)}
-                          className="px-8 py-3.5 rounded-full bg-white hover:bg-neutral-200 text-black font-black text-xs sm:text-sm uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer"
-                        >
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span>ส่งกระดาษคำตอบและดูผลคะแนน</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Question Grid Navigator (4 Cols) */}
-                <div className="lg:col-span-4 rounded-[2.5rem] bg-black/50 backdrop-blur-3xl border border-white/[0.1] p-6 space-y-5 shadow-2xl">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-[11px] font-mono uppercase tracking-widest text-white/45 block">
-                        QUESTION NAVIGATOR
-                      </span>
-                      <h3 className="text-lg font-black text-white">กระดาษคำตอบ 60 ข้อ</h3>
-                    </div>
-                    <span className="text-xs font-mono font-bold text-white/80">
-                      ตอบแล้ว {answeredCount}/60
-                    </span>
-                  </div>
-
-                  {/* Grouped by Part */}
-                  <div className="space-y-4 max-h-[520px] overflow-y-auto pr-1">
-                    {ENGLISH_PARTS.map((part) => {
-                      const partQuestions = ENGLISH_PRETEST_QUESTIONS.filter(
-                        (q) => q.part === part.id
-                      );
-                      return (
-                        <div key={part.id} className="space-y-2">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="font-bold text-white/80">
-                              Part {part.partNumber}: {part.title}
-                            </span>
-                            <span className="font-mono text-white/40">
-                              {partQuestions.filter((q) => answers[q.id]).length}/
-                              {part.questionCount}
-                            </span>
-                          </div>
-                          <div className="grid grid-cols-5 gap-2">
-                            {partQuestions.map((q) => {
-                              const idx = q.id - 1;
-                              const isCurrent = currentIndex === idx;
-                              const isAns = Boolean(answers[q.id]);
-                              const isFlag = flagged.includes(q.id);
-
-                              return (
-                                <button
-                                  key={q.id}
-                                  onClick={() => setCurrentIndex(idx)}
-                                  className={`h-10 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer relative flex items-center justify-center border ${
-                                    isCurrent
-                                      ? 'bg-white text-black border-white scale-105'
-                                      : isAns
-                                      ? 'bg-white/[0.14] text-white border-white/30 hover:bg-white/[0.2]'
-                                      : 'bg-white/[0.04] text-white/50 border-white/[0.08] hover:bg-white/[0.1] hover:text-white'
-                                  }`}
-                                >
-                                  <span>{q.id}</span>
-                                  {isAns && (
-                                    <span className="text-[9px] ml-0.5 opacity-80">
-                                      ({answers[q.id]})
-                                    </span>
-                                  )}
-                                  {isFlag && (
-                                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-white" />
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Submit CTA in Sidebar */}
-                  <div className="pt-4 border-t border-white/[0.08] space-y-3">
-                    <button
-                      onClick={() => setShowConfirmModal(true)}
-                      className="w-full py-4 rounded-2xl bg-white hover:bg-neutral-200 text-black font-black text-xs sm:text-sm uppercase tracking-wider transition-all cursor-pointer"
-                    >
-                      ส่งคำตอบและดู Dashboard คะแนน
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              /* ---------------- ALL-IN-ONE LIST MODE ---------------- */
-              <div className="space-y-5">
-                <div className="flex flex-wrap items-center justify-between gap-3 px-2">
-                  <div className="text-sm text-white/70">
-                    กำลังแสดงข้อสอบแบบเรียงรายการ ({listModeQuestions.length} ข้อ)
-                  </div>
-                  <button
-                    onClick={() => setActiveListPart('all')}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase border cursor-pointer ${
-                      activeListPart === 'all'
-                        ? 'bg-white text-black font-bold border-white'
-                        : 'bg-white/[0.04] text-white/60 border-white/[0.1]'
-                    }`}
-                  >
-                    แสดงครบทั้ง 60 ข้อ
-                  </button>
-                </div>
-
-                {listModeQuestions.map((q) => {
-                  const partInfo = ENGLISH_PARTS.find((p) => p.id === q.part);
-                  return (
-                    <div
-                      key={q.id}
-                      className="rounded-3xl bg-black/50 backdrop-blur-2xl border border-white/[0.1] p-6 sm:p-8 space-y-5"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5">
-                          <span className="px-3 py-1 rounded-xl bg-white/[0.08] font-mono font-bold text-sm text-white">
-                            ข้อที่ {q.id} / 60
-                          </span>
-                          <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-white/75">
-                            Part {partInfo?.partNumber}: {partInfo?.title}
-                          </span>
-                        </div>
-                        {answers[q.id] && (
-                          <span className="text-xs font-mono text-white/80">
-                            เลือกข้อ {answers[q.id]} แล้ว
-                          </span>
-                        )}
-                      </div>
-
-                      {q.passageText && (
-                        <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.1] space-y-2">
-                          <div className="text-xs font-mono uppercase tracking-wider text-white/75 font-bold">
-                            {q.passageTitle}
-                          </div>
-                          <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
-                            {q.passageText}
-                          </p>
-                        </div>
-                      )}
-
-                      <div className="text-base sm:text-lg font-bold text-white whitespace-pre-line">
-                        {q.question}
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {(['A', 'B', 'C', 'D'] as OptionKey[]).map((opt) => {
-                          const isSelected = answers[q.id] === opt;
-                          return (
-                            <button
-                              key={opt}
-                              onClick={() => handleSelectOption(q.id, opt)}
-                              className={`p-4 rounded-2xl border text-left transition-all flex items-center gap-3.5 cursor-pointer ${
-                                isSelected
-                                  ? 'bg-white/[0.12] border-white/60 text-white font-semibold'
-                                  : 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.08] text-white/75'
-                              }`}
-                            >
-                              <span
-                                className={`w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs shrink-0 ${
-                                  isSelected
-                                    ? 'bg-white text-black'
-                                    : 'bg-white/[0.08] text-white/60'
-                                }`}
-                              >
-                                {opt}
-                              </span>
-                              <span className="text-sm sm:text-base">{q.options[opt]}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-
-                <div className="flex justify-center pt-6">
-                  <button
-                    onClick={() => setShowConfirmModal(true)}
-                    className="px-10 py-4 rounded-full bg-white hover:bg-neutral-200 text-black font-black text-sm sm:text-base uppercase tracking-wider cursor-pointer transition-all"
-                  >
-                    ส่งกระดาษคำตอบและดูผลคะแนน ({answeredCount}/60 ข้อ)
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </main>
-
-      {/* ===================================================================== */}
-      {/* SUBMIT CONFIRMATION MODAL */}
-      {/* ===================================================================== */}
-      {showConfirmModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4">
-          <div className="max-w-md w-full rounded-[2.5rem] bg-[#0b0b12] border border-white/[0.15] p-8 space-y-6 shadow-2xl text-center">
-            <div className="w-16 h-16 rounded-2xl bg-white/[0.06] border border-white/[0.15] flex items-center justify-center mx-auto text-white">
-              <GraduationCap className="w-8 h-8" />
-            </div>
-
-            <div className="space-y-2">
-              <h3 className="text-2xl font-black text-white">ยืนยันการส่งข้อสอบ Pre-Test?</h3>
-              <p className="text-sm text-white/65 leading-relaxed">
-                คุณตอบคำถามไปแล้ว{' '}
-                <span className="text-white font-bold">
-                  {answeredCount} จาก {totalQuestions} ข้อ
-                </span>
-                {answeredCount < totalQuestions
-                  ? ` (ยังเหลืออีก ${totalQuestions - answeredCount} ข้อที่ยังไม่ได้เลือกคำตอบ)`
-                  : ' ครบทุกข้อเรียบร้อยแล้ว'}
-              </p>
-            </div>
-
-            {/* Part Status Summary */}
-            <div className="grid grid-cols-2 gap-2.5 text-left">
-              {ENGLISH_PARTS.map((p) => {
-                const stat = analytics.partStats.find((s) => s.id === p.id);
-                return (
-                  <div
-                    key={p.id}
-                    className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-between text-xs"
-                  >
-                    <span className="text-white/75 font-semibold">{p.title}</span>
-                    <span className="font-mono font-bold text-white">
-                      {stat?.answered}/{p.questionCount}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <button
-                onClick={() => setShowConfirmModal(false)}
-                className="flex-1 py-3.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.12] text-xs font-bold uppercase tracking-wider text-white transition-all cursor-pointer"
+      {/* Floating Side Track Index */}
+      <div className="fixed right-10 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-end gap-3 pointer-events-none">
+        {ENGLISH_CHAPTERS.map((ch, idx) => {
+          const isActive = activeChapterIndex === idx + 1;
+          return (
+            <div key={ch.id} className="flex items-center gap-3 transition-all duration-300">
+              <span
+                className={`text-[10px] font-mono tracking-wider transition-all duration-300 ${
+                  isActive ? 'text-white font-bold opacity-100' : 'text-white/25 opacity-35'
+                }`}
               >
-                กลับไปทำต่อ
-              </button>
-              <button
-                onClick={handleConfirmSubmit}
-                className="flex-1 py-3.5 rounded-full bg-white hover:bg-neutral-200 text-black font-black text-xs uppercase tracking-wider transition-all cursor-pointer"
-              >
-                ดูผลคะแนนและเฉลยทันที
-              </button>
+                {String(idx + 1).padStart(2, '0')} {ch.cluster.split(' ')[0]}
+              </span>
+              <div
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                  isActive
+                    ? 'bg-white scale-150 shadow-[0_0_8px_rgba(255,255,255,0.9)]'
+                    : 'bg-white/20'
+                }`}
+              />
             </div>
+          );
+        })}
+      </div>
+
+      {/* Intro Hero Screen */}
+      <section className="h-screen w-full flex flex-col justify-center items-center px-6 relative z-10 text-center">
+        <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in zoom-in duration-1000">
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.12] text-white/80 text-xs sm:text-sm font-mono tracking-wider uppercase">
+            <Sparkles className="w-4 h-4 text-white/80" />
+            <span>Interactive 3D Linguistic Curriculum Explorer</span>
+          </div>
+
+          <div className="space-y-4">
+            <h1 className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tight text-white leading-none">
+              ENGLISH <span className="text-white/30 font-light">COURSE</span>
+            </h1>
+            <p className="text-lg sm:text-xl font-light text-white/70 max-w-2xl mx-auto leading-relaxed">
+              สำรวจหลักสูตรภาษาอังกฤษครบวงจร 12 บทเรียน เริ่มต้นจากการวัดพื้นฐานด้วย Pre-Test 100 ข้อ สู่การเจาะลึกโครงสร้างประโยค 12 Tenses คำศัพท์ การอ่านจับใจความ บทสนทนา และการพิชิตข้อสอบ A-Level
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+            <Link
+              href="/course/english/pretest"
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2.5 hover:scale-[1.02]"
+            >
+              <span>เริ่มทำ Pre-Test 100 ข้อ (บทที่ 1)</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <button
+              onClick={scrollToChapter1}
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.12] text-white/85 font-semibold text-xs sm:text-sm tracking-wider uppercase transition-all cursor-pointer"
+            >
+              เลื่อนดูโครงสร้างทั้ง 12 บทเรียน
+            </button>
+          </div>
+
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3 text-xs font-mono text-white/40">
+            <span>12 STRUCTURED MODULES</span>
+            <span>·</span>
+            <span>100-ITEM DIAGNOSTIC PRE-TEST</span>
+            <span>·</span>
+            <span>ACCOUNT SCORE & TIME MEMORY</span>
           </div>
         </div>
-      )}
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 animate-bounce">
+          <span className="text-xs font-mono uppercase tracking-[0.3em]">
+            Scroll to inspect chapters
+          </span>
+          <ChevronDown className="w-5 h-5 text-white/70" />
+        </div>
+      </section>
+
+      {/* 12 Chapter Presentation Stages */}
+      {ENGLISH_CHAPTERS.map((chapter, idx) => {
+        const isEven = idx % 2 === 0;
+
+        return (
+          <section
+            key={chapter.id}
+            className={`h-screen w-full flex items-center px-6 md:px-24 relative z-10 ${
+              isEven ? 'justify-start' : 'justify-end'
+            }`}
+          >
+            <div className="max-w-xl md:max-w-2xl bg-black/45 backdrop-blur-3xl border border-white/[0.1] hover:border-white/[0.25] p-8 md:p-12 rounded-[2.5rem] shadow-[0_20px_70px_rgba(0,0,0,0.75)] relative group transition-all duration-500">
+              <div className="space-y-6 relative z-10">
+                {/* Header Badge */}
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.14] text-white/85 text-xs font-mono tracking-wider uppercase">
+                      <GraduationCap className="w-3.5 h-3.5 text-white/80" />
+                      <span>
+                        CHAPTER {String(idx + 1).padStart(2, '0')} · {chapter.cluster}
+                      </span>
+                    </div>
+                    {chapter.isPretest && (
+                      <span className="px-3 py-1 rounded-full bg-white text-black text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3" />
+                        <span>พร้อมทำข้อสอบแล้ว (100 ข้อ)</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Telemetry label for 3D model */}
+                  <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-mono text-white/40">
+                    <Box className="w-3.5 h-3.5 text-white/60" />
+                    <span>{chapter.modelLabel}</span>
+                  </div>
+                </div>
+
+                {/* Chapter Title */}
+                <div className="space-y-2">
+                  <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
+                    {chapter.title}
+                  </h2>
+                  <p className="text-xs sm:text-sm font-mono text-white/40 uppercase tracking-widest">
+                    {chapter.engTitle}
+                  </p>
+                </div>
+
+                {/* Description */}
+                <p className="text-white/65 text-sm md:text-base leading-relaxed">
+                  {chapter.desc}
+                </p>
+
+                {/* Sub-topics Tags */}
+                <div className="flex flex-wrap gap-2">
+                  {chapter.topics.map((topic) => (
+                    <span
+                      key={topic}
+                      className="px-3 py-1 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs text-white/75 font-medium"
+                    >
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Account Score Memory Box (Only on Chapter 01 Pre-Test if score/progress exists) */}
+                {chapter.isPretest && (latestScore || inProgressCount > 0) && (
+                  <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/[0.12] flex flex-wrap items-center justify-between gap-3">
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-white/50">
+                        บันทึกของบัญชี {session?.user?.name || 'คุณ'}
+                      </span>
+                      {latestScore ? (
+                        <div className="text-sm font-bold text-white">
+                          คะแนนล่าสุด: {latestScore.totalScore}/{latestScore.totalQuestions} ข้อ ({latestScore.percentage}%) · เวลา {formatTime(latestScore.elapsedSeconds)}
+                        </div>
+                      ) : (
+                        <div className="text-sm font-bold text-white">
+                          กำลังทำค้างไว้: ตอบแล้ว {inProgressCount} / 100 ข้อ
+                        </div>
+                      )}
+                    </div>
+                    <Link
+                      href="/course/english/pretest"
+                      className="text-xs font-mono underline text-white/80 hover:text-white"
+                    >
+                      {latestScore ? 'ดู Dashboard รายพาร์ท →' : 'ทำต่อจากเดิม →'}
+                    </Link>
+                  </div>
+                )}
+
+                {/* Status & Action Buttons */}
+                <div className="pt-2 flex flex-col sm:flex-row items-center gap-3.5">
+                  {chapter.isPretest ? (
+                    <>
+                      <Link
+                        href="/course/english/pretest"
+                        className="w-full sm:w-auto px-8 py-4 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                      >
+                        <span>
+                          {latestScore
+                            ? 'เปิด Dashboard คะแนน / สอบ Pre-Test'
+                            : inProgressCount > 0
+                            ? `ทำข้อสอบ Pre-Test ต่อ (${inProgressCount}/100)`
+                            : 'เข้าทำข้อสอบ Pre-Test (100 ข้อ)'}
+                        </span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/[0.04] border border-white/[0.1] text-white/60 text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2">
+                        <Clock className="w-3.5 h-3.5 text-white/60" />
+                        <span>เนื้อหาบทเรียนกำลังจัดทำ</span>
+                      </div>
+                      <Link
+                        href="/course/english/pretest"
+                        className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.15] text-white font-semibold text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2"
+                      >
+                        <Layers className="w-3.5 h-3.5" />
+                        <span>วัดพื้นฐานด้วย Pre-Test ก่อนเรียน</span>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      })}
+
+      {/* Summary Footer Section */}
+      <section className="h-screen w-full flex flex-col justify-center items-center px-6 relative z-10 text-center">
+        <div className="max-w-4xl mx-auto space-y-10">
+          <div className="space-y-4">
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-white">
+              COMPLETE ENGLISH SYLLABUS
+            </h2>
+            <p className="text-white/60 text-base sm:text-lg max-w-xl mx-auto">
+              ครอบคลุมครบวงจรทั้ง 12 บทเรียน ตั้งแต่วัดพื้นฐาน Pre-Test 100 ข้อ ไวยากรณ์ คำศัพท์ การอ่าน บทสนทนา และการจำลองสอบ A-Level
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/course/english/pretest"
+              className="px-8 py-4.5 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-sm sm:text-base tracking-wider uppercase transition-all hover:scale-[1.02]"
+            >
+              เริ่มทำ Pre-Test 100 ข้อ
+            </Link>
+            <Link
+              href="/"
+              className="px-8 py-4.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.15] text-white font-semibold text-sm sm:text-base tracking-wider uppercase transition-all"
+            >
+              กลับสู่หน้าหลัก
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
