@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELYSIA // DAYDREAM KEYNOTE — ARTISTIC 3D PRESENTATION</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=M+PLUS+Rounded+1c:wght@800;900&family=Plus+Jakarta+Sans:wght@700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      background-color: #fdfbfd;
+      color: #1e1b4b;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow: hidden;
+      transition: background-color 0.8s ease;
+    }
+
+    body.dark-mode {
+      background-color: #030308;
+      color: #ffffff;
+    }
+
+    #presentation-stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Background WebGL & Artistic Overlay */
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #webgl-bg {
+      z-index: 1;
+    }
+
+    #art-canvas {
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Slide Overlay Container */
+    #slides-wrapper {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 60px 80px 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.94) translateY(24px);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* TOP & BOTTOM ARTISTIC HUD */
+    #top-branding {
+      position: absolute;
+      top: 36px;
+      left: 64px;
+      right: 64px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: #818cf8;
+      pointer-events: none;
+      transition: color 0.6s ease;
+    }
+
+    body.dark-mode #top-branding {
+      color: #94a3b8;
+    }
+
+    #bottom-dock {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      padding: 12px 28px;
+      border-radius: 999px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 16px 40px rgba(165, 180, 252, 0.35);
+      transition: all 0.6s ease;
+    }
+
+    body.dark-mode #bottom-dock {
+      background: rgba(15, 23, 42, 0.85);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    .nav-btn {
+      background: #f1f5f9;
+      border: 1px solid rgba(0,0,0,0.06);
+      color: #334155;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      padding: 9px 20px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body.dark-mode .nav-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    .nav-btn:hover {
+      background: #6366f1;
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+    }
+
+    .slide-dots {
+      display: flex;
+      gap: 8px;
+      padding: 0 8px;
+    }
+
+    .dot {
+      width: 32px;
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(148, 163, 184, 0.35);
+      cursor: pointer;
+      transition: all 0.35s ease;
+    }
+
+    .dot.active {
+      width: 52px;
+      background: linear-gradient(90deg, #818cf8, #f472b6);
+      box-shadow: 0 0 16px rgba(244, 114, 182, 0.6);
+    }
+
+    /* SLIDE 1 (COVER) SUBTITLE */
+    .daydream-sub {
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: 0.38em;
+      color: #64748b;
+      white-space: nowrap;
+    }
+
+    /* SLIDE 2: ERGONOMIC PHILOSOPHY */
+    .giant-title {
+      font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
+      font-size: 88px;
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+    .giant-title span {
+      background: linear-gradient(135deg, #818cf8 0%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .art-cards-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      max-width: 1300px;
+      width: 100%;
+      margin-top: 40px;
+    }
+
+    .art-card {
+      background: rgba(255, 255, 255, 0.65);
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      border-radius: 36px;
+      padding: 44px 36px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 50px rgba(199, 210, 254, 0.35);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+    .art-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 60px rgba(165, 180, 252, 0.5);
+      border-color: #c084fc;
+    }
+    .card-pill {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      padding: 8px 18px;
+      border-radius: 99px;
+      margin-bottom: 20px;
+      background: rgba(129, 140, 248, 0.12);
+      color: #6366f1;
+    }
+    .card-h {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #1e1b4b;
+      margin-bottom: 12px;
+    }
+    .card-p {
+      font-size: 16px;
+      line-height: 1.65;
+      color: #64748b;
+    }
+
+    /* SLIDE 3: NO ANNOTATIONS (DARK KINETIC SLAM) */
+    .slam-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .slam-huge {
+      font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
+      font-size: 150px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 0.95;
+      color: #ffffff;
+      text-shadow: 0 0 60px rgba(255, 255, 255, 0.4), 0 20px 40px rgba(0, 0, 0, 0.9);
+      margin-bottom: 24px;
+    }
+    .slam-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: #38bdf8;
+    }
+
+    /* SLIDE 4: BENCHMARK (21x FASTER) */
+    .metric-hero {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .metric-huge-num {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 190px;
+      font-weight: 800;
+      line-height: 0.85;
+      letter-spacing: -0.05em;
+      background: linear-gradient(135deg, #38bdf8 0%, #c084fc 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 20px 50px rgba(192, 132, 252, 0.5));
+    }
+    .metric-unit {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 70px;
+      font-weight: 800;
+      color: #f472b6;
+    }
+    .metric-sub-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      max-width: 1100px;
+      width: 100%;
+      margin-top: 30px;
+    }
+    .metric-pill-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 28px;
+      padding: 30px;
+      backdrop-filter: blur(20px);
+    }
+    .metric-val {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 44px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+    .metric-lbl {
+      font-size: 15px;
+      color: #94a3b8;
+    }
+
+    /* SLIDE 5: ARTISTIC FINALE */
+    .outro-h {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 96px;
+      font-weight: 800;
+      line-height: 1.05;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #818cf8, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Presenter Notes */
+    #notes-drawer {
+      position: absolute;
+      top: 0;
+      right: -420px;
+      width: 400px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      border-left: 2px solid #e2e8f0;
+      backdrop-filter: blur(24px);
+      z-index: 50;
+      padding: 40px 32px;
+      transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: -20px 0 50px rgba(165, 180, 252, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      text-align: left;
+    }
+    body.dark-mode #notes-drawer {
+      background: rgba(10, 15, 26, 0.95);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: -20px 0 50px rgba(0, 0, 0, 0.8);
+    }
+    #notes-drawer.open { right: 0; }
+  </style>
+</head>
+<body>
+
+  <div id="presentation-stage">
+    <canvas id="webgl-bg"></canvas>
+    <canvas id="art-canvas"></canvas>
+
+    <!-- Top Branding -->
+    <div id="top-branding">
+      <div id="brand-tag">┌  ELYSIA 2  •  DAYDREAM</div>
+      <div id="slide-index-tag">01 / 05  ┐</div>
+    </div>
+
+    <!-- Slides Wrapper -->
+    <div id="slides-wrapper">
+
+      <!-- SLIDE 1: PURE DAYDREAM (MATCHES SCREENSHOT 1:1 WITH MASSIVE 3D PUFFY STICKERS) -->
+      <div class="slide active" id="slide-0">
+        <!-- Rendered with breathtaking precision directly on art-canvas -->
+        <div class="daydream-sub">B A C K E N D    T Y P E S C R I P T    F R A M E W O R K</div>
+      </div>
+
+      <!-- SLIDE 2: ERGONOMIC ARCHITECTURE -->
+      <div class="slide" id="slide-1">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #818cf8; letter-spacing: 0.2em; margin-bottom: 12px;">
+          // 01 • DESIGNED FOR HUMANS
+        </div>
+        <h1 class="giant-title">
+          Type-safe to the core.<br>
+          <span>Zero boilerplate.</span>
+        </h1>
+        <p style="font-size: 20px; color: #64748b; max-width: 720px; line-height: 1.6;">
+          ลบความยุ่งเหยิงของเฟรมเวิร์กยุคเก่า ให้เหลือเพียงโค้ดที่สะอาด สวยงาม และตรวจสอบ Type อัตโนมัติทุกบรรทัด
+        </p>
+        <div class="art-cards-row">
+          <div class="art-card">
+            <span class="card-pill">END-TO-END</span>
+            <h3 class="card-h">Unified Types</h3>
+            <p class="card-p">ส่ง Type ตรงจาก Backend ไป Frontend ทันที ไม่ต้อง Gen โค้ดซ้ำซ้อน ไม่ต้องเขียน interface เบิ้ล</p>
+          </div>
+          <div class="art-card">
+            <span class="card-pill">ERASE ANNOTATIONS</span>
+            <h3 class="card-h">Pure TypeScript</h3>
+            <p class="card-p">ไม่ต้องแปะ Decorator รกๆ อีกต่อไป โค้ดดูสะอาดตา อ่านง่ายเหมือนงานศิลป์</p>
+          </div>
+          <div class="art-card">
+            <span class="card-pill">INSTANT SYNC</span>
+            <h3 class="card-h">Eden Treaty</h3>
+            <p class="card-p">Client เรียก API เหมือนเรียกฟังก์ชันในเครื่อง Auto-complete นำทางแบบไร้รอยต่อ</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 3: NO ANNOTATIONS (DARK KINETIC SLAM) -->
+      <div class="slide" id="slide-2">
+        <div class="slam-container">
+          <div class="slam-huge">NO ANNOTATIONS.</div>
+          <div class="slam-sub">VALIDATED AT RUNTIME • TYPED AT COMPILE TIME</div>
+        </div>
+      </div>
+
+      <!-- SLIDE 4: SPEED & BENCHMARK -->
+      <div class="slide" id="slide-3">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #38bdf8; letter-spacing: 0.2em; margin-bottom: 12px;">
+          // 03 • PROVEN PERFORMANCE
+        </div>
+        <div class="metric-hero">
+          <div class="metric-huge-num">21</div>
+          <div class="metric-unit">x</div>
+        </div>
+        <div style="font-family: 'Fredoka', sans-serif; font-size: 38px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">
+          FASTER THAN EXPRESS.JS
+        </div>
+        <p style="font-size: 18px; color: #94a3b8; max-width: 600px;">
+          ขับเคลื่อนด้วย Bun V8 Engine และ Just-in-time Schema Compilation ที่เร็วระดับหัวแถวของโลก
+        </p>
+        <div class="metric-sub-cards">
+          <div class="metric-pill-card">
+            <div class="metric-val">0.02ms</div>
+            <div class="metric-lbl">Average Latency</div>
+          </div>
+          <div class="metric-pill-card">
+            <div class="metric-val">4x Less</div>
+            <div class="metric-lbl">Memory Footprint</div>
+          </div>
+          <div class="metric-pill-card">
+            <div class="metric-val">250k+</div>
+            <div class="metric-lbl">Req / Second</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 5: CONCLUSION & OUTRO -->
+      <div class="slide" id="slide-4">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #f472b6; letter-spacing: 0.2em; margin-bottom: 12px;">
+          // 04 • READY FOR THE FUTURE
+        </div>
+        <h1 class="outro-h">
+          Start Daydreaming.<br>
+          Ship with confidence.
+        </h1>
+        <p style="font-size: 22px; color: #64748b; max-width: 680px; line-height: 1.6; margin-bottom: 40px;">
+          พร้อมยกระดับการพรีเซนต์โปรเจกต์ด้วยดีไซน์ 3D ระดับเวิลด์คลาสแล้วหรือยังครับ?
+        </p>
+        <div style="display: flex; gap: 18px;">
+          <button class="nav-btn" id="btn-restart" style="padding: 14px 34px; font-size: 15px; background: #6366f1; color: #fff;">
+            ↻ RESTART SLIDES
+          </button>
+          <button class="nav-btn" id="btn-notes" style="padding: 14px 28px; font-size: 15px;">
+            📝 TALKING POINTS
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Dock Controller -->
+    <div id="bottom-dock">
+      <button class="nav-btn" id="btn-prev">◀ PREV</button>
+      <div class="slide-dots" id="dots-container"></div>
+      <button class="nav-btn" id="btn-next">NEXT ▶</button>
+      <div style="width: 1px; height: 18px; background: rgba(148, 163, 184, 0.3); margin: 0 4px;"></div>
+      <button class="nav-btn" id="btn-sound">🔊</button>
+      <button class="nav-btn" id="btn-fullscreen">⛶</button>
+    </div>
+
+    <!-- Presenter Notes Drawer -->
+    <div id="notes-drawer">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-family: 'Fredoka', sans-serif; font-size: 24px; color: #6366f1;">PRESENTER NOTES</h3>
+        <button id="btn-close-notes" style="background: none; border: none; font-size: 22px; cursor: pointer; color: #94a3b8;">✕</button>
+      </div>
+      <div id="notes-body" style="font-size: 16px; line-height: 1.7; color: #475569; flex-grow: 1; overflow-y: auto;">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       1. STATE & TALKING POINTS
+       ========================================================================= */
+    let currentSlide = 0;
+    const totalSlides = 5;
+    let isSoundOn = true;
+
+    const presenterNotes = [
+      "📌 Slide 1 (Daydream Cover): เปิดตัวด้วยภาพลักษณ์ที่ละมุน นุ่มฟู แตกต่างจากสไลด์เทคโนโลยีทั่วไปที่มักจะมืดและแข็ง ชี้ให้เห็นถึงความใส่ใจในสุนทรียศาสตร์และการออกแบบ",
+      "📌 Slide 2 (Ergonomic): พูดถึงแนวคิด Ergonomic Framework For Humans การเขียนโค้ดที่เข้าใจง่าย ไม่มี Decorator หรือ Annotation รกๆ",
+      "📌 Slide 3 (No Annotations): จุดเปลี่ยนทางอารมณ์! จอมืดลงและตัดสลับเข้าสู่โหมดไฮเปอร์สปีด เน้นย้ำประโยคเด็ด NO ANNOTATIONS กระแทกสายตาผู้ชม",
+      "📌 Slide 4 (Performance): ตอกย้ำด้วยความเร็วระดับ 21x เมื่อเทียบกับเฟรมเวิร์กยอดนิยมในอดีต พร้อมตัวเลข Latency 0.02ms",
+      "📌 Slide 5 (Outro): สรุปภาพรวมและเปิดรับคำถาม (Q&A)"
+    ];
+
+    /* =========================================================================
+       2. THREE.JS 3D SCENE: IRIDESCENT FLOATING GLASS ORBS & WARP CARDS (NO CUBES!)
+       ========================================================================= */
+    const webglCanvas = document.getElementById('webgl-bg');
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 18);
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas: webglCanvas,
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Studio Lights for Organic Glass
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    scene.add(ambientLight);
+
+    const light1 = new THREE.PointLight(0xa5b4fc, 4.0, 40);
+    light1.position.set(-10, 8, 10);
+    scene.add(light1);
+
+    const light2 = new THREE.PointLight(0xfbcfe8, 4.0, 40);
+    light2.position.set(10, -6, 10);
+    scene.add(light2);
+
+    // Group 1: Iridescent Floating Glass Orbs (Liquid & Soft, NO CUBES)
+    const orbsGroup = new THREE.Group();
+    scene.add(orbsGroup);
+
+    const orbGeo = new THREE.SphereGeometry(1.6, 64, 64);
+    const orbMat = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      transmission: 0.88,
+      opacity: 1,
+      transparent: true,
+      roughness: 0.05,
+      ior: 1.45,
+      thickness: 2.0,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.1,
+      reflectivity: 0.9
+    });
+
+    const orbs = [];
+    const orbConfigs = [
+      { x: -9, y: 4, z: -4, scale: 1.8 },
+      { x: 10, y: -3, z: -2, scale: 2.2 },
+      { x: 8, y: 5, z: -6, scale: 1.4 },
+      { x: -7, y: -5, z: -3, scale: 1.6 },
+      { x: 0, y: -8, z: -8, scale: 3.0 }
+    ];
+
+    orbConfigs.forEach((cfg, idx) => {
+      const mesh = new THREE.Mesh(orbGeo, orbMat.clone());
+      mesh.position.set(cfg.x, cfg.y, cfg.z);
+      mesh.scale.setScalar(cfg.scale);
+      mesh.userData = {
+        baseY: cfg.y,
+        baseX: cfg.x,
+        floatSpeed: 0.8 + idx * 0.3,
+        floatAmp: 0.6 + idx * 0.2
+      };
+      orbsGroup.add(mesh);
+      orbs.push(mesh);
+    });
+
+    // Group 2: Flying API Cards for Slide 2 (Dark Warp Scene)
+    const cardsGroup = new THREE.Group();
+    cardsGroup.visible = false;
+    scene.add(cardsGroup);
+
+    function createCardTexture(route, method, color) {
+      const c = document.createElement('canvas');
+      c.width = 440; c.height = 280;
+      const ctx = c.getContext('2d');
+
+      // Rounded Manila Paper Card with folder tab
+      ctx.fillStyle = '#f8f5ee';
+      ctx.beginPath();
+      ctx.roundRect(0, 0, 440, 280, 24);
+      ctx.fill();
+
+      // Method pill
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.roundRect(30, 44, 76, 32, 8);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 15px "JetBrains Mono"';
+      ctx.fillText(method, 44, 66);
+
+      // Route
+      ctx.fillStyle = '#1e293b';
+      ctx.font = '800 24px "Plus Jakarta Sans"';
+      ctx.fillText(route, 120, 68);
+
+      // Code line
+      ctx.fillStyle = '#64748b';
+      ctx.font = '500 14px "JetBrains Mono"';
+      ctx.fillText('• params: { id: string }', 32, 120);
+      ctx.fillText('• response: 200 OK -> schema.item', 32, 155);
+
+      const tex = new THREE.CanvasTexture(c);
+      return tex;
+    }
+
+    const cardPlanes = [];
+    const cardData = [
+      { r: '/users', m: 'GET', c: '#8b5cf6' },
+      { r: '/posts', m: 'POST', c: '#ec4899' },
+      { r: '/ws', m: 'WS', c: '#10b981' },
+      { r: '/auth', m: 'GET', c: '#0ea5e9' }
+    ];
+    const planeGeo = new THREE.PlaneGeometry(4.4, 2.8);
+
+    for (let i = 0; i < 36; i++) {
+      const d = cardData[i % cardData.length];
+      const pMesh = new THREE.Mesh(planeGeo, new THREE.MeshBasicMaterial({
+        map: createCardTexture(d.r, d.m, d.c),
+        transparent: true,
+        side: THREE.DoubleSide
+      }));
+      const angle = (i / 36) * Math.PI * 4;
+      const radius = 3.5 + Math.random() * 5.0;
+      pMesh.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius, -Math.random() * 60);
+      pMesh.rotation.set((Math.random() - 0.5) * 0.4, (Math.random() - 0.5) * 0.4, (Math.random() - 0.5) * 0.4);
+      pMesh.userData = { speed: 20 + Math.random() * 15 };
+      cardsGroup.add(pMesh);
+      cardPlanes.push(pMesh);
+    }
+
+    /* =========================================================================
+       3. 2D ARTISTIC CANVAS: GIGANTIC PUFFY 3D STICKERS, BÉZIER SPARKLES, HEARTS
+       ========================================================================= */
+    const artCanvas = document.getElementById('art-canvas');
+    const artCtx = artCanvas.getContext('2d');
+
+    function resizeAll() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+
+      artCanvas.width = w;
+      artCanvas.height = h;
+    }
+    window.addEventListener('resize', resizeAll);
+    resizeAll();
+
+    // Helper: 4-pointed curved Bézier Sparkle (Cute Anime Style)
+    function drawCuteSparkle(ctx, x, y, size, color, rot = 0) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = size * 0.15;
+      ctx.beginPath();
+      for (let i = 0; i < 4; i++) {
+        ctx.quadraticCurveTo(0, 0, size, 0);
+        ctx.quadraticCurveTo(0, 0, 0, -size);
+        ctx.rotate(Math.PI / 2);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Helper: Cute Rounded Heart
+    function drawCuteHeart(ctx, x, y, size, color, rot = 0) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = size * 0.15;
+      ctx.beginPath();
+      const d = size * 0.7;
+      ctx.moveTo(0, d * 0.4);
+      ctx.bezierCurveTo(-d, -d * 0.5, -d * 1.4, d * 0.5, 0, d * 1.5);
+      ctx.bezierCurveTo(d * 1.4, d * 0.5, d, -d * 0.5, 0, d * 0.4);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // RENDER MASSIVE COVER SLIDE 1 (MATCHES SCREENSHOT 1:1)
+    function renderCoverArt(t) {
+      if (currentSlide !== 0) return;
+      const w = artCanvas.width;
+      const h = artCanvas.height;
+
+      // 1. Dreamy Pastel Aura Gradient Background
+      const bgGrad = artCtx.createRadialGradient(w * 0.5, h * 0.5, 50, w * 0.5, h * 0.5, w * 0.85);
+      bgGrad.addColorStop(0, '#ffffff');
+      bgGrad.addColorStop(0.35, '#f5f3ff');
+      bgGrad.addColorStop(0.7, '#ede9fe');
+      bgGrad.addColorStop(1, '#fce7f3');
+      artCtx.fillStyle = bgGrad;
+      artCtx.fillRect(0, 0, w, h);
+
+      // Floating Cute Sparkles & Hearts in background
+      const bob = Math.sin(t * 3.0) * 8;
+      drawCuteSparkle(artCtx, w * 0.09, h * 0.48 + bob, 34, '#c4b5fd', t * 0.2);
+      drawCuteSparkle(artCtx, w * 0.16, h * 0.78 - bob, 28, '#fef08a', -t * 0.3);
+      drawCuteSparkle(artCtx, w * 0.33, h * 0.19 + bob * 0.8, 24, '#fbcfe8', t * 0.4);
+      drawCuteSparkle(artCtx, w * 0.88, h * 0.28 - bob, 48, '#fbcfe8', t * 0.15);
+      drawCuteSparkle(artCtx, w * 0.81, h * 0.76 + bob, 32, '#a5b4fc', -t * 0.25);
+      drawCuteHeart(artCtx, w * 0.77, h * 0.22 - bob * 0.7, 36, '#f472b6', 0.2);
+
+      // 2. Japanese Katakana "エリシア" (Floating on top left)
+      const kataX = w * 0.15;
+      const kataY = h * 0.31 + Math.sin(t * 3.5) * 10;
+      artCtx.save();
+      artCtx.translate(kataX, kataY);
+      artCtx.rotate(-0.06);
+
+      // Huge font for Katakana
+      const kataSize = Math.min(w * 0.075, 120);
+      artCtx.font = `900 ${kataSize}px "M PLUS Rounded 1c", sans-serif`;
+      artCtx.lineJoin = 'round';
+      artCtx.lineCap = 'round';
+
+      // Thick Puffy White Stroke
+      artCtx.lineWidth = kataSize * 0.28;
+      artCtx.strokeStyle = '#ffffff';
+      artCtx.strokeText('エリシア', 0, 0);
+
+      // Drop shadow offset
+      artCtx.fillStyle = '#818cf8';
+      artCtx.fillText('エリシア', 4, 8);
+
+      // Cyan to purple gradient fill
+      const kataGrad = artCtx.createLinearGradient(0, -kataSize * 0.8, kataSize * 3.5, 0);
+      kataGrad.addColorStop(0, '#93c5fd');
+      kataGrad.addColorStop(1, '#c084fc');
+      artCtx.fillStyle = kataGrad;
+      artCtx.fillText('エリシア', 0, 0);
+      artCtx.restore();
+
+      // 3. THE GIGANTIC 3D PUFFY STICKER: "ELYSIA" (TAKES 80% SCREEN WIDTH!)
+      const mainFontSize = Math.min(w * 0.165, 260); // GIGANTIC!
+      const mainY = h * 0.62 + Math.sin(t * 2.5) * 12;
+      const text = 'ELYSIA';
+      const textX = w * 0.10;
+
+      artCtx.save();
+      artCtx.font = `800 ${mainFontSize}px "Fredoka", sans-serif`;
+      artCtx.lineJoin = 'round';
+      artCtx.lineCap = 'round';
+
+      // Layer A: Ambient Soft Drop Shadow
+      artCtx.shadowColor = 'rgba(165, 180, 252, 0.6)';
+      artCtx.shadowBlur = 55;
+      artCtx.shadowOffsetX = 16;
+      artCtx.shadowOffsetY = 36;
+      artCtx.fillStyle = 'rgba(255, 255, 255, 0.01)';
+      artCtx.fillText(text, textX, mainY);
+      artCtx.shadowColor = 'transparent';
+
+      // Layer B: Multi-layer 3D Extruded Depth (Pastel Purple Block)
+      const layers = 24;
+      for (let i = layers; i >= 1; i--) {
+        const offX = i * 1.6;
+        const offY = i * 2.0;
+        artCtx.lineWidth = mainFontSize * 0.22;
+        artCtx.strokeStyle = '#c4b5fd';
+        artCtx.strokeText(text, textX + offX, mainY + offY);
+        artCtx.fillStyle = '#c4b5fd';
+        artCtx.fillText(text, textX + offX, mainY + offY);
+      }
+
+      // Layer C: Thick Puffy White Sticker Outline
+      artCtx.lineWidth = mainFontSize * 0.24;
+      artCtx.strokeStyle = '#ffffff';
+      artCtx.strokeText(text, textX, mainY);
+
+      // Layer D: Horizontal Pastel Face Gradient (Sky Blue ➔ Lilac ➔ Baby Pink)
+      const faceGrad = artCtx.createLinearGradient(textX, mainY - mainFontSize * 0.7, textX + w * 0.8, mainY);
+      faceGrad.addColorStop(0.0, '#93c5fd');
+      faceGrad.addColorStop(0.35, '#a5b4fc');
+      faceGrad.addColorStop(0.65, '#c084fc');
+      faceGrad.addColorStop(1.0, '#f472b6');
+      artCtx.fillStyle = faceGrad;
+      artCtx.fillText(text, textX, mainY);
+
+      // Layer E: Specular Gloss Sheen
+      artCtx.lineWidth = 6;
+      artCtx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+      artCtx.strokeText(text, textX - 2, mainY - 4);
+
+      artCtx.restore();
+    }
+
+    /* =========================================================================
+       4. PURE WEB AUDIO SYNTHESIZER
+       ========================================================================= */
+    let audioCtx = null;
+    function playChimeSound(freq = 523.25) {
+      if (!isSoundOn) return;
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.5, audioCtx.currentTime + 0.1);
+
+      gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.42);
+    }
+
+    /* =========================================================================
+       5. SLIDE NAVIGATION & ATMOSPHERE CONTROLLER
+       ========================================================================= */
+    function goToSlide(index) {
+      if (index < 0 || index >= totalSlides) return;
+      currentSlide = index;
+
+      playChimeSound(currentSlide === 2 ? 140 : 523.25 + currentSlide * 100);
+
+      // Handle Dark Mode for Slide 2 & 3
+      const isDark = (currentSlide === 2 || currentSlide === 3);
+      document.body.classList.toggle('dark-mode', isDark);
+
+      // Update 3D Groups
+      orbsGroup.visible = (currentSlide !== 2);
+      cardsGroup.visible = (currentSlide === 2);
+
+      // Camera positions
+      if (currentSlide === 2) {
+        // Warp Scene Camera
+        camera.position.set(0, 0, 16);
+      } else {
+        camera.position.set(0, 0, 18);
+      }
+
+      // Update HTML slides
+      document.querySelectorAll('.slide').forEach((s, i) => {
+        s.classList.toggle('active', i === currentSlide);
+      });
+
+      // Update Dots
+      document.querySelectorAll('.dot').forEach((d, i) => {
+        d.classList.toggle('active', i === currentSlide);
+      });
+
+      // Update Top HUD
+      document.getElementById('slide-index-tag').textContent = `0${currentSlide + 1} / 0${totalSlides}  ┐`;
+
+      // Update Notes
+      document.getElementById('notes-body').textContent = presenterNotes[currentSlide];
+    }
+
+    // Build Dots
+    const dotsContainer = document.getElementById('dots-container');
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('div');
+      dot.className = `dot ${i === 0 ? 'active' : ''}`;
+      dot.addEventListener('click', () => goToSlide(i));
+      dotsContainer.appendChild(dot);
+    }
+
+    // Button controls
+    document.getElementById('btn-prev').addEventListener('click', () => goToSlide(currentSlide - 1));
+    document.getElementById('btn-next').addEventListener('click', () => goToSlide(currentSlide + 1));
+    document.getElementById('btn-restart').addEventListener('click', () => goToSlide(0));
+
+    // Sound toggle
+    const soundBtn = document.getElementById('btn-sound');
+    soundBtn.addEventListener('click', () => {
+      isSoundOn = !isSoundOn;
+      soundBtn.textContent = isSoundOn ? '🔊' : '🔇';
+    });
+
+    // Fullscreen toggle
+    document.getElementById('btn-fullscreen').addEventListener('click', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    });
+
+    // Notes toggle
+    const notesDrawer = document.getElementById('notes-drawer');
+    document.getElementById('btn-notes').addEventListener('click', () => notesDrawer.classList.toggle('open'));
+    document.getElementById('btn-close-notes').addEventListener('click', () => notesDrawer.classList.remove('open'));
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        goToSlide(currentSlide + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        goToSlide(currentSlide - 1);
+      } else if (e.key === 'n' || e.key === 'N') {
+        notesDrawer.classList.toggle('open');
+      } else if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      } else if (e.key >= '1' && e.key <= '5') {
+        goToSlide(parseInt(e.key) - 1);
+      }
+    });
+
+    /* =========================================================================
+       6. MAIN ANIMATION LOOP
+       ========================================================================= */
+    let clock = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      clock += 0.016;
+
+      // Animate Iridescent Glass Orbs (No cubes, organic liquid breathing)
+      if (orbsGroup.visible) {
+        orbs.forEach((orb) => {
+          orb.position.y = orb.userData.baseY + Math.sin(clock * orb.userData.floatSpeed) * orb.userData.floatAmp;
+          orb.position.x = orb.userData.baseX + Math.cos(clock * orb.userData.floatSpeed * 0.7) * 0.3;
+          orb.rotation.y += 0.005;
+        });
+      }
+
+      // Animate Flying Cards on Slide 2
+      if (cardsGroup.visible) {
+        cardPlanes.forEach((card) => {
+          card.position.z += card.userData.speed * 0.05;
+          if (card.position.z > camera.position.z + 2) {
+            card.position.z = camera.position.z - 60;
+          }
+        });
+      }
+
+      renderer.render(scene, camera);
+
+      // Render 2D Artistic Canvas
+      artCtx.clearRect(0, 0, artCanvas.width, artCanvas.height);
+      renderCoverArt(clock);
+    }
+
+    goToSlide(0);
+    animate();
+  </script>
+</body>
+</html>

@@ -550,11 +550,17 @@ export default function EnglishPretestExamPage() {
   }, [analytics.partStats]);
 
   return (
-    <div className="min-h-screen bg-[#030306] text-white selection:bg-white/20 selection:text-white relative overflow-x-hidden pb-24">
-      {/* Top Progress Hairline (Clean Single Tone) */}
+    <div className="min-h-screen bg-[#030306] text-white selection:bg-indigo-500/25 selection:text-indigo-200 relative overflow-x-hidden pb-24">
+      {/* Subtle Single-Tone Indigo Ambient Background Glow */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute -top-40 left-1/4 w-[620px] h-[620px] bg-indigo-600/10 rounded-full blur-[160px]" />
+        <div className="absolute bottom-0 right-1/4 w-[520px] h-[520px] bg-indigo-500/8 rounded-full blur-[150px]" />
+      </div>
+
+      {/* Top Progress Hairline (Unified Indigo Tone) */}
       <div className="fixed top-0 left-0 w-full h-[2px] z-50 bg-white/[0.06]">
         <div
-          className="h-full bg-white/80 transition-all duration-300"
+          className="h-full bg-gradient-to-r from-indigo-500 via-indigo-400 to-blue-400 shadow-[0_0_12px_rgba(129,140,248,0.7)] transition-all duration-300"
           style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
         />
       </div>
@@ -568,7 +574,7 @@ export default function EnglishPretestExamPage() {
               href="/course/english"
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-xs sm:text-sm font-semibold text-white/85 hover:text-white transition-all"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 text-indigo-400" />
               <span>บทเรียนภาษาอังกฤษ (English Course)</span>
             </Link>
             <Link
@@ -582,14 +588,14 @@ export default function EnglishPretestExamPage() {
           {/* Right: Live Timer, Pause/Resume, Answered Counter & Account */}
           <div className="flex flex-wrap items-center gap-2.5">
             {/* Timer Pill + Pause Toggle */}
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.1] text-xs font-mono">
-              <Clock className="w-3.5 h-3.5 text-white/60" />
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/[0.08] border border-indigo-500/25 text-xs font-mono">
+              <Clock className="w-3.5 h-3.5 text-indigo-400" />
               <span className="text-white/45 hidden sm:inline">TIME</span>
-              <span className="font-bold text-white/95">{formatTime(elapsedSeconds)}</span>
+              <span className="font-bold text-indigo-300">{formatTime(elapsedSeconds)}</span>
               {!isSubmitted && (
                 <button
                   onClick={() => setIsPaused((p) => !p)}
-                  className="ml-1 px-2 py-0.5 rounded-full bg-white/[0.08] hover:bg-white/[0.15] text-[10px] text-white/80 cursor-pointer"
+                  className="ml-1 px-2 py-0.5 rounded-full bg-indigo-500/20 hover:bg-indigo-500/30 text-[10px] text-indigo-200 cursor-pointer"
                 >
                   {isPaused ? 'ทำต่อ' : 'พักเวลา'}
                 </button>
@@ -599,7 +605,7 @@ export default function EnglishPretestExamPage() {
             {/* Answered Counter Pill */}
             <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.1] text-xs font-mono">
               <span className="text-white/45 hidden sm:inline">ANSWERED</span>
-              <span className="font-bold text-white/90">
+              <span className="font-bold text-indigo-300">
                 {answeredCount} / {totalQuestions}
               </span>
             </div>
@@ -608,14 +614,14 @@ export default function EnglishPretestExamPage() {
             {isSubmitted ? (
               <button
                 onClick={handleResetPretest}
-                className="px-4 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.15] text-xs font-bold uppercase tracking-wider text-white transition-all cursor-pointer"
+                className="px-4 py-2 rounded-full bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/35 text-xs font-bold uppercase tracking-wider text-indigo-300 transition-all cursor-pointer"
               >
                 สอบใหม่อีกครั้ง
               </button>
             ) : (
               <button
                 onClick={() => setShowConfirmModal(true)}
-                className="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                className="px-5 py-2 rounded-full bg-indigo-400 hover:bg-indigo-300 text-black font-bold text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(129,140,248,0.35)] cursor-pointer"
               >
                 ส่งข้อสอบดูคะแนน
               </button>
@@ -623,11 +629,11 @@ export default function EnglishPretestExamPage() {
 
             {/* Account Status */}
             {session?.user ? (
-              <div className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.12]">
+              <div className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full bg-white/[0.04] border border-indigo-500/25">
                 <span className="text-xs font-semibold text-white/85 max-w-[120px] truncate">
                   👤 {session.user.name}
                 </span>
-                <span className="text-[10px] font-mono text-white/45 hidden xl:inline">
+                <span className="text-[10px] font-mono text-indigo-300/75 hidden xl:inline">
                   {syncStatus === 'syncing'
                     ? '· กำลังซิงก์...'
                     : syncStatus === 'synced'
@@ -656,15 +662,16 @@ export default function EnglishPretestExamPage() {
 
       {/* Main Content Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-8 relative z-10 space-y-8">
-        {/* Clean Minimalist Subject Header Banner */}
-        <section className="rounded-[2.5rem] bg-black/50 border border-white/[0.1] p-6 sm:p-10 backdrop-blur-3xl shadow-2xl">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+        {/* Clean Single-Accent Subject Header Banner */}
+        <section className="rounded-[2.5rem] bg-black/50 border border-white/[0.1] p-6 sm:p-10 backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+          <div className="absolute -top-12 -left-12 w-56 h-56 bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
             <div className="space-y-4 max-w-3xl">
               <div className="inline-flex flex-wrap items-center gap-2">
-                <span className="px-3.5 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-white/75 text-xs font-mono uppercase tracking-wider">
+                <span className="px-3.5 py-1 rounded-full bg-indigo-500/[0.12] border border-indigo-500/30 text-indigo-300 text-xs font-mono uppercase tracking-wider">
                   CHAPTER 01 · DIAGNOSTIC ASSESSMENT
                 </span>
-                <span className="px-3.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-white/55 text-xs font-mono uppercase tracking-wider">
+                <span className="px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.1] text-white/60 text-xs font-mono uppercase tracking-wider">
                   100 QUESTIONS · TIME ANALYTICS · ACCOUNT SYNC
                 </span>
               </div>
@@ -675,12 +682,12 @@ export default function EnglishPretestExamPage() {
               </h1>
 
               {/* Clean Single-Tone Description */}
-              <p className="text-sm sm:text-base text-white/60 leading-relaxed">
+              <p className="text-sm sm:text-base text-white/65 leading-relaxed">
                 แบบทดสอบวัดพื้นฐานภาษาอังกฤษระดับกลาง จำนวน 100 ข้อ (4 ตัวเลือก) แบ่งออกเป็น Vocabulary 25 ข้อ · Grammar 30 ข้อ · Reading 20 ข้อ · Conversation 25 ข้อ พร้อมระบบจับเวลาสถิติรายพาร์ทและจดจำคะแนนผูกกับแต่ละแอคเคาท์
               </p>
             </div>
 
-            {/* Unified Monochrome Part Summary Cards */}
+            {/* Unified Indigo Part Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-3 shrink-0">
               {ENGLISH_PARTS.map((p) => {
                 const stat = analytics.partStats.find((s) => s.id === p.id);
@@ -691,13 +698,13 @@ export default function EnglishPretestExamPage() {
                       if (!isSubmitted) handleJumpToPart(p.id);
                       else setReviewPartFilter(p.id);
                     }}
-                    className="p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.08] hover:border-white/[0.2] text-left transition-all cursor-pointer"
+                    className="p-3.5 rounded-2xl bg-white/[0.03] hover:bg-indigo-500/[0.08] border border-white/[0.08] hover:border-indigo-500/35 text-left transition-all cursor-pointer"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-[11px] font-mono uppercase tracking-wider text-white/40">
+                      <span className="text-[11px] font-mono uppercase tracking-wider text-white/45">
                         PART {p.partNumber}
                       </span>
-                      <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/[0.1] text-white/85">
+                      <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">
                         {isSubmitted
                           ? `${stat?.correct}/${p.questionCount}`
                           : `${stat?.answered}/${p.questionCount}`}
@@ -723,8 +730,8 @@ export default function EnglishPretestExamPage() {
               <div className="lg:col-span-7 rounded-[2.5rem] bg-black/50 backdrop-blur-3xl border border-white/[0.1] p-8 sm:p-10 flex flex-col justify-between shadow-2xl">
                 <div className="space-y-6">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.12] text-white/85 text-xs font-mono uppercase tracking-wider">
-                      <CheckCircle2 className="w-4 h-4 text-white" />
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-mono uppercase tracking-wider">
+                      <CheckCircle2 className="w-4 h-4 text-indigo-400" />
                       <span>PRE-TEST COMPLETED · OFFICIAL SCORE REPORT</span>
                     </div>
                     <span className="text-xs font-mono text-white/50">
@@ -733,7 +740,7 @@ export default function EnglishPretestExamPage() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center gap-8 py-2">
-                    {/* Circular Score Gauge (Clean White) */}
+                    {/* Circular Score Gauge (Unified Indigo) */}
                     <div className="relative w-44 h-44 flex items-center justify-center shrink-0">
                       <svg className="w-full h-full -rotate-90" viewBox="0 0 160 160">
                         <circle
@@ -749,7 +756,7 @@ export default function EnglishPretestExamPage() {
                           cy="80"
                           r="68"
                           fill="none"
-                          stroke="#ffffff"
+                          stroke="#818cf8"
                           strokeWidth="12"
                           strokeLinecap="round"
                           strokeDasharray={2 * Math.PI * 68}
@@ -763,7 +770,7 @@ export default function EnglishPretestExamPage() {
                           {analytics.totalCorrect}
                           <span className="text-lg text-white/40 font-semibold">/100</span>
                         </span>
-                        <span className="text-sm font-mono font-bold text-white/75 mt-1">
+                        <span className="text-sm font-mono font-bold text-indigo-300 mt-1">
                           {analytics.totalPercentage}%
                         </span>
                       </div>
@@ -771,7 +778,7 @@ export default function EnglishPretestExamPage() {
 
                     {/* Level & Feedback */}
                     <div className="space-y-3 text-center sm:text-left">
-                      <div className="text-xs font-mono uppercase tracking-widest text-white/45">
+                      <div className="text-xs font-mono uppercase tracking-widest text-indigo-300/80">
                         ระดับพื้นฐานของคุณ (Estimated Level)
                       </div>
                       <h2 className="text-2xl sm:text-3xl font-black text-white">
@@ -786,8 +793,8 @@ export default function EnglishPretestExamPage() {
 
                 {/* Quick Metric Pills */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-white/[0.08] mt-6">
-                  <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-                    <div className="text-[11px] font-mono text-white/50 uppercase">ตอบถูก</div>
+                  <div className="p-3.5 rounded-2xl bg-indigo-500/[0.08] border border-indigo-500/25">
+                    <div className="text-[11px] font-mono text-indigo-300 uppercase">ตอบถูก</div>
                     <div className="text-xl font-black text-white">
                       {analytics.totalCorrect} ข้อ
                     </div>
@@ -798,7 +805,7 @@ export default function EnglishPretestExamPage() {
                   </div>
                   <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
                     <div className="text-[11px] font-mono text-white/50 uppercase">เวลารวมที่ใช้</div>
-                    <div className="text-xl font-black text-white">
+                    <div className="text-xl font-black text-indigo-300">
                       {formatTime(elapsedSeconds)}
                     </div>
                   </div>
@@ -815,12 +822,12 @@ export default function EnglishPretestExamPage() {
               <div className="lg:col-span-5 rounded-[2.5rem] bg-black/50 backdrop-blur-3xl border border-white/[0.1] p-8 flex flex-col justify-between shadow-2xl">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-xs font-mono uppercase tracking-widest text-white/45 block">
+                    <span className="text-xs font-mono uppercase tracking-widest text-indigo-300/80 block">
                       SKILL RADAR ANALYSIS
                     </span>
                     <h3 className="text-xl font-black text-white">สมดุลทักษะทั้ง 4 พาร์ท</h3>
                   </div>
-                  <Cpu className="w-6 h-6 text-white/60" />
+                  <Cpu className="w-6 h-6 text-indigo-400" />
                 </div>
 
                 {/* SVG Diamond Radar Chart */}
@@ -858,20 +865,20 @@ export default function EnglishPretestExamPage() {
 
                     <polygon
                       points={radarPoints.polygon}
-                      fill="rgba(255, 255, 255, 0.14)"
-                      stroke="#ffffff"
-                      strokeWidth="2"
+                      fill="rgba(129, 140, 248, 0.22)"
+                      stroke="#818cf8"
+                      strokeWidth="2.5"
                     />
 
                     {radarPoints.dots.map((d, i) => (
-                      <circle key={i} cx={d.x} cy={d.y} r="4" fill="#ffffff" />
+                      <circle key={i} cx={d.x} cy={d.y} r="4.5" fill="#818cf8" />
                     ))}
 
                     <text
                       x="110"
                       y="18"
                       textAnchor="middle"
-                      fill="rgba(255,255,255,0.8)"
+                      fill="#c7d2fe"
                       fontSize="11"
                       fontWeight="bold"
                     >
@@ -881,7 +888,7 @@ export default function EnglishPretestExamPage() {
                       x="215"
                       y="114"
                       textAnchor="end"
-                      fill="rgba(255,255,255,0.8)"
+                      fill="#c7d2fe"
                       fontSize="11"
                       fontWeight="bold"
                     >
@@ -891,7 +898,7 @@ export default function EnglishPretestExamPage() {
                       x="110"
                       y="210"
                       textAnchor="middle"
-                      fill="rgba(255,255,255,0.8)"
+                      fill="#c7d2fe"
                       fontSize="11"
                       fontWeight="bold"
                     >
@@ -901,7 +908,7 @@ export default function EnglishPretestExamPage() {
                       x="5"
                       y="114"
                       textAnchor="start"
-                      fill="rgba(255,255,255,0.8)"
+                      fill="#c7d2fe"
                       fontSize="11"
                       fontWeight="bold"
                     >
@@ -912,8 +919,8 @@ export default function EnglishPretestExamPage() {
 
                 {/* Strengths & Priority Focus */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-white/[0.08]">
-                  <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-white/50">
+                  <div className="p-3.5 rounded-2xl bg-indigo-500/[0.08] border border-indigo-500/25">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-300">
                       พาร์ทที่ทำได้ดีที่สุด
                     </span>
                     <div className="text-sm font-bold text-white mt-1">
@@ -938,7 +945,7 @@ export default function EnglishPretestExamPage() {
             <section className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <span className="text-xs font-mono uppercase tracking-widest text-white/45">
+                  <span className="text-xs font-mono uppercase tracking-widest text-indigo-300/80">
                     PART-BY-PART PERFORMANCE & TIME TELEMETRY
                   </span>
                   <h3 className="text-2xl sm:text-3xl font-black text-white">
@@ -947,7 +954,7 @@ export default function EnglishPretestExamPage() {
                 </div>
                 <button
                   onClick={handleResetPretest}
-                  className="self-start sm:self-auto px-5 py-2.5 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                  className="self-start sm:self-auto px-5 py-2.5 rounded-full bg-indigo-400 text-black hover:bg-indigo-300 font-bold text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(129,140,248,0.35)] cursor-pointer"
                 >
                   ทำแบบทดสอบ Pre-Test ใหม่
                 </button>
@@ -957,14 +964,14 @@ export default function EnglishPretestExamPage() {
                 {analytics.partStats.map((part) => (
                   <div
                     key={part.id}
-                    className="rounded-3xl bg-black/50 backdrop-blur-2xl border border-white/[0.1] hover:border-white/[0.22] p-6 flex flex-col justify-between transition-all shadow-xl space-y-5"
+                    className="rounded-3xl bg-black/50 backdrop-blur-2xl border border-white/[0.1] hover:border-indigo-500/35 p-6 flex flex-col justify-between transition-all shadow-xl space-y-5"
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.12] text-white/85">
+                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">
                           PART {part.partNumber}
                         </span>
-                        <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.1] text-white/70">
+                        <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.1] text-white/75">
                           {part.statusLabel}
                         </span>
                       </div>
@@ -977,7 +984,7 @@ export default function EnglishPretestExamPage() {
                       {/* Score Big Number */}
                       <div className="flex items-baseline justify-between pt-2">
                         <div>
-                          <span className="text-4xl font-black text-white">
+                          <span className="text-4xl font-black text-indigo-300">
                             {part.correct}
                           </span>
                           <span className="text-lg text-white/40 font-bold">
@@ -985,15 +992,15 @@ export default function EnglishPretestExamPage() {
                             / {part.questionCount}
                           </span>
                         </div>
-                        <span className="text-lg font-mono font-bold text-white/80">
+                        <span className="text-lg font-mono font-bold text-white/85">
                           {part.percentage}%
                         </span>
                       </div>
 
-                      {/* Clean White Progress Bar */}
+                      {/* Unified Indigo Progress Bar */}
                       <div className="w-full h-2 rounded-full bg-white/[0.08] overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-white transition-all duration-700"
+                          className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-indigo-400 transition-all duration-700"
                           style={{ width: `${part.percentage}%` }}
                         />
                       </div>
@@ -1005,7 +1012,7 @@ export default function EnglishPretestExamPage() {
                         <span>ผิด: {part.wrong}</span>
                         <span>ว่าง: {part.unanswered}</span>
                       </div>
-                      <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-between text-xs font-mono text-white/75">
+                      <div className="p-2.5 rounded-xl bg-indigo-500/[0.06] border border-indigo-500/20 flex items-center justify-between text-xs font-mono text-indigo-200">
                         <span>⏱ เวลาพาร์ทนี้: {formatTime(part.partTimeSeconds)}</span>
                         <span>({part.avgSecondsPerQuestion} วิ/ข้อ)</span>
                       </div>
@@ -1015,7 +1022,7 @@ export default function EnglishPretestExamPage() {
                           const el = document.getElementById('answer-key-section');
                           el?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        className="w-full py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-xs font-semibold text-white/80 hover:text-white transition-all cursor-pointer"
+                        className="w-full py-2.5 rounded-xl bg-white/[0.05] hover:bg-indigo-500/15 border border-white/[0.08] hover:border-indigo-500/30 text-xs font-semibold text-white/80 hover:text-indigo-200 transition-all cursor-pointer"
                       >
                         ดูเฉลยพาร์ทนี้ ({part.questionCount} ข้อ) →
                       </button>
@@ -1033,19 +1040,19 @@ export default function EnglishPretestExamPage() {
               <div className="lg:col-span-6 rounded-3xl bg-black/50 backdrop-blur-2xl border border-white/[0.1] p-6 sm:p-8 space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-xs font-mono uppercase tracking-widest text-white/45 block">
+                    <span className="text-xs font-mono uppercase tracking-widest text-indigo-300/80 block">
                       TIME TELEMETRY REPORT
                     </span>
                     <h3 className="text-xl sm:text-2xl font-black text-white">
                       สถิติเวลาในการทำข้อสอบ
                     </h3>
                   </div>
-                  <Clock className="w-6 h-6 text-white/60" />
+                  <Clock className="w-6 h-6 text-indigo-400" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08]">
-                    <div className="text-xs text-white/50">เวลารวมทั้งหมด</div>
+                  <div className="p-4 rounded-2xl bg-indigo-500/[0.06] border border-indigo-500/20">
+                    <div className="text-xs text-indigo-300/80">เวลารวมทั้งหมด</div>
                     <div className="text-lg sm:text-xl font-black text-white mt-1">
                       {formatReadableTime(elapsedSeconds)}
                     </div>
@@ -1089,13 +1096,13 @@ export default function EnglishPretestExamPage() {
                           <span className="text-white/80 font-medium">
                             Part {ps.partNumber}: {ps.title}
                           </span>
-                          <span className="font-mono text-white/60">
+                          <span className="font-mono text-indigo-300">
                             {formatTime(ps.partTimeSeconds)} ({timeRatio}%)
                           </span>
                         </div>
                         <div className="w-full h-1.5 rounded-full bg-white/[0.07] overflow-hidden">
                           <div
-                            className="h-full rounded-full bg-white/75"
+                            className="h-full rounded-full bg-indigo-400"
                             style={{ width: `${timeRatio}%` }}
                           />
                         </div>
@@ -1110,14 +1117,14 @@ export default function EnglishPretestExamPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-mono uppercase tracking-widest text-white/45 block">
+                      <span className="text-xs font-mono uppercase tracking-widest text-indigo-300/80 block">
                         ACCOUNT SCORE MEMORY
                       </span>
                       <h3 className="text-xl sm:text-2xl font-black text-white">
                         ประวัติคะแนนของแอคเคาท์ ({session?.user?.name || 'Guest'})
                       </h3>
                     </div>
-                    <Layers className="w-6 h-6 text-white/60" />
+                    <Layers className="w-6 h-6 text-indigo-400" />
                   </div>
 
                   {history.length === 0 ? (
@@ -1133,7 +1140,7 @@ export default function EnglishPretestExamPage() {
                         >
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <span className="px-2.5 py-0.5 rounded-full bg-white/[0.08] text-[11px] font-mono font-bold text-white">
+                              <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-[11px] font-mono font-bold text-indigo-300">
                                 ครั้งที่ {history.length - i}
                               </span>
                               <span className="text-xs font-mono text-white/50">
@@ -1149,7 +1156,7 @@ export default function EnglishPretestExamPage() {
                           <div className="text-right">
                             <div className="text-lg font-black text-white">
                               {att.totalScore}/{att.totalQuestions}{' '}
-                              <span className="text-xs font-mono text-white/60">
+                              <span className="text-xs font-mono text-indigo-300">
                                 ({att.percentage}%)
                               </span>
                             </div>
@@ -1164,13 +1171,13 @@ export default function EnglishPretestExamPage() {
                 </div>
 
                 {!session?.user && (
-                  <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/[0.1] flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <span className="text-xs text-white/70">
+                  <div className="p-4 rounded-2xl bg-indigo-500/[0.08] border border-indigo-500/25 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <span className="text-xs text-indigo-200">
                       เข้าสู่ระบบเพื่อซิงก์และจดจำสถิติคะแนนนี้ไว้ในบัญชีของคุณอย่างถาวร
                     </span>
                     <Link
                       href="/login?callbackUrl=/course/english/pretest"
-                      className="px-4 py-2 rounded-full bg-white text-black font-bold text-xs uppercase tracking-wider shrink-0"
+                      className="px-4 py-2 rounded-full bg-indigo-400 text-black font-bold text-xs uppercase tracking-wider shrink-0"
                     >
                       เข้าสู่ระบบ
                     </Link>
@@ -1186,7 +1193,7 @@ export default function EnglishPretestExamPage() {
               <div className="rounded-3xl bg-black/50 backdrop-blur-2xl border border-white/[0.1] p-6 sm:p-8 space-y-6">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   <div>
-                    <span className="text-xs font-mono uppercase tracking-widest text-white/45">
+                    <span className="text-xs font-mono uppercase tracking-widest text-indigo-300/80">
                       COMPLETE ANSWER KEY & EXPLANATIONS
                     </span>
                     <h3 className="text-2xl sm:text-3xl font-black text-white">
@@ -1211,7 +1218,7 @@ export default function EnglishPretestExamPage() {
                         onClick={() => setReviewStatusFilter(st.id as any)}
                         className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer border ${
                           reviewStatusFilter === st.id
-                            ? 'bg-white text-black border-white'
+                            ? 'bg-indigo-400 text-black border-indigo-400'
                             : 'bg-white/[0.04] text-white/70 border-white/[0.1] hover:bg-white/[0.08]'
                         }`}
                       >
@@ -1227,7 +1234,7 @@ export default function EnglishPretestExamPage() {
                     onClick={() => setReviewPartFilter('all')}
                     className={`px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer border ${
                       reviewPartFilter === 'all'
-                        ? 'bg-white text-black font-bold border-white'
+                        ? 'bg-indigo-400 text-black font-bold border-indigo-400'
                         : 'bg-white/[0.04] text-white/60 border-white/[0.1] hover:text-white'
                     }`}
                   >
@@ -1239,7 +1246,7 @@ export default function EnglishPretestExamPage() {
                       onClick={() => setReviewPartFilter(p.id)}
                       className={`px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer border ${
                         reviewPartFilter === p.id
-                          ? 'bg-white text-black font-bold border-white'
+                          ? 'bg-indigo-400 text-black font-bold border-indigo-400'
                           : 'bg-white/[0.04] text-white/60 border-white/[0.1] hover:text-white'
                       }`}
                     >
@@ -1273,7 +1280,7 @@ export default function EnglishPretestExamPage() {
                             <span className="px-3 py-1 rounded-xl bg-white/[0.08] font-mono font-bold text-sm text-white">
                               ข้อที่ {q.id}
                             </span>
-                            <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-white/75">
+                            <span className="text-xs font-mono px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">
                               Part {partInfo?.partNumber}: {partInfo?.title}
                             </span>
                             <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-white/55">
@@ -1300,8 +1307,8 @@ export default function EnglishPretestExamPage() {
 
                         {/* Passage if Reading */}
                         {q.passageText && (
-                          <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.1] space-y-2">
-                            <div className="text-xs font-mono uppercase tracking-wider text-white/70 font-bold">
+                          <div className="p-4 sm:p-5 rounded-2xl bg-indigo-500/[0.05] border border-indigo-500/20 space-y-2">
+                            <div className="text-xs font-mono uppercase tracking-wider text-indigo-300 font-bold">
                               {q.passageTitle}
                             </div>
                             <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
@@ -1366,8 +1373,8 @@ export default function EnglishPretestExamPage() {
                         </div>
 
                         {/* Explanation Box */}
-                        <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/[0.1] text-sm text-white/80 leading-relaxed">
-                          <span className="font-bold text-white mr-2">คำอธิบายเฉลย:</span>
+                        <div className="p-4 rounded-2xl bg-indigo-500/[0.08] border border-indigo-500/25 text-sm text-indigo-100 leading-relaxed">
+                          <span className="font-bold text-indigo-300 mr-2">คำอธิบายเฉลย:</span>
                           {q.explanation}
                         </div>
                       </div>
@@ -1384,7 +1391,7 @@ export default function EnglishPretestExamPage() {
           <div className="space-y-6">
             {/* Part Switcher & View Mode Controls */}
             <div className="rounded-3xl bg-black/50 backdrop-blur-2xl border border-white/[0.1] p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-              {/* 4 Part Tabs */}
+              {/* 4 Part Tabs (Unified Indigo Active State) */}
               <div className="flex flex-wrap items-center gap-2">
                 {ENGLISH_PARTS.map((part) => {
                   const isCurrentPart =
@@ -1399,7 +1406,7 @@ export default function EnglishPretestExamPage() {
                       onClick={() => handleJumpToPart(part.id)}
                       className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2.5 border ${
                         isCurrentPart
-                          ? 'bg-white text-black border-white'
+                          ? 'bg-indigo-400 text-black border-indigo-400 shadow-[0_0_20px_rgba(129,140,248,0.3)]'
                           : 'bg-white/[0.04] text-white/70 border-white/[0.08] hover:bg-white/[0.08] hover:text-white'
                       }`}
                     >
@@ -1410,7 +1417,7 @@ export default function EnglishPretestExamPage() {
                         className={`px-2 py-0.5 rounded-full text-[11px] font-mono ${
                           isCurrentPart
                             ? 'bg-black/15 text-black'
-                            : 'bg-white/[0.08] text-white/60'
+                            : 'bg-indigo-500/15 text-indigo-300'
                         }`}
                       >
                         {stat?.answered}/{part.questionCount}
@@ -1426,7 +1433,7 @@ export default function EnglishPretestExamPage() {
                   onClick={() => setViewMode('single')}
                   className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
                     viewMode === 'single'
-                      ? 'bg-white text-black border-white font-bold'
+                      ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40 font-bold'
                       : 'bg-white/[0.04] text-white/55 border-white/[0.08] hover:text-white'
                   }`}
                 >
@@ -1436,7 +1443,7 @@ export default function EnglishPretestExamPage() {
                   onClick={() => setViewMode('list')}
                   className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
                     viewMode === 'list'
-                      ? 'bg-white text-black border-white font-bold'
+                      ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40 font-bold'
                       : 'bg-white/[0.04] text-white/55 border-white/[0.08] hover:text-white'
                   }`}
                 >
@@ -1453,7 +1460,7 @@ export default function EnglishPretestExamPage() {
                   {/* Question Top Meta */}
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
-                      <span className="text-xs font-mono font-bold px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.12] text-white/85">
+                      <span className="text-xs font-mono font-bold px-3.5 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">
                         PART {currentPartMeta.partNumber} · {currentPartMeta.title.toUpperCase()}
                       </span>
                       <span className="text-xs font-mono text-white/45 hidden sm:inline">
@@ -1462,20 +1469,20 @@ export default function EnglishPretestExamPage() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2.5">
-                      <span className="px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] font-mono text-xs text-white/65">
+                      <span className="px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] font-mono text-xs text-indigo-300">
                         ⏱ ข้อนี้: {questionTimes[currentQuestion.id] || 0} วิ
                       </span>
                       <button
                         onClick={() => handleToggleFlag(currentQuestion.id)}
                         className={`px-3.5 py-1.5 rounded-full text-xs font-mono border transition-all cursor-pointer ${
                           flagged.includes(currentQuestion.id)
-                            ? 'bg-white text-black border-white font-bold'
+                            ? 'bg-indigo-400 text-black border-indigo-400 font-bold'
                             : 'bg-white/[0.04] border-white/[0.1] text-white/55 hover:text-white'
                         }`}
                       >
                         {flagged.includes(currentQuestion.id) ? '★ ติดดาวทบทวนแล้ว' : '☆ ติดดาวทบทวน'}
                       </button>
-                      <div className="px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.12] font-mono font-bold text-sm text-white/90">
+                      <div className="px-4 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 font-mono font-bold text-sm text-indigo-200">
                         ข้อที่ {currentQuestion.id} / {totalQuestions}
                       </div>
                     </div>
@@ -1483,9 +1490,9 @@ export default function EnglishPretestExamPage() {
 
                   {/* Reading Passage Card (Only for Part 3 Reading) */}
                   {currentQuestion.passageText && (
-                    <div className="p-5 sm:p-6 rounded-3xl bg-white/[0.03] border border-white/[0.12] space-y-2.5">
-                      <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-white/75 font-bold">
-                        <BookOpen className="w-4 h-4 text-white/75" />
+                    <div className="p-5 sm:p-6 rounded-3xl bg-indigo-500/[0.05] border border-indigo-500/20 space-y-2.5">
+                      <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-indigo-300 font-bold">
+                        <BookOpen className="w-4 h-4 text-indigo-400" />
                         <span>{currentQuestion.passageTitle}</span>
                       </div>
                       <p className="text-sm sm:text-base text-white/85 leading-relaxed">
@@ -1509,15 +1516,15 @@ export default function EnglishPretestExamPage() {
                           onClick={() => handleSelectOption(currentQuestion.id, opt)}
                           className={`group p-4 sm:p-5 rounded-2xl border text-left transition-all duration-200 flex items-center gap-4 cursor-pointer ${
                             isSelected
-                              ? 'bg-white/[0.12] border-white/60 shadow-[0_0_20px_rgba(255,255,255,0.08)]'
-                              : 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.08] hover:border-white/[0.2]'
+                              ? 'bg-indigo-500/20 border-indigo-400 shadow-[0_0_24px_rgba(129,140,248,0.2)]'
+                              : 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.08] hover:border-indigo-500/30'
                           }`}
                         >
                           <span
                             className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center font-mono font-black text-sm sm:text-base shrink-0 transition-all ${
                               isSelected
-                                ? 'bg-white text-black'
-                                : 'bg-white/[0.07] text-white/60 group-hover:text-white'
+                                ? 'bg-indigo-400 text-black'
+                                : 'bg-white/[0.07] text-white/60 group-hover:text-indigo-300'
                             }`}
                           >
                             {opt}
@@ -1551,7 +1558,7 @@ export default function EnglishPretestExamPage() {
                           onClick={() =>
                             setCurrentIndex((prev) => Math.min(totalQuestions - 1, prev + 1))
                           }
-                          className="px-8 py-3.5 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-xs sm:text-sm uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer"
+                          className="px-8 py-3.5 rounded-full bg-indigo-400 text-black hover:bg-indigo-300 font-bold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(129,140,248,0.3)] flex items-center gap-2 cursor-pointer"
                         >
                           <span>ข้อถัดไป</span>
                           <ArrowRight className="w-4 h-4" />
@@ -1559,7 +1566,7 @@ export default function EnglishPretestExamPage() {
                       ) : (
                         <button
                           onClick={() => setShowConfirmModal(true)}
-                          className="px-8 py-3.5 rounded-full bg-white hover:bg-neutral-200 text-black font-black text-xs sm:text-sm uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer"
+                          className="px-8 py-3.5 rounded-full bg-indigo-400 hover:bg-indigo-300 text-black font-black text-xs sm:text-sm uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(129,140,248,0.4)] flex items-center gap-2 cursor-pointer"
                         >
                           <CheckCircle2 className="w-4 h-4" />
                           <span>ส่งกระดาษคำตอบและดูผลคะแนน</span>
@@ -1573,12 +1580,12 @@ export default function EnglishPretestExamPage() {
                 <div className="lg:col-span-4 rounded-[2.5rem] bg-black/50 backdrop-blur-3xl border border-white/[0.1] p-6 space-y-5 shadow-2xl">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-[11px] font-mono uppercase tracking-widest text-white/45 block">
+                      <span className="text-[11px] font-mono uppercase tracking-widest text-indigo-300/80 block">
                         QUESTION NAVIGATOR
                       </span>
                       <h3 className="text-lg font-black text-white">กระดาษคำตอบ 100 ข้อ</h3>
                     </div>
-                    <span className="text-xs font-mono font-bold text-white/80">
+                    <span className="text-xs font-mono font-bold text-indigo-300">
                       ตอบแล้ว {answeredCount}/100
                     </span>
                   </div>
@@ -1595,7 +1602,7 @@ export default function EnglishPretestExamPage() {
                             <span className="font-bold text-white/80">
                               Part {part.partNumber}: {part.title}
                             </span>
-                            <span className="font-mono text-white/40">
+                            <span className="font-mono text-indigo-300/80">
                               {partQuestions.filter((q) => answers[q.id]).length}/
                               {part.questionCount}
                             </span>
@@ -1613,9 +1620,9 @@ export default function EnglishPretestExamPage() {
                                   onClick={() => setCurrentIndex(idx)}
                                   className={`h-10 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer relative flex items-center justify-center border ${
                                     isCurrent
-                                      ? 'bg-white text-black border-white scale-105'
+                                      ? 'bg-indigo-400 text-black border-indigo-300 scale-105 shadow-[0_0_14px_rgba(129,140,248,0.5)]'
                                       : isAns
-                                      ? 'bg-white/[0.14] text-white border-white/30 hover:bg-white/[0.2]'
+                                      ? 'bg-indigo-500/20 text-indigo-200 border-indigo-500/40 hover:bg-indigo-500/30'
                                       : 'bg-white/[0.04] text-white/50 border-white/[0.08] hover:bg-white/[0.1] hover:text-white'
                                   }`}
                                 >
@@ -1626,7 +1633,7 @@ export default function EnglishPretestExamPage() {
                                     </span>
                                   )}
                                   {isFlag && (
-                                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-white" />
+                                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-indigo-400" />
                                   )}
                                 </button>
                               );
@@ -1651,7 +1658,7 @@ export default function EnglishPretestExamPage() {
                     )}
                     <button
                       onClick={() => setShowConfirmModal(true)}
-                      className="w-full py-4 rounded-2xl bg-white hover:bg-neutral-200 text-black font-black text-xs sm:text-sm uppercase tracking-wider transition-all cursor-pointer"
+                      className="w-full py-4 rounded-2xl bg-indigo-400 hover:bg-indigo-300 text-black font-black text-xs sm:text-sm uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(129,140,248,0.35)] cursor-pointer"
                     >
                       ส่งคำตอบและดู Dashboard คะแนน
                     </button>
@@ -1669,7 +1676,7 @@ export default function EnglishPretestExamPage() {
                     onClick={() => setActiveListPart('all')}
                     className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase border cursor-pointer ${
                       activeListPart === 'all'
-                        ? 'bg-white text-black font-bold border-white'
+                        ? 'bg-indigo-400 text-black font-bold border-indigo-400'
                         : 'bg-white/[0.04] text-white/60 border-white/[0.1]'
                     }`}
                   >
@@ -1689,20 +1696,20 @@ export default function EnglishPretestExamPage() {
                           <span className="px-3 py-1 rounded-xl bg-white/[0.08] font-mono font-bold text-sm text-white">
                             ข้อที่ {q.id} / 100
                           </span>
-                          <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-white/75">
+                          <span className="text-xs font-mono px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">
                             Part {partInfo?.partNumber}: {partInfo?.title}
                           </span>
                         </div>
                         {answers[q.id] && (
-                          <span className="text-xs font-mono text-white/80">
+                          <span className="text-xs font-mono text-indigo-300">
                             เลือกข้อ {answers[q.id]} แล้ว
                           </span>
                         )}
                       </div>
 
                       {q.passageText && (
-                        <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.1] space-y-2">
-                          <div className="text-xs font-mono uppercase tracking-wider text-white/75 font-bold">
+                        <div className="p-4 sm:p-5 rounded-2xl bg-indigo-500/[0.05] border border-indigo-500/20 space-y-2">
+                          <div className="text-xs font-mono uppercase tracking-wider text-indigo-300 font-bold">
                             {q.passageTitle}
                           </div>
                           <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
@@ -1724,14 +1731,14 @@ export default function EnglishPretestExamPage() {
                               onClick={() => handleSelectOption(q.id, opt)}
                               className={`p-4 rounded-2xl border text-left transition-all flex items-center gap-3.5 cursor-pointer ${
                                 isSelected
-                                  ? 'bg-white/[0.12] border-white/60 text-white font-semibold'
+                                  ? 'bg-indigo-500/20 border-indigo-400 text-white font-semibold'
                                   : 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.08] text-white/75'
                               }`}
                             >
                               <span
                                 className={`w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs shrink-0 ${
                                   isSelected
-                                    ? 'bg-white text-black'
+                                    ? 'bg-indigo-400 text-black'
                                     : 'bg-white/[0.08] text-white/60'
                                 }`}
                               >
@@ -1749,7 +1756,7 @@ export default function EnglishPretestExamPage() {
                 <div className="flex justify-center pt-6">
                   <button
                     onClick={() => setShowConfirmModal(true)}
-                    className="px-10 py-4 rounded-full bg-white hover:bg-neutral-200 text-black font-black text-sm sm:text-base uppercase tracking-wider cursor-pointer transition-all"
+                    className="px-10 py-4 rounded-full bg-indigo-400 hover:bg-indigo-300 text-black font-black text-sm sm:text-base uppercase tracking-wider shadow-[0_0_25px_rgba(129,140,248,0.4)] cursor-pointer transition-all"
                   >
                     ส่งกระดาษคำตอบและดูผลคะแนน ({answeredCount}/100 ข้อ)
                   </button>
@@ -1766,7 +1773,7 @@ export default function EnglishPretestExamPage() {
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4">
           <div className="max-w-md w-full rounded-[2.5rem] bg-[#0b0b12] border border-white/[0.15] p-8 space-y-6 shadow-2xl text-center">
-            <div className="w-16 h-16 rounded-2xl bg-white/[0.06] border border-white/[0.15] flex items-center justify-center mx-auto text-white">
+            <div className="w-16 h-16 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center mx-auto text-indigo-300">
               <GraduationCap className="w-8 h-8" />
             </div>
 
@@ -1774,7 +1781,7 @@ export default function EnglishPretestExamPage() {
               <h3 className="text-2xl font-black text-white">ยืนยันการส่งข้อสอบ Pre-Test?</h3>
               <p className="text-sm text-white/65 leading-relaxed">
                 คุณตอบคำถามไปแล้ว{' '}
-                <span className="text-white font-bold">
+                <span className="text-indigo-300 font-bold">
                   {answeredCount} จาก {totalQuestions} ข้อ
                 </span>{' '}
                 (ใช้เวลา {formatTime(elapsedSeconds)})
@@ -1794,7 +1801,7 @@ export default function EnglishPretestExamPage() {
                     className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-between text-xs"
                   >
                     <span className="text-white/75 font-semibold">{p.title}</span>
-                    <span className="font-mono font-bold text-white">
+                    <span className="font-mono font-bold text-indigo-300">
                       {stat?.answered}/{p.questionCount}
                     </span>
                   </div>
@@ -1811,7 +1818,7 @@ export default function EnglishPretestExamPage() {
               </button>
               <button
                 onClick={handleConfirmSubmit}
-                className="flex-1 py-3.5 rounded-full bg-white hover:bg-neutral-200 text-black font-black text-xs uppercase tracking-wider transition-all cursor-pointer"
+                className="flex-1 py-3.5 rounded-full bg-indigo-400 hover:bg-indigo-300 text-black font-black text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(129,140,248,0.4)] cursor-pointer"
               >
                 ดูผลคะแนนและเฉลยทันที
               </button>

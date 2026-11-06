@@ -103,20 +103,20 @@ export default function Home() {
         className={`fixed inset-0 z-50 pointer-events-none transition-all duration-700 ease-in flex items-center justify-center ${
           isWarping 
             ? warpSubject === 'english'
-              ? 'opacity-100 bg-black/40 backdrop-blur-xl scale-105'
+              ? 'opacity-100 bg-indigo-950/20 backdrop-blur-xl scale-105'
               : 'opacity-100 bg-emerald-950/20 backdrop-blur-xl scale-105' 
             : 'opacity-0 pointer-events-none'
         }`}
       >
         <div className={`w-96 h-96 rounded-full ${
-          warpSubject === 'english' ? 'bg-white/20' : 'bg-emerald-400/30'
+          warpSubject === 'english' ? 'bg-indigo-400/30' : 'bg-emerald-400/30'
         } blur-[120px] transition-all duration-700 ${
           isWarping ? 'scale-[8] opacity-100' : 'scale-0 opacity-0'
         }`} />
         <div className="relative text-center space-y-3 animate-pulse">
           <span className={`text-xs sm:text-sm font-mono uppercase tracking-[0.4em] ${
             warpSubject === 'english'
-              ? 'text-white'
+              ? 'text-indigo-300 drop-shadow-[0_0_15px_rgba(129,140,248,0.8)]'
               : 'text-emerald-300 drop-shadow-[0_0_15px_rgba(52,211,153,0.8)]'
           }`}>
             {warpSubject === 'english'
@@ -124,7 +124,7 @@ export default function Home() {
               : 'WARPING TO CHEMISTRY CURRICULUM'}
           </span>
           <div className={`w-56 h-0.5 bg-gradient-to-r from-transparent ${
-            warpSubject === 'english' ? 'via-white/80' : 'via-emerald-400'
+            warpSubject === 'english' ? 'via-indigo-400' : 'via-emerald-400'
           } to-transparent mx-auto`} />
         </div>
       </div>
@@ -427,8 +427,8 @@ export default function Home() {
         <div className="max-w-xl md:max-w-2xl bg-black/40 backdrop-blur-3xl border border-white/[0.1] p-10 md:p-12 rounded-[2.5rem] shadow-[0_20px_70px_rgba(0,0,0,0.7)] relative group hover:border-white/[0.2] transition-all duration-500">
           <div className="space-y-7 relative z-10">
             {/* Header Telemetry Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.15] text-white/80 text-xs sm:text-sm font-mono tracking-wider uppercase">
-              <GraduationCap className="w-4 h-4 text-white/80" />
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-indigo-500/[0.1] border border-indigo-500/30 text-indigo-400 text-xs sm:text-sm font-mono tracking-wider uppercase">
+              <GraduationCap className="w-4 h-4 text-indigo-400" />
               <span>03 // LINGUISTIC STRUCTURE</span>
             </div>
 
@@ -445,7 +445,7 @@ export default function Home() {
             {/* Premium Metrics Cards */}
             <div className="space-y-3 pt-1">
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-                <div className="w-11 h-11 rounded-xl bg-white/[0.08] flex items-center justify-center text-white/90">
+                <div className="w-11 h-11 rounded-xl bg-indigo-500/15 flex items-center justify-center text-indigo-400">
                   <Layers className="w-5 h-5" />
                 </div>
                 <div>
@@ -454,7 +454,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-                <div className="w-11 h-11 rounded-xl bg-white/[0.08] flex items-center justify-center text-white/90">
+                <div className="w-11 h-11 rounded-xl bg-indigo-500/15 flex items-center justify-center text-indigo-400">
                   <Cpu className="w-5 h-5" />
                 </div>
                 <div>
@@ -468,16 +468,17 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-center gap-3.5 pt-2">
               <button
                 onClick={handleWarpToEnglish}
-                className="w-full sm:w-auto px-8 py-4.5 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-sm sm:text-base tracking-wider uppercase transition-all flex items-center justify-center gap-2.5 hover:scale-[1.02] shadow-[0_0_25px_rgba(255,255,255,0.2)] cursor-pointer"
+                className="w-full sm:w-auto px-8 py-4.5 rounded-full bg-indigo-400 hover:bg-indigo-300 text-black font-bold text-sm sm:text-base tracking-wider uppercase transition-all flex items-center justify-center gap-2.5 hover:scale-[1.03] shadow-[0_0_30px_rgba(129,140,248,0.4)] cursor-pointer"
               >
-                <span>Enter English</span>
+                <GraduationCap className="w-4 h-4" />
+                <span>เข้าสู่บทเรียน (เนื้อหา 12 บท)</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
               <Link
-                href="/course"
-                className="w-full sm:w-auto px-8 py-4.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.12] text-white/80 hover:text-white font-semibold text-sm sm:text-base tracking-wider uppercase transition-all flex items-center justify-center"
+                href="/course/english/pretest"
+                className="w-full sm:w-auto px-8 py-4.5 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-sm sm:text-base tracking-wider uppercase transition-all flex items-center justify-center gap-2.5 hover:scale-[1.02] shadow-[0_0_25px_rgba(255,255,255,0.2)]"
               >
-                All Courses
+                <span>ทำ Pre-Test 100 ข้อ</span>
               </Link>
             </div>
           </div>
@@ -556,12 +557,12 @@ export default function Home() {
             {/* English Card */}
             <Link
               href="/course/english"
-              className="p-8 rounded-3xl bg-black/40 backdrop-blur-2xl border border-white/[0.1] hover:border-white/35 transition-all hover:-translate-y-1.5 group text-left space-y-4 shadow-xl"
+              className="p-8 rounded-3xl bg-black/40 backdrop-blur-2xl border border-white/[0.1] hover:border-indigo-500/50 transition-all hover:-translate-y-1.5 group text-left space-y-4 shadow-xl"
             >
-              <div className="w-12 h-12 rounded-2xl bg-white/[0.06] border border-white/[0.15] flex items-center justify-center text-white/85 group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-500/[0.1] border border-indigo-500/25 flex items-center justify-center text-indigo-400 group-hover:scale-105 transition-transform">
                 <GraduationCap className="w-6 h-6" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white group-hover:text-white transition-colors">
+              <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white group-hover:text-indigo-300 transition-colors">
                 English A-Level
               </h3>
               <p className="text-sm text-white/50 leading-relaxed">

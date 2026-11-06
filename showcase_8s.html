@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELYSIA // DAYDREAM & WARP SPEED — 8-SECOND SHOWCASE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=JetBrains+Mono:wght@400;600;800&family=M+PLUS+Rounded+1c:wght@800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      background-color: #0b0f19;
+      color: #ffffff;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #stage-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      max-width: 1920px;
+      max-height: 1080px;
+      aspect-ratio: 16 / 9;
+      background: #000000;
+      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #webgl-canvas {
+      z-index: 1;
+    }
+
+    #hud-canvas {
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* UI Controls overlay */
+    #ui-overlay {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 10px 24px;
+      border-radius: 999px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      padding: 10px 20px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn:hover {
+      background: #ffffff;
+      color: #0b0f19;
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #a5b4fc, #f472b6);
+      color: #0b0f19;
+      border: none;
+      font-weight: 800;
+    }
+
+    .btn.primary:hover {
+      background: #ffffff;
+      box-shadow: 0 0 35px #f472b6;
+    }
+
+    .btn.record {
+      border-color: #f43f5e;
+      color: #f43f5e;
+    }
+
+    .btn.record:hover {
+      background: #f43f5e;
+      color: #ffffff;
+      box-shadow: 0 0 25px rgba(244, 63, 94, 0.6);
+    }
+
+    .time-indicator {
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+      font-family: 'JetBrains Mono', monospace;
+      min-width: 90px;
+      text-align: center;
+    }
+
+    #rec-badge {
+      display: none;
+      position: absolute;
+      top: 28px;
+      right: 36px;
+      z-index: 20;
+      align-items: center;
+      gap: 8px;
+      background: rgba(244, 63, 94, 0.2);
+      border: 1px solid #f43f5e;
+      color: #f43f5e;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      font-family: 'JetBrains Mono', monospace;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.6; }
+      to { opacity: 1.0; }
+    }
+
+    /* Start screen cover */
+    #start-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      background: rgba(10, 15, 26, 0.94);
+      backdrop-filter: blur(24px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 32px;
+      gap: 20px;
+    }
+    .start-title {
+      font-size: 46px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+    .start-title span {
+      background: linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .start-desc {
+      max-width: 650px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #cbd5e1;
+    }
+    .start-tech {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .tech-pill {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 6px 14px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="stage-container">
+    <canvas id="webgl-canvas"></canvas>
+    <canvas id="hud-canvas" width="1920" height="1080"></canvas>
+
+    <div id="rec-badge">
+      <span style="width: 8px; height: 8px; border-radius: 50%; background: #f43f5e; display: inline-block;"></span>
+      REC • 60 FPS WEBM
+    </div>
+
+    <!-- Start Modal -->
+    <div id="start-modal">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.3em; color: #f472b6;">
+        ELYSIA MOTION SHOWCASE // RE-ENGINEERED BY JEFF
+      </div>
+      <h1 class="start-title">DAYDREAM ➔ <span>NO ANNOTATIONS.</span></h1>
+      <p class="start-desc">
+        ถอดแบบความมน ความน่ารักสไตล์สติกเกอร์ 3D <b>Daydream (エリシア)</b> และความมันส์ระดับไฮเปอร์สปีดของการ์ด 3D บินทะลุมิติ 
+        <b>NO ANNOTATIONS.</b> ด้วย <b>Code 100% (Three.js + Canvas 2D + Web Audio Algorithmic Music)</b> แบบไม่มีการใช้ Image/Video Model ใดๆ!
+      </p>
+      <div class="start-tech">
+        <span class="tech-pill">3D Puffy Sticker Physics</span>
+        <span class="tech-pill">3D Flying API Cards Engine</span>
+        <span class="tech-pill">Hyperspace Warp Streaks</span>
+        <span class="tech-pill">Pure Web Audio 2-Phase Synth</span>
+        <span class="tech-pill">60 FPS Video Recorder</span>
+      </div>
+      <div style="margin-top: 24px; display: flex; gap: 16px;">
+        <button class="btn primary" id="btn-start" style="padding: 16px 36px; font-size: 15px;">
+          ▶ PLAY 8-SECOND SHOWCASE
+        </button>
+        <button class="btn record" id="btn-start-record" style="padding: 16px 28px; font-size: 14px;">
+          ⏺ RECORD & DOWNLOAD (.WEBM)
+        </button>
+      </div>
+    </div>
+
+    <div id="ui-overlay" style="display: none;">
+      <button class="btn" id="btn-replay">↻ REPLAY</button>
+      <button class="btn record" id="btn-export">⏺ EXPORT WEBM</button>
+      <div class="time-indicator" id="time-display">0.00s / 8.00s</div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       1. GLOBAL CONSTANTS & AUDIO/VIDEO CONTROLLER
+       ========================================================================= */
+    const DURATION = 8.0;
+    const STAGE_W = 1920;
+    const STAGE_H = 1080;
+
+    let isPlaying = false;
+    let isRecording = false;
+    let currentTime = 0;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let audioCtx = null;
+    let masterGain = null;
+    let audioDestination = null;
+    let analyser = null;
+    let freqData = new Uint8Array(64);
+
+    const hudCanvas = document.getElementById('hud-canvas');
+    const hudCtx = hudCanvas.getContext('2d');
+    const webglCanvas = document.getElementById('webgl-canvas');
+    const timeDisplay = document.getElementById('time-display');
+    const recBadge = document.getElementById('rec-badge');
+    const uiOverlay = document.getElementById('ui-overlay');
+    const startModal = document.getElementById('start-modal');
+
+    /* =========================================================================
+       2. THREE.JS 3D SCENE (WARP SPEED TUNNEL & 3D FLYING CARDS)
+       ========================================================================= */
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+
+    const camera = new THREE.PerspectiveCamera(55, STAGE_W / STAGE_H, 0.1, 1000);
+    camera.position.set(0, 0, 18);
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas: webglCanvas,
+      antialias: true,
+      powerPreference: 'high-performance',
+      preserveDrawingBuffer: true
+    });
+    renderer.setSize(STAGE_W, STAGE_H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.8);
+    dirLight.position.set(5, 10, 15);
+    scene.add(dirLight);
+
+    // Dynamic Card Textures Generation
+    function createCardTexture(route, method, methodColor, paramLine) {
+      const c = document.createElement('canvas');
+      c.width = 512;
+      c.height = 340;
+      const ctx = c.getContext('2d');
+
+      // Realistic paper/manila background with soft noise
+      ctx.fillStyle = '#f6f3ed';
+      ctx.beginPath();
+      // Card with folder tab on top left
+      const r = 16;
+      ctx.moveTo(r, 0);
+      ctx.lineTo(160, 0);
+      ctx.arcTo(180, 0, 190, 24, 12);
+      ctx.lineTo(200, 28);
+      ctx.lineTo(512 - r, 28);
+      ctx.arcTo(512, 28, 512, 28 + r, r);
+      ctx.lineTo(512, 340 - r);
+      ctx.arcTo(512, 340, 512 - r, 340, r);
+      ctx.lineTo(r, 340);
+      ctx.arcTo(0, 340, 0, 340 - r, r);
+      ctx.lineTo(0, r);
+      ctx.arcTo(0, 0, r, 0, r);
+      ctx.closePath();
+      ctx.fill();
+
+      // Soft paper grain
+      ctx.fillStyle = 'rgba(0,0,0,0.03)';
+      for (let i = 0; i < 400; i++) {
+        ctx.fillRect(Math.random() * 512, Math.random() * 340, 2, 2);
+      }
+
+      // Method badge pill
+      ctx.fillStyle = methodColor;
+      ctx.beginPath();
+      ctx.roundRect(32, 54, 76, 32, 8);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 16px "JetBrains Mono"';
+      ctx.fillText(method, 46, 76);
+
+      // Route title
+      ctx.fillStyle = '#1e293b';
+      ctx.font = '800 24px "Inter"';
+      ctx.fillText(route, 124, 78);
+
+      // Folder tab label
+      ctx.fillStyle = '#64748b';
+      ctx.font = '700 13px "JetBrains Mono"';
+      ctx.fillText('ENDPOINT', 24, 18);
+
+      // Schema parameter lines
+      ctx.fillStyle = '#475569';
+      ctx.font = '500 15px "JetBrains Mono"';
+      ctx.fillText(paramLine, 32, 130);
+      ctx.fillText('• query: { limit: number, cursor?: string }', 32, 165);
+      ctx.fillText('• response: 200 OK -> schema.userRecord', 32, 200);
+
+      // Code divider
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(32, 230);
+      ctx.lineTo(480, 230);
+      ctx.stroke();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '400 13px "JetBrains Mono"';
+      ctx.fillText('openapi({ tags: ["Production"], auth: true })', 32, 270);
+      ctx.fillText('handler: async ({ params }) => ({ ok: true })', 32, 300);
+
+      const tex = new THREE.CanvasTexture(c);
+      tex.minFilter = THREE.LinearFilter;
+      return tex;
+    }
+
+    // Create 45 Flying 3D Cards in Hyperspace
+    const cardData = [
+      { route: '/profile', method: 'GET', color: '#8b5cf6', param: '• params: { userId: string }' },
+      { route: '/posts', method: 'POST', color: '#ec4899', param: '• body: t.Object({ title: t.String() })' },
+      { route: '/auth/session', method: 'GET', color: '#0ea5e9', param: '• cookie: { token: string }' },
+      { route: '/ws/chat', method: 'WS', color: '#10b981', param: '• ws: { open, message, close }' },
+      { route: '/openapi.json', method: 'GET', color: '#f59e0b', param: '• spec: OpenAPI.Version3_1' }
+    ];
+
+    const cardsGroup = new THREE.Group();
+    scene.add(cardsGroup);
+
+    const cards = [];
+    const cardGeo = new THREE.PlaneGeometry(5.2, 3.4);
+
+    for (let i = 0; i < 48; i++) {
+      const info = cardData[i % cardData.length];
+      const mat = new THREE.MeshBasicMaterial({
+        map: createCardTexture(info.route, info.method, info.color, info.param),
+        transparent: true,
+        side: THREE.DoubleSide
+      });
+      const mesh = new THREE.Mesh(cardGeo, mat);
+
+      // Scatter in a cone tunnel
+      const angle = (i / 48) * Math.PI * 4;
+      const radius = 3.5 + Math.random() * 5.0;
+      mesh.position.x = Math.cos(angle) * radius;
+      mesh.position.y = Math.sin(angle) * radius;
+      mesh.position.z = -Math.random() * 70; // deep down the tunnel
+
+      // Realistic random tilt
+      mesh.rotation.x = (Math.random() - 0.5) * 0.4;
+      mesh.rotation.y = (Math.random() - 0.5) * 0.6;
+      mesh.rotation.z = (Math.random() - 0.5) * 0.4;
+
+      mesh.userData = {
+        baseZ: mesh.position.z,
+        baseX: mesh.position.x,
+        baseY: mesh.position.y,
+        speed: 25 + Math.random() * 15,
+        rotSpeed: (Math.random() - 0.5) * 0.8
+      };
+
+      cardsGroup.add(mesh);
+      cards.push(mesh);
+    }
+
+    // Warp Speed Radial Lines
+    const warpCount = 200;
+    const warpGeo = new THREE.BufferGeometry();
+    const warpPos = new Float32Array(warpCount * 6);
+    for (let i = 0; i < warpCount; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 1.0 + Math.random() * 14;
+      const z = -Math.random() * 80;
+      warpPos[i * 6 + 0] = Math.cos(angle) * dist;
+      warpPos[i * 6 + 1] = Math.sin(angle) * dist;
+      warpPos[i * 6 + 2] = z;
+
+      warpPos[i * 6 + 3] = Math.cos(angle) * (dist + 0.1);
+      warpPos[i * 6 + 4] = Math.sin(angle) * (dist + 0.1);
+      warpPos[i * 6 + 5] = z + 5.0; // streak length
+    }
+    warpGeo.setAttribute('position', new THREE.BufferAttribute(warpPos, 3));
+    const warpMat = new THREE.LineBasicMaterial({
+      color: 0x475569,
+      transparent: true,
+      opacity: 0.6
+    });
+    const warpLines = new THREE.LineSegments(warpGeo, warpMat);
+    scene.add(warpLines);
+
+    /* =========================================================================
+       3. 2D CINEMATIC RENDER ENGINE (DAYDREAM PUFFY 3D + HUD)
+       ========================================================================= */
+
+    // Helper: Draw smooth 4-point pinched sparkle star
+    function drawSparkle(ctx, x, y, size, color, rot = 0) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = size * 0.14;
+      ctx.beginPath();
+      // Draw 4 curved pinched arms
+      for (let i = 0; i < 4; i++) {
+        ctx.quadraticCurveTo(0, 0, size, 0);
+        ctx.quadraticCurveTo(0, 0, 0, -size);
+        ctx.rotate(Math.PI / 2);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Helper: Draw smooth cute rounded heart
+    function drawCuteHeart(ctx, x, y, size, color, rot = 0) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = size * 0.14;
+      ctx.beginPath();
+      const d = size * 0.7;
+      ctx.moveTo(0, d * 0.4);
+      ctx.bezierCurveTo(-d, -d * 0.5, -d * 1.4, d * 0.5, 0, d * 1.5);
+      ctx.bezierCurveTo(d * 1.4, d * 0.5, d, -d * 0.5, 0, d * 0.4);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // RENDER SCENE 1: ELYSIA DAYDREAM (0.0s -> 3.8s)
+    function renderDaydream(t) {
+      const p = Math.min(1, t / 3.8);
+
+      // 1. Soft Pastel Dreamy Background Gradient
+      const grad = hudCtx.createRadialGradient(
+        STAGE_W * 0.5, STAGE_H * 0.55, 100,
+        STAGE_W * 0.5, STAGE_H * 0.5, STAGE_W * 0.8
+      );
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.35, '#f4f2ff');
+      grad.addColorStop(0.7, '#e4e7ff');
+      grad.addColorStop(1, '#fed7e2');
+      hudCtx.fillStyle = grad;
+      hudCtx.fillRect(0, 0, STAGE_W, STAGE_H);
+
+      // Subtle pastel floor glow
+      const floorGrad = hudCtx.createLinearGradient(0, STAGE_H * 0.6, 0, STAGE_H);
+      floorGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+      floorGrad.addColorStop(1, 'rgba(238, 242, 255, 0.85)');
+      hudCtx.fillStyle = floorGrad;
+      hudCtx.fillRect(0, STAGE_H * 0.6, STAGE_W, STAGE_H * 0.4);
+
+      // Floating Cute Sparkles & Hearts with gentle breathing
+      const bob = Math.sin(t * 3.5) * 8;
+      drawSparkle(hudCtx, STAGE_W * 0.08, STAGE_H * 0.46 + bob, 32, '#c4b5fd', t * 0.3);
+      drawSparkle(hudCtx, STAGE_W * 0.17, STAGE_H * 0.74 - bob, 26, '#fef08a', -t * 0.4);
+      drawSparkle(hudCtx, STAGE_W * 0.34, STAGE_H * 0.20 + bob * 0.8, 22, '#fbcfe8', t * 0.5);
+      drawSparkle(hudCtx, STAGE_W * 0.89, STAGE_H * 0.28 - bob, 48, '#fbcfe8', t * 0.2);
+      drawSparkle(hudCtx, STAGE_W * 0.81, STAGE_H * 0.74 + bob, 30, '#a5b4fc', -t * 0.3);
+      drawCuteHeart(hudCtx, STAGE_W * 0.77, STAGE_H * 0.22 - bob * 0.7, 34, '#f472b6', 0.2);
+
+      // Top Header: ┌ ELYSIA 2 • DAYDREAM ┐
+      hudCtx.fillStyle = '#818cf8';
+      hudCtx.font = '700 18px "JetBrains Mono"';
+      hudCtx.fillText('┌  ELYSIA 2  •  DAYDREAM', 64, 76);
+      hudCtx.fillText('┐', STAGE_W - 84, 76);
+
+      // Bottom Subtitle: BACKEND TYPESCRIPT FRAMEWORK
+      hudCtx.fillStyle = '#64748b';
+      hudCtx.font = '800 18px "Inter"';
+      hudCtx.textAlign = 'center';
+      hudCtx.letterSpacing = '0.35em';
+      hudCtx.fillText('B A C K E N D    T Y P E S C R I P T    F R A M E W O R K', STAGE_W / 2, STAGE_H - 140);
+      hudCtx.textAlign = 'start';
+      hudCtx.letterSpacing = '0px';
+
+      // 2. Japanese Katakana: "エリシア" (Floating Above)
+      const kataBob = Math.sin(t * 4.0) * 10;
+      hudCtx.save();
+      hudCtx.translate(STAGE_W * 0.13, STAGE_H * 0.33 + kataBob);
+      hudCtx.rotate(-0.06);
+
+      // Katakana Puffy Outline
+      hudCtx.font = '900 100px "M PLUS Rounded 1c", "Inter", sans-serif';
+      hudCtx.lineJoin = 'round';
+      hudCtx.lineCap = 'round';
+      hudCtx.lineWidth = 26;
+      hudCtx.strokeStyle = '#ffffff';
+      hudCtx.strokeText('エリシア', 0, 0);
+
+      // Katakana Extrusion / Drop shadow
+      hudCtx.fillStyle = '#818cf8';
+      hudCtx.fillText('エリシア', 4, 8);
+
+      // Katakana Fill Gradient
+      const kataGrad = hudCtx.createLinearGradient(0, -80, 400, 0);
+      kataGrad.addColorStop(0, '#93c5fd');
+      kataGrad.addColorStop(1, '#c084fc');
+      hudCtx.fillStyle = kataGrad;
+      hudCtx.fillText('エリシア', 0, 0);
+      hudCtx.restore();
+
+      // 3. THE GIANT PUFFY 3D STICKER: "ELYSIA"
+      const mainY = STAGE_H * 0.62 + Math.sin(t * 3.0) * 12;
+      hudCtx.save();
+      hudCtx.font = '900 230px "Inter", sans-serif';
+      hudCtx.lineJoin = 'round';
+      hudCtx.lineCap = 'round';
+
+      const text = 'ELYSIA';
+      const textX = STAGE_W * 0.12;
+
+      // Stage A: Deep Soft Ambient Drop Shadow
+      hudCtx.shadowColor = 'rgba(165, 180, 252, 0.55)';
+      hudCtx.shadowBlur = 45;
+      hudCtx.shadowOffsetX = 12;
+      hudCtx.shadowOffsetY = 28;
+      hudCtx.fillStyle = 'rgba(255,255,255,0.01)';
+      hudCtx.fillText(text, textX, mainY);
+      hudCtx.shadowColor = 'transparent';
+
+      // Stage B: Multi-layered 3D Extrusion (Pastel Purple Block)
+      const extrudeLayers = 20;
+      for (let e = extrudeLayers; e >= 1; e--) {
+        const offX = e * 1.5;
+        const offY = e * 1.8;
+        hudCtx.lineWidth = 36;
+        hudCtx.strokeStyle = '#c4b5fd';
+        hudCtx.strokeText(text, textX + offX, mainY + offY);
+        hudCtx.fillStyle = '#c4b5fd';
+        hudCtx.fillText(text, textX + offX, mainY + offY);
+      }
+
+      // Stage C: Thick Puffy White Sticker Border (Smooth pillowy curve)
+      hudCtx.lineWidth = 42;
+      hudCtx.strokeStyle = '#ffffff';
+      hudCtx.strokeText(text, textX, mainY);
+
+      // Stage D: Face Gradient Fill (Pastel Sky Blue -> Lilac -> Baby Pink)
+      const faceGrad = hudCtx.createLinearGradient(textX, mainY - 180, textX + 1300, mainY);
+      faceGrad.addColorStop(0.0, '#93c5fd'); // sky blue
+      faceGrad.addColorStop(0.35, '#a5b4fc'); // periwinkle
+      faceGrad.addColorStop(0.65, '#c084fc'); // lilac
+      faceGrad.addColorStop(1.0, '#f472b6'); // baby pink
+      hudCtx.fillStyle = faceGrad;
+      hudCtx.fillText(text, textX, mainY);
+
+      // Stage E: Top Specular Pillowy Sheen
+      hudCtx.lineWidth = 6;
+      hudCtx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+      hudCtx.strokeText(text, textX - 2, mainY - 4);
+
+      hudCtx.restore();
+    }
+
+    // RENDER SCENE 2: WARP TUNNEL & "NO ANNOTATIONS." (3.8s -> 8.0s)
+    function renderWarpScene(t) {
+      // 1. Kinetic Typography slamming into screen
+      hudCtx.save();
+
+      // Top Left Header
+      hudCtx.fillStyle = '#ffffff';
+      hudCtx.font = '900 24px "Inter"';
+      hudCtx.fillText('ELYSIA', 60, 60);
+      hudCtx.fillStyle = '#94a3b8';
+      hudCtx.font = '700 12px "JetBrains Mono"';
+      hudCtx.fillText('ERGONOMIC FRAMEWORK FOR HUMANS 2.0', 60, 84);
+
+      // Top Right Audio / Timecode
+      const barCount = 18;
+      let barStr = '';
+      for (let b = 0; b < barCount; b++) barStr += '|';
+      hudCtx.fillStyle = '#64748b';
+      hudCtx.font = '700 13px "JetBrains Mono"';
+      hudCtx.fillText(`BAR 13.2  •  135 BPM  •  0${t.toFixed(2)}s`, STAGE_W - 380, 84);
+
+      hudCtx.fillStyle = '#a855f7';
+      hudCtx.fillText('04 — DOC', STAGE_W - 160, 56);
+
+      // Bottom Bar Code Callouts
+      hudCtx.fillStyle = '#94a3b8';
+      hudCtx.font = '500 15px "JetBrains Mono"';
+      hudCtx.fillText('openapi({ references: fromTy990 })', 60, STAGE_H - 50);
+
+      hudCtx.fillStyle = '#64748b';
+      hudCtx.textAlign = 'right';
+      hudCtx.fillText('ELYSIAJS.COM // ZERO RUNTIME OVERHEAD', STAGE_W - 60, STAGE_H - 50);
+      hudCtx.textAlign = 'start';
+
+      // MASTER KINETIC SLAM TEXT:
+      if (t >= 3.8 && t < 6.0) {
+        // "NO ANNOTATIONS."
+        const enterT = t - 3.8;
+        const scale = enterT < 0.25 ? 1.4 - enterT * 1.6 : 1.0;
+        const alpha = Math.min(1, enterT * 8);
+
+        hudCtx.save();
+        hudCtx.translate(STAGE_W / 2, STAGE_H / 2 + 10);
+        hudCtx.scale(scale, scale);
+        hudCtx.globalAlpha = alpha;
+
+        hudCtx.fillStyle = '#ffffff';
+        hudCtx.font = '900 130px "Inter", sans-serif';
+        hudCtx.textAlign = 'center';
+        hudCtx.textBaseline = 'middle';
+        hudCtx.letterSpacing = '-0.03em';
+
+        // High-speed motion blur shadow
+        hudCtx.shadowColor = 'rgba(255, 255, 255, 0.4)';
+        hudCtx.shadowBlur = 30;
+        hudCtx.fillText('NO ANNOTATIONS.', 0, 0);
+        hudCtx.shadowColor = 'transparent';
+
+        hudCtx.restore();
+      } else if (t >= 6.0 && t < 7.2) {
+        // "TYPE INTEGRITY."
+        hudCtx.save();
+        hudCtx.translate(STAGE_W / 2, STAGE_H / 2 + 10);
+        hudCtx.fillStyle = '#38bdf8';
+        hudCtx.font = '900 120px "Inter", sans-serif';
+        hudCtx.textAlign = 'center';
+        hudCtx.textBaseline = 'middle';
+        hudCtx.letterSpacing = '-0.02em';
+        hudCtx.fillText('TYPE INTEGRITY.', 0, 0);
+        hudCtx.restore();
+      } else if (t >= 7.2) {
+        // Final Lock: "FASTEST TS BACKEND."
+        hudCtx.save();
+        hudCtx.translate(STAGE_W / 2, STAGE_H / 2 + 10);
+        hudCtx.fillStyle = '#f472b6';
+        hudCtx.font = '900 110px "Inter", sans-serif';
+        hudCtx.textAlign = 'center';
+        hudCtx.textBaseline = 'middle';
+        hudCtx.fillText('FASTEST TS BACKEND.', 0, -20);
+
+        hudCtx.fillStyle = '#ffffff';
+        hudCtx.font = '700 24px "JetBrains Mono"';
+        hudCtx.fillText('// RE-ENGINEERED BY JEFF × ANTIGRAVITY', 0, 60);
+        hudCtx.restore();
+      }
+
+      hudCtx.restore();
+    }
+
+    /* =========================================================================
+       4. PURE ALGORITHMIC AUDIO SYNTHESIZER (TWO PHASES: LO-FI & HYPERBEAT)
+       ========================================================================= */
+    function initAudio() {
+      if (audioCtx) return;
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+
+      masterGain = audioCtx.createGain();
+      masterGain.gain.setValueAtTime(0.85, audioCtx.currentTime);
+
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 128;
+      masterGain.connect(analyser);
+
+      audioDestination = audioCtx.createMediaStreamDestination();
+      analyser.connect(audioCtx.destination);
+      analyser.connect(audioDestination);
+    }
+
+    function scheduleShowcaseMusic(startCtxTime) {
+      const t0 = startCtxTime;
+
+      // --- PHASE 1 (0.0s - 3.8s): CUTE DAYDREAM BELLS & LO-FI CHORDS ---
+      function playCuteBell(freq, time, dur = 0.6) {
+        const osc = audioCtx.createOscillator();
+        const oscMod = audioCtx.createOscillator();
+        const modGain = audioCtx.createGain();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, time);
+
+        // FM Bell modulation
+        oscMod.type = 'sine';
+        oscMod.frequency.setValueAtTime(freq * 2.76, time);
+        modGain.gain.setValueAtTime(freq * 0.8, time);
+        modGain.gain.exponentialRampToValueAtTime(1, time + dur);
+
+        oscMod.connect(modGain);
+        modGain.connect(osc.frequency);
+
+        gain.gain.setValueAtTime(0.25, time);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+
+        osc.connect(gain);
+        gain.connect(masterGain);
+
+        oscMod.start(time);
+        osc.start(time);
+        oscMod.stop(time + dur);
+        osc.stop(time + dur);
+      }
+
+      function playWarmPad(freqs, time, dur = 1.6) {
+        freqs.forEach(f => {
+          const osc = audioCtx.createOscillator();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, time);
+
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(900, time);
+
+          const gain = audioCtx.createGain();
+          gain.gain.setValueAtTime(0.01, time);
+          gain.gain.linearRampToValueAtTime(0.07, time + 0.3);
+          gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(masterGain);
+          osc.start(time);
+          osc.stop(time + dur);
+        });
+      }
+
+      // Daydream Melody (C Major / A Minor Lofi Progression)
+      playWarmPad([261.63, 329.63, 392.00, 493.88], t0, 1.8); // Cmaj7
+      playWarmPad([220.00, 261.63, 329.63, 392.00], t0 + 1.8, 1.8); // Am7
+
+      const melody = [
+        { f: 523.25, t: 0.0 }, { f: 659.25, t: 0.4 }, { f: 783.99, t: 0.8 }, { f: 987.77, t: 1.2 },
+        { f: 880.00, t: 1.8 }, { f: 659.25, t: 2.2 }, { f: 587.33, t: 2.6 }, { f: 523.25, t: 3.0 }
+      ];
+      melody.forEach(m => playCuteBell(m.f, t0 + m.t, 0.7));
+
+      // --- TRANSITION SUCTION / DROP AT 3.8s ---
+      const vacuumOsc = audioCtx.createOscillator();
+      const vacuumGain = audioCtx.createGain();
+      vacuumOsc.type = 'sawtooth';
+      vacuumOsc.frequency.setValueAtTime(400, t0 + 3.2);
+      vacuumOsc.frequency.exponentialRampToValueAtTime(50, t0 + 3.8);
+      vacuumGain.gain.setValueAtTime(0.01, t0 + 3.2);
+      vacuumGain.gain.linearRampToValueAtTime(0.4, t0 + 3.75);
+      vacuumGain.gain.exponentialRampToValueAtTime(0.001, t0 + 3.85);
+      vacuumOsc.connect(vacuumGain);
+      vacuumGain.connect(masterGain);
+      vacuumOsc.start(t0 + 3.2);
+      vacuumOsc.stop(t0 + 3.85);
+
+      // --- PHASE 2 (3.8s - 8.0s): HYPER-SPEED TRAP 808 & PUNCHY BEATS ---
+      function play808(time) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(140, time);
+        osc.frequency.exponentialRampToValueAtTime(38, time + 0.35);
+
+        gain.gain.setValueAtTime(1.0, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.42);
+
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start(time);
+        osc.stop(time + 0.45);
+      }
+
+      function playSnare(time) {
+        // Noise burst + tone
+        const bufSize = audioCtx.sampleRate * 0.15;
+        const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buf;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(1200, time);
+
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.6, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(masterGain);
+        noise.start(time);
+        noise.stop(time + 0.16);
+      }
+
+      function playHihat(time) {
+        const osc = audioCtx.createOscillator();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(8000, time);
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.2, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.04);
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start(time);
+        osc.stop(time + 0.045);
+      }
+
+      // Hard Slam Drop at 3.8s
+      play808(t0 + 3.8);
+      playSnare(t0 + 4.24);
+      play808(t0 + 4.68);
+      playSnare(t0 + 5.12);
+      play808(t0 + 5.56);
+      playSnare(t0 + 6.0);
+      play808(t0 + 6.44);
+      playSnare(t0 + 6.88);
+      play808(t0 + 7.32);
+
+      // Hihat 16th and 32nd rolls
+      for (let h = 0; h < 32; h++) {
+        const ht = t0 + 3.8 + h * 0.11;
+        if (ht < t0 + 7.8) playHihat(ht);
+      }
+    }
+
+    /* =========================================================================
+       5. MASTER GSAP TIMELINE & THREE.JS FLIGHT CONTROLLER
+       ========================================================================= */
+    const masterTimeline = gsap.timeline({
+      paused: true,
+      onUpdate: () => {
+        currentTime = masterTimeline.time();
+        timeDisplay.textContent = `${currentTime.toFixed(2)}s / ${DURATION.toFixed(2)}s`;
+      },
+      onComplete: () => {
+        isPlaying = false;
+        if (isRecording && mediaRecorder && mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+        }
+      }
+    });
+
+    masterTimeline
+      .to({}, { duration: 8.0 }); // 8.0s virtual ticker
+
+    /* =========================================================================
+       6. MAIN ANIMATION LOOP
+       ========================================================================= */
+    function renderLoop() {
+      requestAnimationFrame(renderLoop);
+
+      const t = masterTimeline.time();
+
+      if (t < 3.8) {
+        // --- PHASE 1: DAYDREAM PUFFY 3D ---
+        cardsGroup.visible = false;
+        warpLines.visible = false;
+        renderer.render(scene, camera);
+
+        hudCtx.clearRect(0, 0, STAGE_W, STAGE_H);
+        renderDaydream(t);
+
+      } else {
+        // --- PHASE 2: 3D FLYING CARDS & NO ANNOTATIONS ---
+        cardsGroup.visible = true;
+        warpLines.visible = true;
+
+        const warpT = t - 3.8;
+
+        // Camera rushes into the tunnel
+        camera.position.z = 18 - warpT * 12;
+
+        // Animate 48 Flying 3D Cards
+        cards.forEach((card, idx) => {
+          card.position.z += card.userData.speed * 0.05;
+          card.rotation.z += card.userData.rotSpeed * 0.01;
+
+          // Loop cards if they pass camera
+          if (card.position.z > camera.position.z + 5) {
+            card.position.z = camera.position.z - 65;
+            card.position.x = (Math.random() - 0.5) * 18;
+            card.position.y = (Math.random() - 0.5) * 12;
+          }
+        });
+
+        // Warp radial streaks flicker
+        warpLines.rotation.z = warpT * 2.5;
+
+        renderer.render(scene, camera);
+
+        hudCtx.clearRect(0, 0, STAGE_W, STAGE_H);
+        renderWarpScene(t);
+      }
+    }
+
+    renderLoop();
+
+    /* =========================================================================
+       7. PLAYBACK & SCREEN RECORDER INTEGRATION
+       ========================================================================= */
+    function startShowcase(recordVideo = false) {
+      initAudio();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      startModal.style.display = 'none';
+      uiOverlay.style.display = 'flex';
+
+      isRecording = recordVideo;
+      if (isRecording) {
+        recBadge.style.display = 'flex';
+        setupRecorder();
+      } else {
+        recBadge.style.display = 'none';
+      }
+
+      masterTimeline.restart();
+      scheduleShowcaseMusic(audioCtx.currentTime + 0.05);
+      isPlaying = true;
+    }
+
+    function setupRecorder() {
+      const compositeCanvas = document.createElement('canvas');
+      compositeCanvas.width = STAGE_W;
+      compositeCanvas.height = STAGE_H;
+      const compCtx = compositeCanvas.getContext('2d');
+
+      const videoStream = compositeCanvas.captureStream(60);
+
+      if (audioDestination && audioDestination.stream.getAudioTracks().length > 0) {
+        videoStream.addTrack(audioDestination.stream.getAudioTracks()[0]);
+      }
+
+      function mergeFrames() {
+        if (!isRecording) return;
+        compCtx.drawImage(webglCanvas, 0, 0);
+        compCtx.drawImage(hudCanvas, 0, 0);
+        requestAnimationFrame(mergeFrames);
+      }
+      mergeFrames();
+
+      recordedChunks = [];
+      const mimeTypes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+      let selectedMime = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || '';
+
+      mediaRecorder = new MediaRecorder(videoStream, {
+        mimeType: selectedMime,
+        videoBitsPerSecond: 14000000 // 14 Mbps ultra crisp
+      });
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        recBadge.style.display = 'none';
+        isRecording = false;
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `elysia_daydream_showcase_8s_${Date.now()}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      };
+
+      mediaRecorder.start();
+    }
+
+    // Button event listeners
+    document.getElementById('btn-start').addEventListener('click', () => startShowcase(false));
+    document.getElementById('btn-start-record').addEventListener('click', () => startShowcase(true));
+    document.getElementById('btn-replay').addEventListener('click', () => startShowcase(false));
+    document.getElementById('btn-export').addEventListener('click', () => startShowcase(true));
+
+    // Responsive Canvas Resize
+    function handleResize() {
+      const container = document.getElementById('stage-container');
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', handleResize);
+    handleResize();
+  </script>
+</body>
+</html>

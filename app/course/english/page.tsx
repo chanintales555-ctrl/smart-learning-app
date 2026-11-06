@@ -145,15 +145,15 @@ export default function EnglishCoursePage() {
   return (
     <div
       ref={containerRef}
-      className="relative bg-[#030306] text-white min-h-[1300vh] selection:bg-white/20 selection:text-white"
+      className="relative bg-[#030306] text-white min-h-[1300vh] selection:bg-indigo-500/25 selection:text-indigo-200"
     >
       {/* 3D WebGL Linguistic Cosmos Scrollytelling Background */}
       <EnglishCourseCanvas scrollProgress={scrollProgress} />
 
-      {/* Top Hairline Progress (Clean Single Tone) */}
+      {/* Top Hairline Progress (Unified Indigo Tone) */}
       <div className="fixed top-0 left-0 w-full h-[2px] z-50 bg-white/[0.06]">
         <div
-          className="h-full bg-white/85 shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-75"
+          className="h-full bg-gradient-to-r from-indigo-500 via-indigo-400 to-blue-400 shadow-[0_0_12px_rgba(129,140,248,0.7)] transition-all duration-75"
           style={{ width: `${scrollProgress * 100}%` }}
         />
       </div>
@@ -169,8 +169,8 @@ export default function EnglishCoursePage() {
             <ArrowLeft className="w-4 h-4" />
             <span>Academy</span>
           </Link>
-          <div className="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/[0.1] text-xs font-mono uppercase text-white/80 tracking-wider">
-            <GraduationCap className="w-4 h-4 text-white/80" />
+          <div className="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-full bg-black/40 backdrop-blur-xl border border-indigo-500/20 text-xs font-mono uppercase text-indigo-300 tracking-wider">
+            <GraduationCap className="w-4 h-4 text-indigo-400" />
             <span>English A-Level · Course Curriculum</span>
           </div>
         </div>
@@ -181,13 +181,13 @@ export default function EnglishCoursePage() {
             <span className="text-[11px] font-mono text-white/40 uppercase tracking-wider">
               Chapter
             </span>
-            <span className="text-sm font-mono font-bold text-white">
+            <span className="text-sm font-mono font-bold text-indigo-400">
               {String(activeChapterIndex).padStart(2, '0')} / {String(totalChapters).padStart(2, '0')}
             </span>
           </div>
 
           {session?.user ? (
-            <div className="hidden md:flex items-center gap-2.5 bg-black/50 backdrop-blur-3xl pl-3.5 pr-2 py-1.5 rounded-full border border-white/[0.15]">
+            <div className="hidden md:flex items-center gap-2.5 bg-black/50 backdrop-blur-3xl pl-3.5 pr-2 py-1.5 rounded-full border border-indigo-500/25">
               <span className="text-xs font-semibold text-white/90 max-w-[110px] truncate">
                 👤 {session.user.name}
               </span>
@@ -210,7 +210,7 @@ export default function EnglishCoursePage() {
 
           <Link
             href="/course/english/pretest"
-            className="hidden sm:inline-flex px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all hover:scale-[1.02]"
+            className="hidden sm:inline-flex px-5 py-2 rounded-full bg-indigo-400 hover:bg-indigo-300 text-black font-bold text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(129,140,248,0.35)] hover:scale-[1.02]"
           >
             Pre-Test 100 ข้อ
           </Link>
@@ -225,7 +225,7 @@ export default function EnglishCoursePage() {
             <div key={ch.id} className="flex items-center gap-3 transition-all duration-300">
               <span
                 className={`text-[10px] font-mono tracking-wider transition-all duration-300 ${
-                  isActive ? 'text-white font-bold opacity-100' : 'text-white/25 opacity-35'
+                  isActive ? 'text-indigo-400 font-bold opacity-100' : 'text-white/25 opacity-35'
                 }`}
               >
                 {String(idx + 1).padStart(2, '0')} {ch.cluster.split(' ')[0]}
@@ -233,7 +233,7 @@ export default function EnglishCoursePage() {
               <div
                 className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                   isActive
-                    ? 'bg-white scale-150 shadow-[0_0_8px_rgba(255,255,255,0.9)]'
+                    ? 'bg-indigo-400 scale-150 shadow-[0_0_8px_rgba(129,140,248,0.9)]'
                     : 'bg-white/20'
                 }`}
               />
@@ -245,8 +245,8 @@ export default function EnglishCoursePage() {
       {/* Intro Hero Screen */}
       <section className="h-screen w-full flex flex-col justify-center items-center px-6 relative z-10 text-center">
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in zoom-in duration-1000">
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.12] text-white/80 text-xs sm:text-sm font-mono tracking-wider uppercase">
-            <Sparkles className="w-4 h-4 text-white/80" />
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-indigo-500/[0.1] border border-indigo-500/30 text-indigo-400 text-xs sm:text-sm font-mono tracking-wider uppercase">
+            <Sparkles className="w-4 h-4 text-indigo-400" />
             <span>Interactive 3D Linguistic Curriculum Explorer</span>
           </div>
 
@@ -262,7 +262,7 @@ export default function EnglishCoursePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
             <Link
               href="/course/english/pretest"
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-black hover:bg-neutral-200 font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2.5 hover:scale-[1.02]"
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-indigo-400 text-black hover:bg-indigo-300 font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2.5 hover:scale-[1.02] shadow-[0_0_25px_rgba(129,140,248,0.4)]"
             >
               <span>เริ่มทำ Pre-Test 100 ข้อ (บทที่ 1)</span>
               <ArrowRight className="w-4 h-4" />
@@ -289,7 +289,7 @@ export default function EnglishCoursePage() {
           <span className="text-xs font-mono uppercase tracking-[0.3em]">
             Scroll to inspect chapters
           </span>
-          <ChevronDown className="w-5 h-5 text-white/70" />
+          <ChevronDown className="w-5 h-5 text-indigo-400" />
         </div>
       </section>
 
@@ -304,19 +304,22 @@ export default function EnglishCoursePage() {
               isEven ? 'justify-start' : 'justify-end'
             }`}
           >
-            <div className="max-w-xl md:max-w-2xl bg-black/45 backdrop-blur-3xl border border-white/[0.1] hover:border-white/[0.25] p-8 md:p-12 rounded-[2.5rem] shadow-[0_20px_70px_rgba(0,0,0,0.75)] relative group transition-all duration-500">
+            <div className="max-w-xl md:max-w-2xl bg-black/45 backdrop-blur-3xl border border-white/[0.1] hover:border-indigo-500/40 p-8 md:p-12 rounded-[2.5rem] shadow-[0_20px_70px_rgba(0,0,0,0.75)] relative group transition-all duration-500">
+              {/* Subtle Indigo Ambient Glow */}
+              <div className="absolute -top-10 -left-10 w-44 h-44 bg-indigo-500/10 rounded-full blur-[70px] pointer-events-none" />
+
               <div className="space-y-6 relative z-10">
                 {/* Header Badge */}
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.14] text-white/85 text-xs font-mono tracking-wider uppercase">
-                      <GraduationCap className="w-3.5 h-3.5 text-white/80" />
+                    <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-indigo-500/[0.1] border border-indigo-500/30 text-indigo-400 text-xs font-mono tracking-wider uppercase">
+                      <GraduationCap className="w-3.5 h-3.5 text-indigo-400" />
                       <span>
                         CHAPTER {String(idx + 1).padStart(2, '0')} · {chapter.cluster}
                       </span>
                     </div>
                     {chapter.isPretest && (
-                      <span className="px-3 py-1 rounded-full bg-white text-black text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="px-3 py-1 rounded-full bg-indigo-400 text-black text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_15px_rgba(129,140,248,0.4)]">
                         <CheckCircle2 className="w-3 h-3" />
                         <span>พร้อมทำข้อสอบแล้ว (100 ข้อ)</span>
                       </span>
@@ -325,7 +328,7 @@ export default function EnglishCoursePage() {
 
                   {/* Telemetry label for 3D model */}
                   <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-mono text-white/40">
-                    <Box className="w-3.5 h-3.5 text-white/60" />
+                    <Box className="w-3.5 h-3.5 text-indigo-400/70" />
                     <span>{chapter.modelLabel}</span>
                   </div>
                 </div>
@@ -359,9 +362,9 @@ export default function EnglishCoursePage() {
 
                 {/* Account Score Memory Box (Only on Chapter 01 Pre-Test if score/progress exists) */}
                 {chapter.isPretest && (latestScore || inProgressCount > 0) && (
-                  <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/[0.12] flex flex-wrap items-center justify-between gap-3">
+                  <div className="p-4 rounded-2xl bg-indigo-500/[0.08] border border-indigo-500/25 flex flex-wrap items-center justify-between gap-3">
                     <div className="space-y-0.5">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-white/50">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-300/80">
                         บันทึกของบัญชี {session?.user?.name || 'คุณ'}
                       </span>
                       {latestScore ? (
@@ -376,7 +379,7 @@ export default function EnglishCoursePage() {
                     </div>
                     <Link
                       href="/course/english/pretest"
-                      className="text-xs font-mono underline text-white/80 hover:text-white"
+                      className="text-xs font-mono underline text-indigo-300 hover:text-white"
                     >
                       {latestScore ? 'ดู Dashboard รายพาร์ท →' : 'ทำต่อจากเดิม →'}
                     </Link>
@@ -389,7 +392,7 @@ export default function EnglishCoursePage() {
                     <>
                       <Link
                         href="/course/english/pretest"
-                        className="w-full sm:w-auto px-8 py-4 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                        className="w-full sm:w-auto px-8 py-4 rounded-full bg-indigo-400 hover:bg-indigo-300 text-black font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 hover:scale-[1.02] shadow-[0_0_25px_rgba(129,140,248,0.4)]"
                       >
                         <span>
                           {latestScore
@@ -404,12 +407,12 @@ export default function EnglishCoursePage() {
                   ) : (
                     <>
                       <div className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/[0.04] border border-white/[0.1] text-white/60 text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2">
-                        <Clock className="w-3.5 h-3.5 text-white/60" />
+                        <Clock className="w-3.5 h-3.5 text-indigo-400" />
                         <span>เนื้อหาบทเรียนกำลังจัดทำ</span>
                       </div>
                       <Link
                         href="/course/english/pretest"
-                        className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.15] text-white font-semibold text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 font-semibold text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2"
                       >
                         <Layers className="w-3.5 h-3.5" />
                         <span>วัดพื้นฐานด้วย Pre-Test ก่อนเรียน</span>
@@ -438,7 +441,7 @@ export default function EnglishCoursePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/course/english/pretest"
-              className="px-8 py-4.5 rounded-full bg-white hover:bg-neutral-200 text-black font-bold text-sm sm:text-base tracking-wider uppercase transition-all hover:scale-[1.02]"
+              className="px-8 py-4.5 rounded-full bg-indigo-400 hover:bg-indigo-300 text-black font-bold text-sm sm:text-base tracking-wider uppercase transition-all shadow-[0_0_25px_rgba(129,140,248,0.4)] hover:scale-[1.02]"
             >
               เริ่มทำ Pre-Test 100 ข้อ
             </Link>

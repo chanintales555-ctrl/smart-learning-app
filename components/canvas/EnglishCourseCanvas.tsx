@@ -111,8 +111,8 @@ function createBokehTexture(size: number = 128): THREE.Texture {
   const half = size / 2;
   const gradient = ctx.createRadialGradient(half, half, 0, half, half, half);
   gradient.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
-  gradient.addColorStop(0.2, 'rgba(226, 232, 240, 0.85)');
-  gradient.addColorStop(0.5, 'rgba(148, 163, 184, 0.22)');
+  gradient.addColorStop(0.2, 'rgba(199, 210, 254, 0.85)');
+  gradient.addColorStop(0.5, 'rgba(99, 102, 241, 0.25)');
   gradient.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, size, size);
@@ -133,8 +133,8 @@ function createGlyphTexture(symbol: string): THREE.Texture {
 
   // Subtle circular halo ring
   const grad = ctx.createRadialGradient(size / 2, size / 2, 10, size / 2, size / 2, size / 2.2);
-  grad.addColorStop(0, 'rgba(255, 255, 255, 0.16)');
-  grad.addColorStop(0.65, 'rgba(148, 163, 184, 0.05)');
+  grad.addColorStop(0, 'rgba(129, 140, 248, 0.22)');
+  grad.addColorStop(0.65, 'rgba(99, 102, 241, 0.08)');
   grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = grad;
   ctx.beginPath();
@@ -145,9 +145,9 @@ function createGlyphTexture(symbol: string): THREE.Texture {
   ctx.font = '700 84px "Inter", "Georgia", monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.shadowColor = 'rgba(255, 255, 255, 0.75)';
+  ctx.shadowColor = 'rgba(129, 140, 248, 0.85)';
   ctx.shadowBlur = 18;
-  ctx.fillStyle = 'rgba(248, 250, 252, 0.92)';
+  ctx.fillStyle = 'rgba(224, 231, 255, 0.94)';
   ctx.fillText(symbol, size / 2, size / 2);
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -216,15 +216,15 @@ export default function EnglishCourseCanvas({ scrollProgress }: EnglishCourseCan
     const ambient = new THREE.AmbientLight(0x0f172a, 1.9);
     scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xf8fafc, 2.8);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.8);
     keyLight.position.set(22, 32, 26);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x94a3b8, 1.5);
+    const fillLight = new THREE.DirectionalLight(0x818cf8, 1.8);
     fillLight.position.set(-22, 14, 20);
     scene.add(fillLight);
 
-    const rimLight = new THREE.DirectionalLight(0xe2e8f0, 1.4);
+    const rimLight = new THREE.DirectionalLight(0x6366f1, 1.6);
     rimLight.position.set(0, -12, -32);
     scene.add(rimLight);
 
@@ -237,9 +237,9 @@ export default function EnglishCourseCanvas({ scrollProgress }: EnglishCourseCan
 
     const starPalette = [
       new THREE.Color(0xffffff),
-      new THREE.Color(0xe2e8f0),
-      new THREE.Color(0xcbd5e1),
-      new THREE.Color(0xbae6fd),
+      new THREE.Color(0xc7d2fe),
+      new THREE.Color(0x818cf8),
+      new THREE.Color(0x93c5fd),
     ];
 
     for (let i = 0; i < starCount; i++) {
@@ -318,31 +318,31 @@ export default function EnglishCourseCanvas({ scrollProgress }: EnglishCourseCan
       });
     }
 
-    // Shared Materials (Clean Silver-Platinum & Ice-Slate)
+    // Shared Materials (Cohesive Indigo-Sapphire & Platinum)
     const matPlatinum = new THREE.MeshPhysicalMaterial({
-      color: 0xf8fafc,
-      emissive: 0x334155,
-      emissiveIntensity: 0.35,
+      color: 0xe0e7ff,
+      emissive: 0x3730a3,
+      emissiveIntensity: 0.45,
       metalness: 0.95,
       roughness: 0.05,
       clearcoat: 1.0,
     });
 
     const matBrushedTitanium = new THREE.MeshPhysicalMaterial({
-      color: 0xcbd5e1,
-      emissive: 0x1e293b,
-      emissiveIntensity: 0.25,
+      color: 0xa5b4fc,
+      emissive: 0x312e81,
+      emissiveIntensity: 0.38,
       metalness: 0.9,
       roughness: 0.08,
       clearcoat: 1.0,
-      iridescence: 0.45,
+      iridescence: 0.55,
       iridescenceIOR: 1.3,
     });
 
     const matLuminousNode = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
-      emissive: 0xe2e8f0,
-      emissiveIntensity: 1.4,
+      emissive: 0x818cf8,
+      emissiveIntensity: 1.65,
       metalness: 0.9,
       roughness: 0.03,
       clearcoat: 1.0,
@@ -369,8 +369,8 @@ export default function EnglishCourseCanvas({ scrollProgress }: EnglishCourseCan
       uniforms: {
         uTime: { value: 0 },
         uColorDeep: { value: new THREE.Color(0x0f172a) },
-        uColorMid: { value: new THREE.Color(0x64748b) },
-        uColorGlow: { value: new THREE.Color(0xf8fafc) },
+        uColorMid: { value: new THREE.Color(0x4f46e5) },
+        uColorGlow: { value: new THREE.Color(0xa5b4fc) },
       },
     });
     const chronosCore = new THREE.Mesh(new THREE.SphereGeometry(1.65, 128, 128), coreShaderMat);
@@ -380,8 +380,8 @@ export default function EnglishCourseCanvas({ scrollProgress }: EnglishCourseCan
       vertexShader: HOLO_SHELL_VERTEX,
       fragmentShader: HOLO_SHELL_FRAGMENT,
       uniforms: {
-        uColor: { value: new THREE.Color(0xe2e8f0) },
-        uOpacity: { value: 0.45 },
+        uColor: { value: new THREE.Color(0x818cf8) },
+        uOpacity: { value: 0.48 },
       },
       transparent: true,
       blending: THREE.AdditiveBlending,

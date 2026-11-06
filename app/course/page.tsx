@@ -9,7 +9,7 @@ export default function CourseSelection() {
   const subjects = [
     { id: 'physics', name: 'PHYSICS', color: 'from-blue-600 to-blue-400', icon: '⚛️' },
     { id: 'chemistry', name: 'CHEMISTRY', color: 'from-orange-600 to-orange-400', icon: '🧪' },
-    { id: 'english', name: 'ENGLISH', color: 'from-sky-600 to-sky-400', icon: '🌐' },
+    { id: 'english', name: 'ENGLISH', color: 'from-indigo-600 to-indigo-400', icon: '🌐' },
     { id: 'biology', name: 'BIOLOGY', color: 'from-green-600 to-green-400', icon: '🧬' },
     { id: 'math', name: 'MATHEMATICS', color: 'from-purple-600 to-purple-400', icon: '📐' }
   ];
