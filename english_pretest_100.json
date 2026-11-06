@@ -1,0 +1,1510 @@
+{
+  "parts": [
+    {
+      "id": "vocab",
+      "partNumber": 1,
+      "title": "Vocabulary",
+      "thaiTitle": "คำศัพท์และการใช้คำ",
+      "questionCount": 25,
+      "description": "วัดคลังคำศัพท์พื้นฐานในชีวิตประจำวันและเชิงวิชาการ การเดาความหมายจากบริบท และกลุ่มคำที่ใช้คู่กัน (Collocations & Phrasal Verbs)",
+      "color": "#818cf8",
+      "badgeClass": "bg-indigo-500/15 text-indigo-300 border-indigo-500/30",
+      "barClass": "from-indigo-500 to-indigo-400"
+    },
+    {
+      "id": "grammar",
+      "partNumber": 2,
+      "title": "Grammar & Structure",
+      "thaiTitle": "ไวยากรณ์และโครงสร้างประโยค",
+      "questionCount": 30,
+      "description": "วัดความเข้าใจโครงสร้างประโยค Tenses, Subject-Verb Agreement, If-Clause, Passive Voice, Relative Clause และคำเชื่อม",
+      "color": "#818cf8",
+      "badgeClass": "bg-indigo-500/15 text-indigo-300 border-indigo-500/30",
+      "barClass": "from-indigo-500 to-indigo-400"
+    },
+    {
+      "id": "reading",
+      "partNumber": 3,
+      "title": "Reading Comprehension",
+      "thaiTitle": "การอ่านจับใจความ",
+      "questionCount": 20,
+      "description": "วัดทักษะการอ่านบทความ การหาใจความสำคัญ (Main Idea) รายละเอียด (Details) คำอ้างอิง และการอนุมานความหมาย (Inference)",
+      "color": "#818cf8",
+      "badgeClass": "bg-indigo-500/15 text-indigo-300 border-indigo-500/30",
+      "barClass": "from-indigo-500 to-indigo-400"
+    },
+    {
+      "id": "conversation",
+      "partNumber": 4,
+      "title": "Conversation",
+      "thaiTitle": "บทสนทนาในชีวิตประจำวัน",
+      "questionCount": 25,
+      "description": "วัดความสามารถในการสื่อสารและการโต้ตอบอย่างเป็นธรรมชาติในสถานการณ์ต่างๆ ทั้งในโรงเรียน ร้านอาหาร การเดินทาง และชีวิตประจำวัน",
+      "color": "#818cf8",
+      "badgeClass": "bg-indigo-500/15 text-indigo-300 border-indigo-500/30",
+      "barClass": "from-indigo-500 to-indigo-400"
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "code": "EN-PRE-001",
+      "part": "vocab",
+      "question": "Please ________ the lights before you leave the classroom to save electricity.",
+      "options": {
+        "A": "turn off",
+        "B": "turn up",
+        "C": "look after",
+        "D": "put on"
+      },
+      "correct": "A",
+      "explanation": "\"turn off\" แปลว่า ปิด (เครื่องใช้ไฟฟ้า/ไฟ) ส่วน turn up = เพิ่มเสียง/มาปรากฏตัว, look after = ดูแล, put on = สวมใส่"
+    },
+    {
+      "id": 2,
+      "code": "EN-PRE-002",
+      "part": "vocab",
+      "question": "Regular exercise and a balanced diet are ________ for maintaining good health.",
+      "options": {
+        "A": "temporary",
+        "B": "essential",
+        "C": "careless",
+        "D": "optional"
+      },
+      "correct": "B",
+      "explanation": "\"essential\" แปลว่า จำเป็นหรือสำคัญอย่างยิ่ง เข้ากับบริบทการออกกำลังกายและอาหารที่สมดุลเพื่อสุขภาพที่ดี"
+    },
+    {
+      "id": 3,
+      "code": "EN-PRE-003",
+      "part": "vocab",
+      "question": "The museum is offering a 50% ________ for high school and university students this weekend.",
+      "options": {
+        "A": "salary",
+        "B": "receipt",
+        "C": "discount",
+        "D": "fine"
+      },
+      "correct": "C",
+      "explanation": "\"discount\" แปลว่า ส่วนลด (a 50% discount = ส่วนลด 50%) ส่วน salary = เงินเดือน, receipt = ใบเสร็จ, fine = ค่าปรับ"
+    },
+    {
+      "id": 4,
+      "code": "EN-PRE-004",
+      "part": "vocab",
+      "question": "Nicha is a very ________ person; you can always trust her to finish her work on time.",
+      "options": {
+        "A": "reliable",
+        "B": "confused",
+        "C": "fragile",
+        "D": "jealous"
+      },
+      "correct": "A",
+      "explanation": "\"reliable\" แปลว่า พึ่งพาได้ / เชื่อถือได้ สอดคล้องกับประโยคหลังที่บอกว่าไว้ใจเธอให้ทำงานเสร็จตรงเวลาได้เสมอ"
+    },
+    {
+      "id": 5,
+      "code": "EN-PRE-005",
+      "part": "vocab",
+      "question": "Due to the heavy rainstorm, the outdoor concert had to be ________ until next Saturday.",
+      "options": {
+        "A": "celebrated",
+        "B": "postponed",
+        "C": "expanded",
+        "D": "graduated"
+      },
+      "correct": "B",
+      "explanation": "\"postponed\" แปลว่า เลื่อนออกไป (เนื่องจากพายุฝนตกหนัก จึงต้องเลื่อนคอนเสิร์ตกลางแจ้งไปเป็นวันเสาร์หน้า)"
+    },
+    {
+      "id": 6,
+      "code": "EN-PRE-006",
+      "part": "vocab",
+      "question": "Many tourists visit Chiang Mai in December to ________ the cool weather and mountain views.",
+      "options": {
+        "A": "avoid",
+        "B": "complain",
+        "C": "enjoy",
+        "D": "prevent"
+      },
+      "correct": "C",
+      "explanation": "\"enjoy\" แปลว่า เพลิดเพลิน/ชื่นชม (นักท่องเที่ยวไปเชียงใหม่ในเดือนธันวาคมเพื่อเพลิดเพลินกับอากาศเย็น)"
+    },
+    {
+      "id": 7,
+      "code": "EN-PRE-007",
+      "part": "vocab",
+      "question": "If you don’t know the meaning of this word, you can ________ it up in the online dictionary.",
+      "options": {
+        "A": "look",
+        "B": "take",
+        "C": "give",
+        "D": "make"
+      },
+      "correct": "A",
+      "explanation": "สำนวน \"look (something) up\" แปลว่า ค้นหาข้อมูลหรือความหมายคำศัพท์ในพจนานุกรม"
+    },
+    {
+      "id": 8,
+      "code": "EN-PRE-008",
+      "part": "vocab",
+      "question": "The instructions on the chemistry lab sheet were very ________, so every student understood what to do immediately.",
+      "options": {
+        "A": "clear",
+        "B": "hidden",
+        "C": "noisy",
+        "D": "bitter"
+      },
+      "correct": "A",
+      "explanation": "\"clear\" แปลว่า ชัดเจน เข้าใจง่าย ทำให้นักเรียนทุกคนเข้าใจได้ทันทีว่าต้องทำอะไร"
+    },
+    {
+      "id": 9,
+      "code": "EN-PRE-009",
+      "part": "vocab",
+      "question": "Wearing a helmet can significantly ________ the risk of serious head injury in an accident.",
+      "options": {
+        "A": "increase",
+        "B": "reduce",
+        "C": "create",
+        "D": "support"
+      },
+      "correct": "B",
+      "explanation": "\"reduce\" แปลว่า ลดลง (การสวมหมวกกันน็อกช่วยลดความเสี่ยงของการบาดเจ็บที่ศีรษะได้อย่างมาก)"
+    },
+    {
+      "id": 10,
+      "code": "EN-PRE-010",
+      "part": "vocab",
+      "question": "Our school library provides a quiet ________ where students can read and prepare for exams.",
+      "options": {
+        "A": "ingredient",
+        "B": "environment",
+        "C": "passenger",
+        "D": "equipment"
+      },
+      "correct": "B",
+      "explanation": "\"environment\" แปลว่า สภาพแวดล้อม/บรรยากาศ (ห้องสมุดมีบรรยากาศที่เงียบสงบให้นักเรียนอ่านหนังสือ)"
+    },
+    {
+      "id": 11,
+      "code": "EN-PRE-011",
+      "part": "vocab",
+      "question": "After practicing the guitar for six months, Ken has made great ________ and can now play several songs.",
+      "options": {
+        "A": "progress",
+        "B": "traffic",
+        "C": "permission",
+        "D": "furniture"
+      },
+      "correct": "A",
+      "explanation": "\"make progress\" เป็น Collocation ที่ใช้คู่กัน แปลว่า มีความก้าวหน้า / พัฒนาขึ้น"
+    },
+    {
+      "id": 12,
+      "code": "EN-PRE-012",
+      "part": "vocab",
+      "question": "The train leaves from Platform 4 at precisely 8:30 a.m. The word \"precisely\" is closest in meaning to ________.",
+      "options": {
+        "A": "gradually",
+        "B": "rarely",
+        "C": "exactly",
+        "D": "lately"
+      },
+      "correct": "C",
+      "explanation": "\"precisely\" มีความหมายเหมือนกับ \"exactly\" แปลว่า อย่างตรงเวลาพอดี / อย่างแม่นยำ"
+    },
+    {
+      "id": 13,
+      "code": "EN-PRE-013",
+      "part": "vocab",
+      "question": "All applicants must ________ their application forms before Friday afternoon.",
+      "options": {
+        "A": "submit",
+        "B": "borrow",
+        "C": "escape",
+        "D": "whisper"
+      },
+      "correct": "A",
+      "explanation": "\"submit\" แปลว่า ยื่น/ส่ง (เอกสารหรือใบสมัคร) ส่วน borrow = ยืม, escape = หลบหนี, whisper = กระซิบ"
+    },
+    {
+      "id": 14,
+      "code": "EN-PRE-014",
+      "part": "vocab",
+      "question": "Solar and wind power are examples of ________ energy sources that do not run out.",
+      "options": {
+        "A": "artificial",
+        "B": "renewable",
+        "C": "harmful",
+        "D": "ancient"
+      },
+      "correct": "B",
+      "explanation": "\"renewable energy\" แปลว่า พลังงานหมุนเวียน (ซึ่งใช้แล้วไม่หมดไป เช่น พลังงานแสงอาทิตย์และลม)"
+    },
+    {
+      "id": 15,
+      "code": "EN-PRE-015",
+      "part": "vocab",
+      "question": "Even though the math problem was difficult, Ploy refused to ________ and finally solved it.",
+      "options": {
+        "A": "give up",
+        "B": "take off",
+        "C": "get in",
+        "D": "wake up"
+      },
+      "correct": "A",
+      "explanation": "\"give up\" แปลว่า ยอมแพ้/ล้มเลิก (แม้โจทย์คณิตศาสตร์จะยาก แต่พลอยก็ไม่ยอมแพ้จนแก้โจทย์ได้สำเร็จ)"
+    },
+    {
+      "id": 16,
+      "code": "EN-PRE-016",
+      "part": "vocab",
+      "question": "The doctor advised him to ________ eating sugary snacks at night to improve his health.",
+      "options": {
+        "A": "avoid",
+        "B": "encourage",
+        "C": "admire",
+        "D": "deliver"
+      },
+      "correct": "A",
+      "explanation": "\"avoid\" แปลว่า หลีกเลี่ยง (คุณหมอแนะนำให้หลีกเลี่ยงการทานขนมหวานตอนกลางคืน)"
+    },
+    {
+      "id": 17,
+      "code": "EN-PRE-017",
+      "part": "vocab",
+      "question": "Because of her ________ experience in digital marketing, she was chosen to lead the new project.",
+      "options": {
+        "A": "empty",
+        "B": "extensive",
+        "C": "narrow",
+        "D": "weak"
+      },
+      "correct": "B",
+      "explanation": "\"extensive\" แปลว่า กว้างขวาง/มีมาก (ประสบการณ์ที่กว้างขวางและโชกโชนทำให้เธอได้รับเลือกเป็นหัวหน้าโปรเจกต์)"
+    },
+    {
+      "id": 18,
+      "code": "EN-PRE-018",
+      "part": "vocab",
+      "question": "We need to find a practical ________ to the parking problem in front of our school.",
+      "options": {
+        "A": "solution",
+        "B": "ambition",
+        "C": "pollution",
+        "D": "tradition"
+      },
+      "correct": "A",
+      "explanation": "\"solution (to a problem)\" แปลว่า ทางออกหรือวิธีแก้ปัญหา"
+    },
+    {
+      "id": 19,
+      "code": "EN-PRE-019",
+      "part": "vocab",
+      "question": "Passengers are reminded to keep their seatbelts ________ fastened during takeoff and landing.",
+      "options": {
+        "A": "securely",
+        "B": "loudly",
+        "C": "accidentally",
+        "D": "politely"
+      },
+      "correct": "A",
+      "explanation": "\"securely fastened\" แปลว่า คาด/รัดไว้อย่างแน่นหนาและปลอดภัย"
+    },
+    {
+      "id": 20,
+      "code": "EN-PRE-020",
+      "part": "vocab",
+      "question": "The charity event successfully raised enough funds to ________ warm blankets for mountain villagers.",
+      "options": {
+        "A": "purchase",
+        "B": "pretend",
+        "C": "predict",
+        "D": "prohibit"
+      },
+      "correct": "A",
+      "explanation": "\"purchase\" แปลว่า ซื้อ (ระดมทุนได้เพียงพอที่จะซื้อผ้าห่มกันหนาวให้ชาวบ้านบนดอย)"
+    },
+    {
+      "id": 21,
+      "code": "EN-PRE-021",
+      "part": "vocab",
+      "question": "The hotel receptionist was very ________ and helped us book a tour around the island.",
+      "options": {
+        "A": "courteous",
+        "B": "selfish",
+        "C": "hostile",
+        "D": "clumsy"
+      },
+      "correct": "A",
+      "explanation": "\"courteous\" แปลว่า สุภาพและมีน้ำใจบริการ ส่วน selfish = เห็นแก่ตัว, hostile = เป็นศัตรู, clumsy = ซุ่มซ่าม"
+    },
+    {
+      "id": 22,
+      "code": "EN-PRE-022",
+      "part": "vocab",
+      "question": "Scientists are working hard to ________ how climate change affects coral reefs in the Pacific Ocean.",
+      "options": {
+        "A": "investigate",
+        "B": "apologize",
+        "C": "decorate",
+        "D": "hesitate"
+      },
+      "correct": "A",
+      "explanation": "\"investigate\" แปลว่า สำรวจตรวจสอบ/ศึกษาวิจัยอย่างละเอียด"
+    },
+    {
+      "id": 23,
+      "code": "EN-PRE-023",
+      "part": "vocab",
+      "question": "We ran ________ milk this morning, so I walked to the convenience store to buy a new bottle.",
+      "options": {
+        "A": "out of",
+        "B": "into",
+        "C": "away from",
+        "D": "over"
+      },
+      "correct": "A",
+      "explanation": "สำนวน \"run out of (something)\" แปลว่า หมด / ใช้จนหมดสต็อก"
+    },
+    {
+      "id": 24,
+      "code": "EN-PRE-024",
+      "part": "vocab",
+      "question": "Attendance at Saturday’s extra review session is ________; students can choose whether to join or study at home.",
+      "options": {
+        "A": "voluntary",
+        "B": "mandatory",
+        "C": "urgent",
+        "D": "permanent"
+      },
+      "correct": "A",
+      "explanation": "\"voluntary\" แปลว่า โดยสมัครใจ (ไม่บังคับ) สอดคล้องกับประโยคหลังที่บอกว่าเลือกได้ว่าจะเข้าหรืออ่านเองที่บ้าน"
+    },
+    {
+      "id": 25,
+      "code": "EN-PRE-025",
+      "part": "vocab",
+      "question": "The new high-speed train will ________ shorten the travel time between the two provinces.",
+      "options": {
+        "A": "considerably",
+        "B": "barely",
+        "C": "nervously",
+        "D": "formerly"
+      },
+      "correct": "A",
+      "explanation": "\"considerably\" แปลว่า อย่างมาก / อย่างมีนัยสำคัญ (ช่วยย่นระยะเวลาเดินทางลงได้อย่างมาก)"
+    },
+    {
+      "id": 26,
+      "code": "EN-PRE-026",
+      "part": "grammar",
+      "question": "Water ________ at 100 degrees Celsius at standard atmospheric pressure.",
+      "options": {
+        "A": "boil",
+        "B": "boils",
+        "C": "is boiling",
+        "D": "boiled"
+      },
+      "correct": "B",
+      "explanation": "ข้อเท็จจริงทางวิทยาศาสตร์ใช้ Present Simple Tense ประธาน \"Water\" เป็นคำนามนับไม่ได้ (เอกพจน์) กริยาจึงต้องเติม -s คือ \"boils\""
+    },
+    {
+      "id": 27,
+      "code": "EN-PRE-027",
+      "part": "grammar",
+      "question": "While I ________ for the bus yesterday evening, it suddenly started to rain.",
+      "options": {
+        "A": "wait",
+        "B": "have waited",
+        "C": "was waiting",
+        "D": "am waiting"
+      },
+      "correct": "C",
+      "explanation": "เหตุการณ์ที่กำลังดำเนินอยู่ในอดีต (Past Continuous: was/were + V.ing) แล้วมีอีกเหตุการณ์แทรกเข้ามา (Past Simple: started) จึงใช้ \"was waiting\""
+    },
+    {
+      "id": 28,
+      "code": "EN-PRE-028",
+      "part": "grammar",
+      "question": "My older brother ________ in Chiang Mai since he graduated from university in 2022.",
+      "options": {
+        "A": "lives",
+        "B": "lived",
+        "C": "has lived",
+        "D": "is living"
+      },
+      "correct": "C",
+      "explanation": "มีคำว่า \"since + จุดเริ่มต้นของเวลาในอดีต\" บอกเหตุการณ์ที่ทำตั้งแต่อดีตต่อเนื่องมาถึงปัจจุบัน ใช้ Present Perfect (has/have + V.3) คือ \"has lived\""
+    },
+    {
+      "id": 29,
+      "code": "EN-PRE-029",
+      "part": "grammar",
+      "question": "If it ________ tomorrow, we will move the welcome party into the school hall.",
+      "options": {
+        "A": "rain",
+        "B": "rains",
+        "C": "rained",
+        "D": "will rain"
+      },
+      "correct": "B",
+      "explanation": "โครงสร้าง If-Clause แบบที่ 1 (มีความเป็นไปได้ในอนาคต): If + Present Simple, Future Simple (will + V.inf) ประธาน it จึงใช้ \"rains\""
+    },
+    {
+      "id": 30,
+      "code": "EN-PRE-030",
+      "part": "grammar",
+      "question": "If I ________ more free time right now, I would learn how to play the piano.",
+      "options": {
+        "A": "have",
+        "B": "had",
+        "C": "will have",
+        "D": "have had"
+      },
+      "correct": "B",
+      "explanation": "โครงสร้าง If-Clause แบบที่ 2 (สมมติสิ่งที่ตรงข้ามกับความจริงในปัจจุบัน \"right now\"): If + Past Simple (V.2), would + V.inf จึงใช้ \"had\""
+    },
+    {
+      "id": 31,
+      "code": "EN-PRE-031",
+      "part": "grammar",
+      "question": "This historic bridge ________ more than eighty years ago.",
+      "options": {
+        "A": "built",
+        "B": "was built",
+        "C": "has built",
+        "D": "is building"
+      },
+      "correct": "B",
+      "explanation": "ประธานคือ \"This historic bridge\" (สะพาน) เป็นผู้ถูกสร้าง (Passive Voice: be + V.3) และมี \"more than eighty years ago\" บอกอดีต จึงใช้ \"was built\""
+    },
+    {
+      "id": 32,
+      "code": "EN-PRE-032",
+      "part": "grammar",
+      "question": "The woman ________ lives next door to us is a pediatric doctor.",
+      "options": {
+        "A": "which",
+        "B": "whom",
+        "C": "whose",
+        "D": "who"
+      },
+      "correct": "D",
+      "explanation": "ขยายคำนามที่เป็นคน (\"The woman\") และทำหน้าที่เป็นประธานของกริยา \"lives\" จึงใช้ Relative Pronoun \"who\""
+    },
+    {
+      "id": 33,
+      "code": "EN-PRE-033",
+      "part": "grammar",
+      "question": "Neither the teacher nor the students ________ aware of the schedule change this morning.",
+      "options": {
+        "A": "was",
+        "B": "were",
+        "C": "is",
+        "D": "has been"
+      },
+      "correct": "B",
+      "explanation": "โครงสร้าง \"Neither A nor B\" กริยาจะผันตามประธานตัวที่อยู่ใกล้กริยามากที่สุด คือ \"the students\" (พหูพจน์) และเป็นเรื่องเมื่อเช้านี้ จึงใช้ \"were\""
+    },
+    {
+      "id": 34,
+      "code": "EN-PRE-034",
+      "part": "grammar",
+      "question": "Everyone in the library ________ asked to keep their voice down during final exam week.",
+      "options": {
+        "A": "is",
+        "B": "are",
+        "C": "were",
+        "D": "have"
+      },
+      "correct": "A",
+      "explanation": "Indefinite Pronoun เช่น Everyone, Everybody, Someone, Nobody ถือเป็นเอกพจน์เสมอ จึงใช้กริยาเอกพจน์ \"is\""
+    },
+    {
+      "id": 35,
+      "code": "EN-PRE-035",
+      "part": "grammar",
+      "question": "Would you mind ________ the window? It is getting a bit chilly in here.",
+      "options": {
+        "A": "close",
+        "B": "to close",
+        "C": "closing",
+        "D": "closed"
+      },
+      "correct": "C",
+      "explanation": "หลังสำนวน \"Would you mind...\" ต้องตามด้วยคำกริยาเติม -ing (Gerund) เสมอ จึงใช้ \"closing\""
+    },
+    {
+      "id": 36,
+      "code": "EN-PRE-036",
+      "part": "grammar",
+      "question": "My parents decided ________ a new electric car to save on fuel costs.",
+      "options": {
+        "A": "buy",
+        "B": "buying",
+        "C": "to buy",
+        "D": "bought"
+      },
+      "correct": "C",
+      "explanation": "คำกริยา \"decide\" ต้องตามด้วย Infinitive with to (decide + to V.inf) จึงตอบ \"to buy\""
+    },
+    {
+      "id": 37,
+      "code": "EN-PRE-037",
+      "part": "grammar",
+      "question": "This chemistry exam is much ________ than the one we took last month.",
+      "options": {
+        "A": "easy",
+        "B": "easier",
+        "C": "easiest",
+        "D": "more easier"
+      },
+      "correct": "B",
+      "explanation": "มีการเปรียบเทียบขั้นกว่า (สังเกตคำว่า \"than\") คำว่า easy เปลี่ยน y เป็น i แล้วเติม -er เป็น \"easier\""
+    },
+    {
+      "id": 38,
+      "code": "EN-PRE-038",
+      "part": "grammar",
+      "question": "________ he was feeling very tired, he stayed up to help his sister finish her science project.",
+      "options": {
+        "A": "Because",
+        "B": "Despite",
+        "C": "Although",
+        "D": "However"
+      },
+      "correct": "C",
+      "explanation": "เชื่อมประโยคที่ขัดแย้งกัน และตามด้วย Clause (Subject + Verb: \"he was feeling...\") จึงใช้ \"Although\" (ส่วน Despite ตามด้วยคำนาม/วลี)"
+    },
+    {
+      "id": 39,
+      "code": "EN-PRE-039",
+      "part": "grammar",
+      "question": "The online workshop will begin ________ 9:00 a.m. ________ Monday.",
+      "options": {
+        "A": "at / on",
+        "B": "in / at",
+        "C": "on / in",
+        "D": "at / in"
+      },
+      "correct": "A",
+      "explanation": "คำบุพบทบอกเวลา: ใช้ \"at\" กับเวลาตามนาฬิกา (at 9:00 a.m.) และใช้ \"on\" กับวันในสัปดาห์ (on Monday)"
+    },
+    {
+      "id": 40,
+      "code": "EN-PRE-040",
+      "part": "grammar",
+      "question": "You have met the new English teacher before, ________?",
+      "options": {
+        "A": "don’t you",
+        "B": "didn’t you",
+        "C": "haven’t you",
+        "D": "aren’t you"
+      },
+      "correct": "C",
+      "explanation": "Question Tag: ประโยคหลักใช้ Present Perfect (\"You have met...\") เป็นบอกเล่า ส่วน Tag จึงใช้กริยาช่วยตัวเดิมในรูปปฏิเสธคือ \"haven’t you?\""
+    },
+    {
+      "id": 41,
+      "code": "EN-PRE-041",
+      "part": "grammar",
+      "question": "Students ________ bring their student ID cards into the examination room; otherwise, they will not be allowed to take the test.",
+      "options": {
+        "A": "must",
+        "B": "might",
+        "C": "would",
+        "D": "could"
+      },
+      "correct": "A",
+      "explanation": "เป็นกฎข้อบังคับที่ต้องปฏิบัติตาม (สังเกตจาก otherwise, they will not be allowed...) จึงใช้ Modal Verb \"must\""
+    },
+    {
+      "id": 42,
+      "code": "EN-PRE-042",
+      "part": "grammar",
+      "question": "When we arrived at the cinema, the movie ________ already ________.",
+      "options": {
+        "A": "has / started",
+        "B": "had / started",
+        "C": "was / starting",
+        "D": "will / start"
+      },
+      "correct": "B",
+      "explanation": "เหตุการณ์ที่เกิดและจบไปก่อนอีกเหตุการณ์ในอดีต (หนังเริ่มไปก่อนที่เราจะมาถึง) ใช้ Past Perfect (had + V.3)"
+    },
+    {
+      "id": 43,
+      "code": "EN-PRE-043",
+      "part": "grammar",
+      "question": "There isn’t ________ milk left in the refrigerator, so we need to buy some more.",
+      "options": {
+        "A": "many",
+        "B": "a few",
+        "C": "much",
+        "D": "several"
+      },
+      "correct": "C",
+      "explanation": "\"milk\" เป็นคำนามนับไม่ได้ (Uncountable Noun) และอยู่ในประโยคปฏิเสธ จึงใช้ \"much\""
+    },
+    {
+      "id": 44,
+      "code": "EN-PRE-044",
+      "part": "grammar",
+      "question": "________ English tutor in our academy has at least five years of teaching experience.",
+      "options": {
+        "A": "Every",
+        "B": "All",
+        "C": "Both",
+        "D": "Many"
+      },
+      "correct": "A",
+      "explanation": "\"English tutor\" เป็นคำนามเอกพจน์ และกริยาคือ \"has\" จึงต้องใช้ \"Every\" (Every + นามเอกพจน์ + กริยาเอกพจน์)"
+    },
+    {
+      "id": 45,
+      "code": "EN-PRE-045",
+      "part": "grammar",
+      "question": "By the time you wake up tomorrow morning, I ________ on the plane to Tokyo.",
+      "options": {
+        "A": "am",
+        "B": "was",
+        "C": "will be",
+        "D": "have been"
+      },
+      "correct": "C",
+      "explanation": "\"By the time + Present Simple (บอกอนาคต)\" คู่กับเหตุการณ์ในอนาคต จึงใช้ \"will be\""
+    },
+    {
+      "id": 46,
+      "code": "EN-PRE-046",
+      "part": "grammar",
+      "question": "The number of students taking online courses ________ increased rapidly over the past three years.",
+      "options": {
+        "A": "have",
+        "B": "has",
+        "C": "are",
+        "D": "were"
+      },
+      "correct": "B",
+      "explanation": "โครงสร้าง \"The number of + นามพหูพจน์\" แปลว่า \"จำนวนของ...\" ถือเป็นประธานเอกพจน์เสมอ จึงใช้กริยาเอกพจน์ \"has\" (ต่างจาก A number of ที่เป็นพหูพจน์)"
+    },
+    {
+      "id": 47,
+      "code": "EN-PRE-047",
+      "part": "grammar",
+      "question": "If she had set her alarm clock last night, she ________ the morning train.",
+      "options": {
+        "A": "will not miss",
+        "B": "would not miss",
+        "C": "would not have missed",
+        "D": "did not miss"
+      },
+      "correct": "C",
+      "explanation": "โครงสร้าง If-Clause แบบที่ 3 (ตรงข้ามกับความจริงในอดีต \"last night\"): If + had V.3, would have + V.3 จึงตอบ \"would not have missed\""
+    },
+    {
+      "id": 48,
+      "code": "EN-PRE-048",
+      "part": "grammar",
+      "question": "The boy ________ bicycle was stolen yesterday reported the incident to the campus security guard.",
+      "options": {
+        "A": "who",
+        "B": "whom",
+        "C": "whose",
+        "D": "which"
+      },
+      "correct": "C",
+      "explanation": "ต้องการ Relative Pronoun แสดงความเป็นเจ้าของ (จักรยานของเด็กผู้ชายคนนั้น) หน้าคำนาม \"bicycle\" จึงใช้ \"whose\""
+    },
+    {
+      "id": 49,
+      "code": "EN-PRE-049",
+      "part": "grammar",
+      "question": "My father had the mechanic ________ the brakes of his car before our family trip.",
+      "options": {
+        "A": "check",
+        "B": "checks",
+        "C": "to check",
+        "D": "checked"
+      },
+      "correct": "A",
+      "explanation": "โครงสร้าง Causative Verb: \"have + คน (someone) + V.inf (ไม่ผัน ไม่เติม to)\" จึงใช้ \"check\""
+    },
+    {
+      "id": 50,
+      "code": "EN-PRE-050",
+      "part": "grammar",
+      "question": "________ the heavy traffic this morning, all candidates arrived at the test center on time.",
+      "options": {
+        "A": "Although",
+        "B": "Because of",
+        "C": "Despite",
+        "D": "Since"
+      },
+      "correct": "C",
+      "explanation": "หลังช่องว่างเป็นกลุ่มคำนาม (\"the heavy traffic this morning\") และใจความขัดแย้งกัน จึงใช้บุพบท \"Despite\" (ทั้งๆ ที่)"
+    },
+    {
+      "id": 51,
+      "code": "EN-PRE-051",
+      "part": "grammar",
+      "question": "The documentary about deep-sea creatures was so ________ that nobody in the classroom fell asleep.",
+      "options": {
+        "A": "fascinate",
+        "B": "fascinated",
+        "C": "fascinating",
+        "D": "fascination"
+      },
+      "correct": "C",
+      "explanation": "ขยายประธาน \"The documentary\" (สารคดีเป็นสิ่งที่น่าตื่นตาตื่นใจ/ผู้กระทำให้คนรู้สึก) จึงใช้ Present Participle \"fascinating\""
+    },
+    {
+      "id": 52,
+      "code": "EN-PRE-052",
+      "part": "grammar",
+      "question": "She speaks English very ________ because she lived in Melbourne for four years.",
+      "options": {
+        "A": "fluent",
+        "B": "fluently",
+        "C": "fluency",
+        "D": "more fluent"
+      },
+      "correct": "B",
+      "explanation": "ต้องการคำวิเศษณ์ (Adverb) มาขยายคำกริยา \"speaks\" จึงต้องใช้รูป -ly คือ \"fluently\""
+    },
+    {
+      "id": 53,
+      "code": "EN-PRE-053",
+      "part": "grammar",
+      "question": "I look forward to ________ from you regarding the scholarship interview soon.",
+      "options": {
+        "A": "hear",
+        "B": "hearing",
+        "C": "heard",
+        "D": "be heard"
+      },
+      "correct": "B",
+      "explanation": "สำนวน \"look forward to\" คำว่า to ในที่นี้เป็นคำบุพบท (Preposition) ดังนั้นกริยาที่ตามมาต้องอยู่ในรูป Gerund (V.ing) คือ \"hearing\""
+    },
+    {
+      "id": 54,
+      "code": "EN-PRE-054",
+      "part": "grammar",
+      "question": "Mount Everest is ________ mountain peak in the world.",
+      "options": {
+        "A": "high",
+        "B": "higher",
+        "C": "the highest",
+        "D": "most high"
+      },
+      "correct": "C",
+      "explanation": "เป็นการเปรียบเทียบขั้นสุดในโลก (\"in the world\") จึงใช้ Superlative Degree คือ \"the highest\""
+    },
+    {
+      "id": 55,
+      "code": "EN-PRE-055",
+      "part": "grammar",
+      "question": "Not only the players but also the coach ________ invited to the championship celebration dinner.",
+      "options": {
+        "A": "was",
+        "B": "were",
+        "C": "are",
+        "D": "have been"
+      },
+      "correct": "A",
+      "explanation": "โครงสร้าง \"Not only A but also B\" กริยาผันตามประธานตัวหลัง (B) คือ \"the coach\" (เอกพจน์) จึงใช้กริยาเอกพจน์ \"was\""
+    },
+    {
+      "id": 56,
+      "code": "EN-PRE-056",
+      "part": "reading",
+      "passageId": "P1",
+      "passageTitle": "Passage 1: Smartphones & Study Habits (Questions 56–59)",
+      "passageText": "Smartphones have become an essential part of modern life. Most students use them not only to stay in touch with friends and family, but also to search for information, use online dictionaries, and manage their study schedules. However, experts warn that spending too much time on screens late at night can reduce sleep quality and affect concentration in class the next morning. Blue light from mobile screens tricks the brain into thinking it is still daytime. Therefore, setting a daily limit and turning off notifications at least thirty minutes before bedtime can help students enjoy the benefits of technology without harming their health.",
+      "question": "What is the main idea of this passage?",
+      "options": {
+        "A": "Students should stop using smartphones completely during the school year.",
+        "B": "Smartphones are useful for learning, but students should manage their screen time before sleep.",
+        "C": "Online dictionaries are more accurate than printed books.",
+        "D": "Schools should ban all mobile phones in classrooms."
+      },
+      "correct": "B",
+      "explanation": "บทความกล่าวถึงประโยชน์ของสมาร์ตโฟนต่อการเรียนควบคู่กับผลเสียหากใช้ดึกเกินไป และแนะนำให้จำกัดเวลาก่อนนอน จึงตรงกับข้อ B"
+    },
+    {
+      "id": 57,
+      "code": "EN-PRE-057",
+      "part": "reading",
+      "passageId": "P1",
+      "passageTitle": "Passage 1: Smartphones & Study Habits (Questions 56–59)",
+      "passageText": "Smartphones have become an essential part of modern life. Most students use them not only to stay in touch with friends and family, but also to search for information, use online dictionaries, and manage their study schedules. However, experts warn that spending too much time on screens late at night can reduce sleep quality and affect concentration in class the next morning. Blue light from mobile screens tricks the brain into thinking it is still daytime. Therefore, setting a daily limit and turning off notifications at least thirty minutes before bedtime can help students enjoy the benefits of technology without harming their health.",
+      "question": "According to the passage, what can happen if students spend too much time on screens late at night?",
+      "options": {
+        "A": "Their phone batteries will run out faster.",
+        "B": "They will forget to bring their homework to school.",
+        "C": "Their sleep quality and classroom concentration may decrease.",
+        "D": "They will receive more notifications from teachers."
+      },
+      "correct": "C",
+      "explanation": "ในบทความระบุชัดเจนว่า \"...spending too much time on screens late at night can reduce sleep quality and affect concentration in class the next morning.\""
+    },
+    {
+      "id": 58,
+      "code": "EN-PRE-058",
+      "part": "reading",
+      "passageId": "P1",
+      "passageTitle": "Passage 1: Smartphones & Study Habits (Questions 56–59)",
+      "passageText": "Smartphones have become an essential part of modern life. Most students use them not only to stay in touch with friends and family, but also to search for information, use online dictionaries, and manage their study schedules. However, experts warn that spending too much time on screens late at night can reduce sleep quality and affect concentration in class the next morning. Blue light from mobile screens tricks the brain into thinking it is still daytime. Therefore, setting a daily limit and turning off notifications at least thirty minutes before bedtime can help students enjoy the benefits of technology without harming their health.",
+      "question": "How does blue light from mobile screens affect the human body?",
+      "options": {
+        "A": "It makes the brain think it is still daytime.",
+        "B": "It helps students read faster in the dark.",
+        "C": "It improves memory retention during sleep.",
+        "D": "It cools down the temperature of the room."
+      },
+      "correct": "A",
+      "explanation": "ในบทความระบุว่า \"Blue light from mobile screens tricks the brain into thinking it is still daytime.\""
+    },
+    {
+      "id": 59,
+      "code": "EN-PRE-059",
+      "part": "reading",
+      "passageId": "P1",
+      "passageTitle": "Passage 1: Smartphones & Study Habits (Questions 56–59)",
+      "passageText": "Smartphones have become an essential part of modern life. Most students use them not only to stay in touch with friends and family, but also to search for information, use online dictionaries, and manage their study schedules. However, experts warn that spending too much time on screens late at night can reduce sleep quality and affect concentration in class the next morning. Blue light from mobile screens tricks the brain into thinking it is still daytime. Therefore, setting a daily limit and turning off notifications at least thirty minutes before bedtime can help students enjoy the benefits of technology without harming their health.",
+      "question": "Which of the following is recommended by the author at the end of the passage?",
+      "options": {
+        "A": "Buying a new tablet for studying",
+        "B": "Studying only late at night when it is quiet",
+        "C": "Setting a daily screen limit and turning off notifications before bedtime",
+        "D": "Asking friends to wake you up every morning"
+      },
+      "correct": "C",
+      "explanation": "ประโยคสุดท้ายของบทความแนะนำว่า \"...setting a daily limit and turning off notifications at least thirty minutes before bedtime...\""
+    },
+    {
+      "id": 60,
+      "code": "EN-PRE-060",
+      "part": "reading",
+      "passageId": "P2",
+      "passageTitle": "Passage 2: The Green Canteen Project (Questions 60–63)",
+      "passageText": "Across the world, many cities are encouraging people to use reusable bags and water bottles instead of single-use plastic. Plastic waste takes hundreds of years to break down and often ends up in rivers and oceans, where it harms marine animals. Recently, several schools in Thailand have started \"Green Canteen\" projects. Students who bring their own containers receive a small discount on lunch, and food waste is collected to make organic fertilizer for the school garden. Within just one semester, participating schools reduced their plastic trash by nearly forty percent and saved a significant amount of money on waste management.",
+      "question": "Why is single-use plastic a serious problem according to the passage?",
+      "options": {
+        "A": "It is too expensive for school canteens to buy.",
+        "B": "It takes hundreds of years to break down and harms marine life.",
+        "C": "It cannot hold hot food safely.",
+        "D": "It makes school gardens grow too slowly."
+      },
+      "correct": "B",
+      "explanation": "ในบทความระบุว่า \"Plastic waste takes hundreds of years to break down and often ends up in rivers and oceans, where it harms marine animals.\""
+    },
+    {
+      "id": 61,
+      "code": "EN-PRE-061",
+      "part": "reading",
+      "passageId": "P2",
+      "passageTitle": "Passage 2: The Green Canteen Project (Questions 60–63)",
+      "passageText": "Across the world, many cities are encouraging people to use reusable bags and water bottles instead of single-use plastic. Plastic waste takes hundreds of years to break down and often ends up in rivers and oceans, where it harms marine animals. Recently, several schools in Thailand have started \"Green Canteen\" projects. Students who bring their own containers receive a small discount on lunch, and food waste is collected to make organic fertilizer for the school garden. Within just one semester, participating schools reduced their plastic trash by nearly forty percent and saved a significant amount of money on waste management.",
+      "question": "How does the \"Green Canteen\" project reward students who bring their own containers?",
+      "options": {
+        "A": "They get extra points in their science class.",
+        "B": "They receive a small discount on their lunch.",
+        "C": "They are given free reusable water bottles every week.",
+        "D": "They can leave school an hour early on Fridays."
+      },
+      "correct": "B",
+      "explanation": "บทความระบุว่า \"Students who bring their own containers receive a small discount on lunch...\""
+    },
+    {
+      "id": 62,
+      "code": "EN-PRE-062",
+      "part": "reading",
+      "passageId": "P2",
+      "passageTitle": "Passage 2: The Green Canteen Project (Questions 60–63)",
+      "passageText": "Across the world, many cities are encouraging people to use reusable bags and water bottles instead of single-use plastic. Plastic waste takes hundreds of years to break down and often ends up in rivers and oceans, where it harms marine animals. Recently, several schools in Thailand have started \"Green Canteen\" projects. Students who bring their own containers receive a small discount on lunch, and food waste is collected to make organic fertilizer for the school garden. Within just one semester, participating schools reduced their plastic trash by nearly forty percent and saved a significant amount of money on waste management.",
+      "question": "What do the participating schools do with the collected food waste?",
+      "options": {
+        "A": "They burn it to generate electricity.",
+        "B": "They send it to local supermarkets.",
+        "C": "They turn it into organic fertilizer for the school garden.",
+        "D": "They throw it into nearby rivers."
+      },
+      "correct": "C",
+      "explanation": "บทความระบุว่า \"...and food waste is collected to make organic fertilizer for the school garden.\""
+    },
+    {
+      "id": 63,
+      "code": "EN-PRE-063",
+      "part": "reading",
+      "passageId": "P2",
+      "passageTitle": "Passage 2: The Green Canteen Project (Questions 60–63)",
+      "passageText": "Across the world, many cities are encouraging people to use reusable bags and water bottles instead of single-use plastic. Plastic waste takes hundreds of years to break down and often ends up in rivers and oceans, where it harms marine animals. Recently, several schools in Thailand have started \"Green Canteen\" projects. Students who bring their own containers receive a small discount on lunch, and food waste is collected to make organic fertilizer for the school garden. Within just one semester, participating schools reduced their plastic trash by nearly forty percent and saved a significant amount of money on waste management.",
+      "question": "What was the result of the project after one semester?",
+      "options": {
+        "A": "Lunch prices increased by forty percent.",
+        "B": "Plastic trash in participating schools dropped by almost forty percent.",
+        "C": "All students stopped eating lunch at school.",
+        "D": "The school garden was replaced by a new parking lot."
+      },
+      "correct": "B",
+      "explanation": "ประโยคสุดท้ายระบุว่า \"Within just one semester, participating schools reduced their plastic trash by nearly forty percent...\""
+    },
+    {
+      "id": 64,
+      "code": "EN-PRE-064",
+      "part": "reading",
+      "passageId": "P3",
+      "passageTitle": "Passage 3: The 20-Minute Language Rule (Questions 64–67)",
+      "passageText": "Learning a foreign language is much like training for a sport: regular practice matters more than cramming the night before an exam. Language researchers suggest the \"20-Minute Rule,\" which means spending twenty minutes every day listening to podcasts, reading short articles, or reviewing vocabulary in context. Students who practice a little each day remember words three times longer than those who study for three hours only once a week. In addition, learners should not be afraid of making mistakes when speaking, because mistakes provide useful feedback that helps the brain improve faster.",
+      "question": "Why does the author compare learning a foreign language to training for a sport?",
+      "options": {
+        "A": "Because both require expensive equipment and a coach.",
+        "B": "Because regular daily practice is more effective than last-minute cramming.",
+        "C": "Because only young people can succeed in both activities.",
+        "D": "Because both should only be practiced once a week."
+      },
+      "correct": "B",
+      "explanation": "ผู้เขียนเปรียบเทียบว่าการเรียนภาษาเหมือนการซ้อมกีฬาตรงที่การฝึกฝนสม่ำเสมอสำคัญกว่าการเร่งอ่านคืนเดียวก่อนสอบ"
+    },
+    {
+      "id": 65,
+      "code": "EN-PRE-065",
+      "part": "reading",
+      "passageId": "P3",
+      "passageTitle": "Passage 3: The 20-Minute Language Rule (Questions 64–67)",
+      "passageText": "Learning a foreign language is much like training for a sport: regular practice matters more than cramming the night before an exam. Language researchers suggest the \"20-Minute Rule,\" which means spending twenty minutes every day listening to podcasts, reading short articles, or reviewing vocabulary in context. Students who practice a little each day remember words three times longer than those who study for three hours only once a week. In addition, learners should not be afraid of making mistakes when speaking, because mistakes provide useful feedback that helps the brain improve faster.",
+      "question": "What is the \"20-Minute Rule\" mentioned in the passage?",
+      "options": {
+        "A": "Taking a 20-minute nap before every English test",
+        "B": "Memorizing 20 dictionary pages every Sunday night",
+        "C": "Practicing the language for 20 minutes every day through listening, reading, or reviewing",
+        "D": "Speaking only for 20 minutes per month in class"
+      },
+      "correct": "C",
+      "explanation": "ในบทความอธิบายว่า \"20-Minute Rule\" คือการใช้เวลา 20 นาทีทุกวันในการฟังพอดแคสต์ อ่านบทความสั้นๆ หรือทบทวนคำศัพท์ในบริบท"
+    },
+    {
+      "id": 66,
+      "code": "EN-PRE-066",
+      "part": "reading",
+      "passageId": "P3",
+      "passageTitle": "Passage 3: The 20-Minute Language Rule (Questions 64–67)",
+      "passageText": "Learning a foreign language is much like training for a sport: regular practice matters more than cramming the night before an exam. Language researchers suggest the \"20-Minute Rule,\" which means spending twenty minutes every day listening to podcasts, reading short articles, or reviewing vocabulary in context. Students who practice a little each day remember words three times longer than those who study for three hours only once a week. In addition, learners should not be afraid of making mistakes when speaking, because mistakes provide useful feedback that helps the brain improve faster.",
+      "question": "According to the passage, why shouldn’t learners be afraid of making mistakes when speaking?",
+      "options": {
+        "A": "Because teachers never notice speaking mistakes.",
+        "B": "Because mistakes provide helpful feedback that allows the brain to improve faster.",
+        "C": "Because grammar is not used in spoken English.",
+        "D": "Because exams do not test speaking skills."
+      },
+      "correct": "B",
+      "explanation": "ประโยคสุดท้ายระบุว่า \"...mistakes provide useful feedback that helps the brain improve faster.\""
+    },
+    {
+      "id": 67,
+      "code": "EN-PRE-067",
+      "part": "reading",
+      "passageId": "P3",
+      "passageTitle": "Passage 3: The 20-Minute Language Rule (Questions 64–67)",
+      "passageText": "Learning a foreign language is much like training for a sport: regular practice matters more than cramming the night before an exam. Language researchers suggest the \"20-Minute Rule,\" which means spending twenty minutes every day listening to podcasts, reading short articles, or reviewing vocabulary in context. Students who practice a little each day remember words three times longer than those who study for three hours only once a week. In addition, learners should not be afraid of making mistakes when speaking, because mistakes provide useful feedback that helps the brain improve faster.",
+      "question": "The word \"cramming\" in the first sentence is closest in meaning to ________.",
+      "options": {
+        "A": "studying intensively at the last minute before an exam",
+        "B": "relaxing with friends after school",
+        "C": "exercising outdoors in the morning",
+        "D": "traveling to another country during vacation"
+      },
+      "correct": "A",
+      "explanation": "\"cramming\" หมายถึง การเร่งอัดเนื้อหาอย่างหนักในนาทีสุดท้ายก่อนสอบ"
+    },
+    {
+      "id": 68,
+      "code": "EN-PRE-068",
+      "part": "reading",
+      "passageId": "P4",
+      "passageTitle": "Passage 4: Urban Vertical Farming (Questions 68–71)",
+      "passageText": "Urban vertical farming is transforming how fresh vegetables are grown in crowded cities. Instead of using large outdoor fields in the countryside, vertical farms grow plants indoors in stacked layers under energy-efficient LED lights. Because the temperature, humidity, and nutrients are carefully controlled by sensors, crops can be harvested all year round regardless of droughts or heavy storms. Moreover, vertical farming uses up to ninety percent less water than traditional agriculture and eliminates the need for chemical pesticides. Since these farms are located right inside cities, vegetables reach local supermarkets within hours of harvesting, reducing transportation emissions.",
+      "question": "How does vertical farming differ from traditional outdoor agriculture?",
+      "options": {
+        "A": "It grows plants indoors in stacked layers under LED lights.",
+        "B": "It requires ten times more water and land.",
+        "C": "It can only operate during the summer months.",
+        "D": "It relies heavily on chemical pesticides."
+      },
+      "correct": "A",
+      "explanation": "บทความระบุว่า \"...vertical farms grow plants indoors in stacked layers under energy-efficient LED lights.\""
+    },
+    {
+      "id": 69,
+      "code": "EN-PRE-069",
+      "part": "reading",
+      "passageId": "P4",
+      "passageTitle": "Passage 4: Urban Vertical Farming (Questions 68–71)",
+      "passageText": "Urban vertical farming is transforming how fresh vegetables are grown in crowded cities. Instead of using large outdoor fields in the countryside, vertical farms grow plants indoors in stacked layers under energy-efficient LED lights. Because the temperature, humidity, and nutrients are carefully controlled by sensors, crops can be harvested all year round regardless of droughts or heavy storms. Moreover, vertical farming uses up to ninety percent less water than traditional agriculture and eliminates the need for chemical pesticides. Since these farms are located right inside cities, vegetables reach local supermarkets within hours of harvesting, reducing transportation emissions.",
+      "question": "Why can crops in vertical farms be harvested all year round?",
+      "options": {
+        "A": "Because farmers work twenty-four hours a day without rest.",
+        "B": "Because temperature, humidity, and nutrients are controlled indoors by sensors.",
+        "C": "Because the vegetables are made of plastic.",
+        "D": "Because rainwater floods the building every week."
+      },
+      "correct": "B",
+      "explanation": "บทความระบุว่า \"Because the temperature, humidity, and nutrients are carefully controlled by sensors, crops can be harvested all year round...\""
+    },
+    {
+      "id": 70,
+      "code": "EN-PRE-070",
+      "part": "reading",
+      "passageId": "P4",
+      "passageTitle": "Passage 4: Urban Vertical Farming (Questions 68–71)",
+      "passageText": "Urban vertical farming is transforming how fresh vegetables are grown in crowded cities. Instead of using large outdoor fields in the countryside, vertical farms grow plants indoors in stacked layers under energy-efficient LED lights. Because the temperature, humidity, and nutrients are carefully controlled by sensors, crops can be harvested all year round regardless of droughts or heavy storms. Moreover, vertical farming uses up to ninety percent less water than traditional agriculture and eliminates the need for chemical pesticides. Since these farms are located right inside cities, vegetables reach local supermarkets within hours of harvesting, reducing transportation emissions.",
+      "question": "How much water does vertical farming save compared to traditional farming?",
+      "options": {
+        "A": "About ten percent",
+        "B": "About thirty percent",
+        "C": "Up to fifty percent",
+        "D": "Up to ninety percent"
+      },
+      "correct": "D",
+      "explanation": "ในบทความระบุว่า \"Moreover, vertical farming uses up to ninety percent less water than traditional agriculture...\""
+    },
+    {
+      "id": 71,
+      "code": "EN-PRE-071",
+      "part": "reading",
+      "passageId": "P4",
+      "passageTitle": "Passage 4: Urban Vertical Farming (Questions 68–71)",
+      "passageText": "Urban vertical farming is transforming how fresh vegetables are grown in crowded cities. Instead of using large outdoor fields in the countryside, vertical farms grow plants indoors in stacked layers under energy-efficient LED lights. Because the temperature, humidity, and nutrients are carefully controlled by sensors, crops can be harvested all year round regardless of droughts or heavy storms. Moreover, vertical farming uses up to ninety percent less water than traditional agriculture and eliminates the need for chemical pesticides. Since these farms are located right inside cities, vegetables reach local supermarkets within hours of harvesting, reducing transportation emissions.",
+      "question": "Why does vertical farming help reduce transportation emissions?",
+      "options": {
+        "A": "Because vegetables are delivered by airplanes.",
+        "B": "Because the farms are located inside cities close to local supermarkets.",
+        "C": "Because customers must walk to the countryside to pick their own vegetables.",
+        "D": "Because supermarkets are closed on weekends."
+      },
+      "correct": "B",
+      "explanation": "ประโยคสุดท้ายระบุว่า เนื่องจากฟาร์มตั้งอยู่ในเมือง ผักจึงส่งถึงซูเปอร์มาร์เก็ตในพื้นที่ได้ภายในไม่กี่ชั่วโมง ช่วยลดมลพิษจากการขนส่งระยะไกล"
+    },
+    {
+      "id": 72,
+      "code": "EN-PRE-072",
+      "part": "reading",
+      "passageId": "P5",
+      "passageTitle": "Passage 5: The Importance of Honeybees (Questions 72–75)",
+      "passageText": "For centuries, honeybees have played a vital role in global agriculture. As bees fly from flower to flower collecting nectar, they transfer pollen, which allows plants to produce fruits, nuts, and seeds. Scientists estimate that nearly one-third of the food humans eat depends directly on pollination by insects, especially honeybees. In recent years, however, bee populations have declined due to habitat loss, climate change, and the widespread use of certain chemicals. Fortunately, local communities can help protect bees by planting native wildflowers in gardens and avoiding harmful sprays during the blooming season.",
+      "question": "How do honeybees help plants produce fruits, nuts, and seeds?",
+      "options": {
+        "A": "By watering the soil around the roots",
+        "B": "By transferring pollen as they fly from flower to flower",
+        "C": "By eating harmful leaves on the trees",
+        "D": "By building hives underground"
+      },
+      "correct": "B",
+      "explanation": "บทความระบุว่า \"As bees fly from flower to flower collecting nectar, they transfer pollen, which allows plants to produce fruits, nuts, and seeds.\""
+    },
+    {
+      "id": 73,
+      "code": "EN-PRE-073",
+      "part": "reading",
+      "passageId": "P5",
+      "passageTitle": "Passage 5: The Importance of Honeybees (Questions 72–75)",
+      "passageText": "For centuries, honeybees have played a vital role in global agriculture. As bees fly from flower to flower collecting nectar, they transfer pollen, which allows plants to produce fruits, nuts, and seeds. Scientists estimate that nearly one-third of the food humans eat depends directly on pollination by insects, especially honeybees. In recent years, however, bee populations have declined due to habitat loss, climate change, and the widespread use of certain chemicals. Fortunately, local communities can help protect bees by planting native wildflowers in gardens and avoiding harmful sprays during the blooming season.",
+      "question": "According to scientists, approximately how much of human food depends on insect pollination?",
+      "options": {
+        "A": "Nearly one-tenth",
+        "B": "Nearly one-third",
+        "C": "Almost ninety percent",
+        "D": "Less than five percent"
+      },
+      "correct": "B",
+      "explanation": "ในบทความระบุว่า \"Scientists estimate that nearly one-third of the food humans eat depends directly on pollination by insects...\""
+    },
+    {
+      "id": 74,
+      "code": "EN-PRE-074",
+      "part": "reading",
+      "passageId": "P5",
+      "passageTitle": "Passage 5: The Importance of Honeybees (Questions 72–75)",
+      "passageText": "For centuries, honeybees have played a vital role in global agriculture. As bees fly from flower to flower collecting nectar, they transfer pollen, which allows plants to produce fruits, nuts, and seeds. Scientists estimate that nearly one-third of the food humans eat depends directly on pollination by insects, especially honeybees. In recent years, however, bee populations have declined due to habitat loss, climate change, and the widespread use of certain chemicals. Fortunately, local communities can help protect bees by planting native wildflowers in gardens and avoiding harmful sprays during the blooming season.",
+      "question": "Which of the following is NOT mentioned as a cause of declining bee populations?",
+      "options": {
+        "A": "Habitat loss",
+        "B": "Climate change",
+        "C": "The use of certain chemicals",
+        "D": "Loud noise from airplanes"
+      },
+      "correct": "D",
+      "explanation": "บทความระบุสาเหตุ 3 ข้อคือ habitat loss, climate change และ the widespread use of certain chemicals ดังนั้นเสียงเครื่องบิน (ข้อ D) จึงไม่ได้กล่าวถึง"
+    },
+    {
+      "id": 75,
+      "code": "EN-PRE-075",
+      "part": "reading",
+      "passageId": "P5",
+      "passageTitle": "Passage 5: The Importance of Honeybees (Questions 72–75)",
+      "passageText": "For centuries, honeybees have played a vital role in global agriculture. As bees fly from flower to flower collecting nectar, they transfer pollen, which allows plants to produce fruits, nuts, and seeds. Scientists estimate that nearly one-third of the food humans eat depends directly on pollination by insects, especially honeybees. In recent years, however, bee populations have declined due to habitat loss, climate change, and the widespread use of certain chemicals. Fortunately, local communities can help protect bees by planting native wildflowers in gardens and avoiding harmful sprays during the blooming season.",
+      "question": "How can local communities help protect honeybees?",
+      "options": {
+        "A": "By keeping bees inside glass jars",
+        "B": "By planting native wildflowers and avoiding harmful sprays during blooming season",
+        "C": "By cutting down all flowering trees in city parks",
+        "D": "By feeding bees chocolate and soda"
+      },
+      "correct": "B",
+      "explanation": "ประโยคสุดท้ายระบุว่า \"...by planting native wildflowers in gardens and avoiding harmful sprays during the blooming season.\""
+    },
+    {
+      "id": 76,
+      "code": "EN-PRE-076",
+      "part": "conversation",
+      "question": "Waiter: \"Are you ready to order, or do you need a few more minutes?\"\nCustomer: \"________\"",
+      "options": {
+        "A": "I’d like the grilled salmon with a side salad, please.",
+        "B": "The restaurant closes at ten o’clock.",
+        "C": "Yes, the bill was very expensive.",
+        "D": "No, I have never cooked salmon before."
+      },
+      "correct": "A",
+      "explanation": "พนักงานถามว่าพร้อมสั่งอาหารหรือยัง ลูกค้าจึงตอบสั่งเมนูที่ต้องการอย่างสุภาพ (\"I’d like the grilled salmon...\")"
+    },
+    {
+      "id": 77,
+      "code": "EN-PRE-077",
+      "part": "conversation",
+      "question": "Tourist: \"Excuse me, could you tell me how to get to the nearest BTS station?\"\nLocal: \"________\"",
+      "options": {
+        "A": "I took the train yesterday morning.",
+        "B": "Go straight for two blocks and you’ll see it on your left.",
+        "C": "The ticket costs forty baht.",
+        "D": "You’re welcome. Have a safe flight!"
+      },
+      "correct": "B",
+      "explanation": "นักท่องเที่ยวถามทางไปสถานีรถไฟฟ้าที่ใกล้ที่สุด คำตอบที่เหมาะสมคือการบอกเส้นทาง (\"เดินตรงไป 2 บล็อก แล้วจะเห็นสถานีอยู่ทางซ้ายมือ\")"
+    },
+    {
+      "id": 78,
+      "code": "EN-PRE-078",
+      "part": "conversation",
+      "question": "Mint: \"I’m really nervous about the English presentation tomorrow.\"\nTon: \"________ You’ve practiced all week and your slides look great!\"",
+      "options": {
+        "A": "That’s a terrible idea.",
+        "B": "Don’t worry! You’ll do great.",
+        "C": "I forgot to bring my laptop too.",
+        "D": "Why didn’t you tell the teacher?"
+      },
+      "correct": "B",
+      "explanation": "เพื่อนกำลังกังวลเรื่องการนำเสนอวันพรุ่งนี้ ประโยคถัดมาเป็นการให้กำลังใจ จึงควรพูดปลอบใจว่า \"Don’t worry! You’ll do great.\""
+    },
+    {
+      "id": 79,
+      "code": "EN-PRE-079",
+      "part": "conversation",
+      "question": "Receptionist: \"Good morning, Smile Dental Clinic. How may I help you?\"\nCaller: \"________\"",
+      "options": {
+        "A": "I’d like to make an appointment to see Dr. Somchai on Friday.",
+        "B": "Please brush your teeth twice a day.",
+        "C": "I am calling from my bedroom.",
+        "D": "Yes, you may help me tomorrow."
+      },
+      "correct": "A",
+      "explanation": "เมื่อโทรไปคลินิกทันตกรรมและพนักงานถามว่ามีอะไรให้ช่วย การตอบว่าต้องการนัดหมายพบคุณหมอ (\"I’d like to make an appointment...\") จึงเหมาะสมที่สุด"
+    },
+    {
+      "id": 80,
+      "code": "EN-PRE-080",
+      "part": "conversation",
+      "question": "Beam: \"Do you mind if I sit here?\"\nFai: \"________ Nobody is using this chair.\"",
+      "options": {
+        "A": "Yes, please go away.",
+        "B": "Not at all. Go ahead!",
+        "C": "I mind my own business.",
+        "D": "Yes, I do. Please sit down."
+      },
+      "correct": "B",
+      "explanation": "คำถาม \"Do you mind if...?\" (คุณจะรังเกียจไหมถ้า...) หากอนุญาตต้องตอบปฏิเสธว่า \"ไม่รังเกียจเลย เชิญนั่งได้เลย\" คือ \"Not at all. Go ahead!\""
+    },
+    {
+      "id": 81,
+      "code": "EN-PRE-081",
+      "part": "conversation",
+      "question": "Shop Assistant: \"Can I help you find anything today?\"\nCustomer: \"________\"",
+      "options": {
+        "A": "No thanks, I’m just looking around.",
+        "B": "You can find it on the second floor.",
+        "C": "Here is your change and receipt.",
+        "D": "The store opens at 10 a.m."
+      },
+      "correct": "A",
+      "explanation": "เมื่อพนักงานขายถามว่าให้ช่วยหาอะไรไหม หากเราแค่เดินดูของทั่วไป สำนวนธรรมชาติที่ใช้คือ \"No thanks, I’m just looking around.\""
+    },
+    {
+      "id": 82,
+      "code": "EN-PRE-082",
+      "part": "conversation",
+      "question": "Boss: \"Thank you so much for lending me your chemistry notes.\"\nPim: \"________ Anytime!\"",
+      "options": {
+        "A": "Never mind.",
+        "B": "No problem!",
+        "C": "What a pity!",
+        "D": "Same to you."
+      },
+      "correct": "B",
+      "explanation": "เป็นการตอบรับคำขอบคุณอย่างเป็นกันเอง (\"No problem! Anytime!\" = ไม่มีปัญหาเลย ยินดีเสมอ)"
+    },
+    {
+      "id": 83,
+      "code": "EN-PRE-083",
+      "part": "conversation",
+      "question": "Nan: \"I’ve had a terrible headache since this morning.\"\nFern: \"________\"",
+      "options": {
+        "A": "Congratulations on your success!",
+        "B": "Why don’t you take some medicine and get some rest?",
+        "C": "You should read in a dark room for three hours.",
+        "D": "Let’s go play basketball in the sun."
+      },
+      "correct": "B",
+      "explanation": "เพื่อนบอกว่าปวดหัวมากตั้งแต่เช้า การให้คำแนะนำด้วยโครงสร้าง \"Why don’t you...?\" จึงเหมาะสมที่สุด"
+    },
+    {
+      "id": 84,
+      "code": "EN-PRE-084",
+      "part": "conversation",
+      "question": "Mark: \"What do you think of the new science lab?\"\nJay: \"________ The 3D equipment makes experiments much easier to understand.\"",
+      "options": {
+        "A": "I have no idea where it is.",
+        "B": "It’s amazing!",
+        "C": "I don’t think we have a science teacher.",
+        "D": "It was closed two years ago."
+      },
+      "correct": "B",
+      "explanation": "ถามความคิดเห็นเกี่ยวกับห้องแล็บใหม่ และประโยคหลังชมว่าอุปกรณ์ 3D ช่วยให้เข้าใจง่ายขึ้นมาก คำตอบจึงเป็น \"It’s amazing!\""
+    },
+    {
+      "id": 85,
+      "code": "EN-PRE-085",
+      "part": "conversation",
+      "question": "Aom: \"Guess what! I just got accepted into my dream university!\"\nKwan: \"________ I’m so proud of you!\"",
+      "options": {
+        "A": "Better luck next time!",
+        "B": "I’m sorry to hear that.",
+        "C": "Congratulations! That’s wonderful news!",
+        "D": "Take care of yourself."
+      },
+      "correct": "C",
+      "explanation": "เพื่อนบอกข่าวดีว่าสอบติดมหาวิทยาลัยในฝัน จึงต้องแสดงความยินดีด้วย \"Congratulations! That’s wonderful news!\""
+    },
+    {
+      "id": 86,
+      "code": "EN-PRE-086",
+      "part": "conversation",
+      "question": "Caller: \"Hello, may I speak to Mr. Wilson, please?\"\nSecretary: \"________ He is in a meeting right now. Would you like to leave a message?\"",
+      "options": {
+        "A": "I’m afraid he’s not available at the moment.",
+        "B": "Who are you talking to?",
+        "C": "Please hang up the phone immediately.",
+        "D": "Yes, this is Mr. Wilson speaking."
+      },
+      "correct": "A",
+      "explanation": "เลขาฯ แจ้งอย่างสุภาพว่าตอนนี้คุณวิลสันไม่สะดวกคุยสายเพราะติดประชุมอยู่ (\"I’m afraid he’s not available at the moment.\")"
+    },
+    {
+      "id": 87,
+      "code": "EN-PRE-087",
+      "part": "conversation",
+      "question": "Oom: \"I’m sorry I’m late. The traffic on Sukhumvit Road was completely jammed.\"\nEarth: \"________ We just got here five minutes ago.\"",
+      "options": {
+        "A": "You should be ashamed.",
+        "B": "That’s alright. Don’t worry about it.",
+        "C": "I don’t have a car.",
+        "D": "See you tomorrow morning."
+      },
+      "correct": "B",
+      "explanation": "เพื่อนขอโทษที่มาสายเพราะรถติด และอีกฝ่ายบอกว่าพวกเราก็เพิ่งมาถึงเมื่อ 5 นาทีที่แล้วเอง จึงตอบว่า \"That’s alright. Don’t worry about it.\""
+    },
+    {
+      "id": 88,
+      "code": "EN-PRE-088",
+      "part": "conversation",
+      "question": "Customer: \"Excuse me, this shirt is a bit too tight. ________\"\nClerk: \"Certainly! Let me check if we have a Large in stock.\"",
+      "options": {
+        "A": "How much does it cost?",
+        "B": "Do you have this in a bigger size?",
+        "C": "Where is the cashier counter?",
+        "D": "Can I get a refund for my lunch?"
+      },
+      "correct": "B",
+      "explanation": "ลูกค้าบอกว่าเสื้อคับไปนิด และพนักงานตอบว่าจะเช็กไซส์ Large ให้ แสดงว่าลูกค้าถามว่า \"มีไซส์ที่ใหญ่กว่านี้ไหม\""
+    },
+    {
+      "id": 89,
+      "code": "EN-PRE-089",
+      "part": "conversation",
+      "question": "Bell: \"Would you like to join our study group at the library this Saturday?\"\nPun: \"________, but I have to visit my grandparents in Chonburi.\"",
+      "options": {
+        "A": "I’d love to",
+        "B": "No way",
+        "C": "Of course I will come",
+        "D": "You’re welcome"
+      },
+      "correct": "A",
+      "explanation": "เป็นการปฏิเสธคำชวนอย่างสุภาพโดยบอกความตั้งใจว่าอยากไปแต่ติดธุระ (\"I’d love to, but I have to...\")"
+    },
+    {
+      "id": 90,
+      "code": "EN-PRE-090",
+      "part": "conversation",
+      "question": "Student: \"Could you explain that grammar rule one more time, please? I didn’t quite catch it.\"\nTeacher: \"________ Let’s look at another example together.\"",
+      "options": {
+        "A": "Sure, no problem at all.",
+        "B": "No, the class is over next week.",
+        "C": "I didn’t catch the bus either.",
+        "D": "Thank you for your explanation."
+      },
+      "correct": "A",
+      "explanation": "นักเรียนขอให้ครูช่วยอธิบายหลักไวยากรณ์ซ้ำอีกครั้ง ครูจึงตอบรับด้วยความเต็มใจว่า \"Sure, no problem at all.\""
+    },
+    {
+      "id": 91,
+      "code": "EN-PRE-091",
+      "part": "conversation",
+      "question": "Pharmacist: \"How can I help you today?\"\nCustomer: \"I have a sore throat and a mild cough. ________\"",
+      "options": {
+        "A": "Could you recommend something for it?",
+        "B": "Where is the nearest post office?",
+        "C": "I would like to order a medium pizza.",
+        "D": "How long have you worked here?"
+      },
+      "correct": "A",
+      "explanation": "คุยกับเภสัชกรและบอกอาการเจ็บคอกับไอเล็กน้อย จึงขอให้ช่วยแนะนำยาที่เหมาะสม (\"Could you recommend something for it?\")"
+    },
+    {
+      "id": 92,
+      "code": "EN-PRE-092",
+      "part": "conversation",
+      "question": "Jane: \"These suitcases look really heavy. ________\"\nGrandma: \"Oh, thank you! That’s very kind of you.\"",
+      "options": {
+        "A": "Why did you pack so many things?",
+        "B": "Let me give you a hand with them.",
+        "C": "You should carry mine too.",
+        "D": "Where did you buy those bags?"
+      },
+      "correct": "B",
+      "explanation": "สำนวน \"give someone a hand\" แปลว่า ช่วยเหลือ (ขอฉันช่วยยกกระเป๋าเดินทางเหล่านี้นะ)"
+    },
+    {
+      "id": 93,
+      "code": "EN-PRE-093",
+      "part": "conversation",
+      "question": "Cashier: \"That will be 350 baht in total. ________\"\nCustomer: \"By QR code scan, please.\"",
+      "options": {
+        "A": "Would you like to pay by cash or mobile scan?",
+        "B": "When will you come back again?",
+        "C": "Do you want to work at this store?",
+        "D": "Why is it so cheap today?"
+      },
+      "correct": "A",
+      "explanation": "ลูกค้าตอบว่าขอจ่ายด้วยการสแกน QR code แสดงว่าแคชเชียร์ถามวิธีการชำระเงิน (\"Would you like to pay by cash or mobile scan?\")"
+    },
+    {
+      "id": 94,
+      "code": "EN-PRE-094",
+      "part": "conversation",
+      "question": "May: \"I’m going to the campus cafe. Do you want me to grab you a coffee?\"\nIce: \"________ An iced Americano with no sugar would be great!\"",
+      "options": {
+        "A": "No, I never drink coffee.",
+        "B": "Yes, please! That would be awesome.",
+        "C": "I went there yesterday.",
+        "D": "Sorry, I don’t know where it is."
+      },
+      "correct": "B",
+      "explanation": "เพื่อนถามว่าจะให้ซื้อกาแฟมาฝากไหม และอีกฝ่ายระบุเมนูที่ต้องการ จึงตอบรับว่า \"Yes, please! That would be awesome.\""
+    },
+    {
+      "id": 95,
+      "code": "EN-PRE-095",
+      "part": "conversation",
+      "question": "New Student: \"Hi, I’m a new student here. I’m looking for Building 3.\"\nSenior: \"________ I’m heading that way right now. Follow me!\"",
+      "options": {
+        "A": "I have never seen Building 3.",
+        "B": "You’re in luck!",
+        "C": "That’s none of my business.",
+        "D": "School is closed today."
+      },
+      "correct": "B",
+      "explanation": "\"You’re in luck!\" แปลว่า โชคดีเลย! เพราะรุ่นพี่กำลังเดินไปทางตึก 3 พอดี จึงชวนให้เดินตามมาได้เลย"
+    },
+    {
+      "id": 96,
+      "code": "EN-PRE-096",
+      "part": "conversation",
+      "question": "Keng: \"How was your weekend trip to Khao Yai?\"\nBoat: \"________ The weather was cool and the waterfall was breathtaking.\"",
+      "options": {
+        "A": "It was a total disaster.",
+        "B": "I couldn’t agree more.",
+        "C": "It was fantastic!",
+        "D": "I haven’t packed my bag yet."
+      },
+      "correct": "C",
+      "explanation": "ถามว่าทริปเขาใหญ่สุดสัปดาห์ที่ผ่านมาเป็นอย่างไรบ้าง ประโยคหลังชมว่าอากาศเย็นสบายและน้ำตกสวยมาก จึงตอบว่า \"It was fantastic!\""
+    },
+    {
+      "id": 97,
+      "code": "EN-PRE-097",
+      "part": "conversation",
+      "question": "Librarian: \"________ The book you reserved has just arrived at the front desk.\"\nStudent: \"Great! I’ll come pick it up this afternoon.\"",
+      "options": {
+        "A": "I have some good news for you.",
+        "B": "You must pay a heavy fine.",
+        "C": "The library is closing forever.",
+        "D": "Have you lost your ID card?"
+      },
+      "correct": "A",
+      "explanation": "บรรณารักษ์แจ้งข่าวดีว่าหนังสือที่จองไว้มาถึงเคาน์เตอร์แล้ว จึงเกริ่นว่า \"I have some good news for you.\""
+    },
+    {
+      "id": 98,
+      "code": "EN-PRE-098",
+      "part": "conversation",
+      "question": "Prae: \"I think online flashcards are really helpful for remembering vocabulary.\"\nNing: \"________ I use them on the skytrain every morning.\"",
+      "options": {
+        "A": "I strongly disagree.",
+        "B": "I think so too!",
+        "C": "You must be joking.",
+        "D": "I don’t have a phone."
+      },
+      "correct": "B",
+      "explanation": "เห็นด้วยกับความคิดเห็นของเพื่อน เพราะตัวเองก็เปิดท่องบนรถไฟฟ้าทุกเช้าเหมือนกัน จึงตอบ \"I think so too!\""
+    },
+    {
+      "id": 99,
+      "code": "EN-PRE-099",
+      "part": "conversation",
+      "question": "Passenger: \"Excuse me, does this bus go to the National Stadium?\"\nDriver: \"No, it doesn’t. ________ You need to take Bus Number 47 across the street.\"",
+      "options": {
+        "A": "You’re on the wrong side of the road.",
+        "B": "Please sit down at the back.",
+        "C": "We are already at the stadium.",
+        "D": "The fare is fifteen baht."
+      },
+      "correct": "A",
+      "explanation": "คนขับบอกว่าคันนี้ไม่ผ่าน ต้องไปขึ้นสาย 47 ที่ฝั่งตรงข้ามของถนน จึงบอกผู้โดยสารว่า \"You’re on the wrong side of the road.\""
+    },
+    {
+      "id": 100,
+      "code": "EN-PRE-100",
+      "part": "conversation",
+      "question": "Coach: \"Everyone did a wonderful job in today’s practice. Keep up the good work!\"\nTeam: \"________\"",
+      "options": {
+        "A": "Thank you, Coach! We’ll do our best in Friday’s match.",
+        "B": "We quit the team yesterday.",
+        "C": "Sorry for losing the ball.",
+        "D": "What time does the movie start?"
+      },
+      "correct": "A",
+      "explanation": "โค้ชชมเชยการซ้อมและให้กำลังใจ (\"Keep up the good work!\") นักกีฬาในทีมจึงกล่าวขอบคุณและรับปากว่าจะทำเต็มที่ในการแข่งขันวันศุกร์นี้"
+    }
+  ]
+}
