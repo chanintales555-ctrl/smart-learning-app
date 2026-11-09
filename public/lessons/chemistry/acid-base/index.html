@@ -75,8 +75,12 @@ html, body {
   position: relative;
 }
 
-/* Left Sidebar: Table of Contents */
+/* Left Sidebar: Table of Contents (Fixed overlay so opening/closing never reflows slide text or shifts strokes) */
 #sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
   width: 310px;
   min-width: 310px;
   height: 100vh;
@@ -84,13 +88,14 @@ html, body {
   border-right: 1px solid var(--panel-border);
   display: flex;
   flex-direction: column;
-  z-index: 50;
-  transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 4px 0 20px rgba(0,0,0,0.35);
+  z-index: 150;
+  transform: translateX(0);
+  transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 8px 0 28px rgba(0,0,0,0.55);
 }
 
 #sidebar.collapsed {
-  margin-left: -310px;
+  transform: translateX(-105%);
 }
 
 .sidebar-header {
@@ -427,7 +432,8 @@ body.light-board .slide-nav-pill {
 
 #board-stage {
   position: relative;
-  width: 100%;
+  width: 1180px;
+  margin: 0 auto;
   min-height: 1180px;
   padding: 28px 44px 120px 44px;
 }
@@ -437,8 +443,8 @@ body.light-board .slide-nav-pill {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 1520px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   pointer-events: none; /* Let pen strokes pass through unless interactive element */
 }
 
@@ -1078,7 +1084,7 @@ body.light-board .qnav-select {
 <body>
 <div id="app">
   <!-- Left Sidebar: Table of Contents -->
-  <aside id="sidebar">
+  <aside id="sidebar" class="collapsed">
     <div class="sidebar-header">
       <div class="sidebar-brand">
         <div class="sidebar-brand-icon">H⁺</div>
@@ -1354,8 +1360,9 @@ let activePointerType = null;
 let lastPenTimestamp = 0;
 
 // Cached Canvas Metrics & Dirty-Rect State (Zero-Reflow & O(1) Incremental Rendering)
+const CANONICAL_STAGE_WIDTH = 1180;
 let cachedCanvasRect = null;
-let cachedStageW = 1400;
+let cachedStageW = CANONICAL_STAGE_WIDTH;
 let lastCanvasW = 0;
 let lastCanvasH = 0;
 let lastCanvasDpr = 0;
@@ -1374,9 +1381,34 @@ const laserCtx = laserCanvas.getContext('2d');
 let laserPoints = [];
 let laserDirtyBox = null;
 
+function getSlideLogicalWidth(idx = currentSlideIndex) {
+  const key = getSlideKey(idx);
+  const strokes = slideAnnotations[key];
+  if (Array.isArray(strokes) && strokes.length > 0) {
+    for (let i = 0; i < strokes.length; i++) {
+      const s = strokes[i];
+      if (s && s.stageW && s.stageW >= 720 && s.stageW <= 1650) {
+        return Math.round(s.stageW);
+      }
+      if (s && Array.isArray(s.points)) {
+        for (let j = 0; j < s.points.length; j++) {
+          const pt = s.points[j];
+          if (pt && typeof pt.x === 'number' && typeof pt.nx === 'number' && pt.nx > 0.08 && pt.x > 60) {
+            const inferred = Math.round(pt.x / pt.nx);
+            if (inferred >= 720 && inferred <= 1650) {
+              return inferred;
+            }
+          }
+        }
+      }
+    }
+  }
+  return CANONICAL_STAGE_WIDTH;
+}
+
 function updateCanvasMetrics() {
   cachedCanvasRect = drawCanvas.getBoundingClientRect();
-  cachedStageW = drawCanvas.clientWidth || cachedCanvasRect.width || 1400;
+  cachedStageW = lastCanvasW || drawCanvas.clientWidth || CANONICAL_STAGE_WIDTH;
 }
 
 const boardViewportEl = document.getElementById('board-viewport');
@@ -1417,14 +1449,33 @@ function getStrokePadding(s) {
 }
 
 function resizeBoardCanvases(forceRedraw = false) {
+  const viewport = document.getElementById('board-viewport');
   const stage = document.getElementById('board-stage');
   const contentLayer = document.getElementById('slide-content-layer');
+
+  const logicalW = getSlideLogicalWidth(currentSlideIndex);
+  stage.style.width = logicalW + 'px';
+
   const targetHeight = Math.max(1180, contentLayer.scrollHeight + 180, window.innerHeight - 52);
   stage.style.minHeight = targetHeight + 'px';
 
-  const rect = stage.getBoundingClientRect();
+  const viewportW = (viewport && viewport.clientWidth) ? viewport.clientWidth : window.innerWidth;
+  if (viewportW > 0 && viewportW < logicalW) {
+    const scale = viewportW / logicalW;
+    stage.style.transformOrigin = 'top left';
+    stage.style.transform = `scale(${scale})`;
+    stage.style.marginLeft = '0px';
+    stage.style.marginRight = '0px';
+    stage.style.marginBottom = `${Math.round(targetHeight * (scale - 1))}px`;
+  } else {
+    stage.style.transform = 'none';
+    stage.style.marginLeft = 'auto';
+    stage.style.marginRight = 'auto';
+    stage.style.marginBottom = '0px';
+  }
+
   const dpr = window.devicePixelRatio || 1;
-  const newW = Math.round(rect.width);
+  const newW = Math.round(logicalW);
   const newH = Math.round(targetHeight);
 
   const dimsChanged = (
@@ -1468,6 +1519,20 @@ function resizeBoardCanvases(forceRedraw = false) {
 }
 
 window.addEventListener('resize', () => resizeBoardCanvases(false));
+if (typeof ResizeObserver !== 'undefined') {
+  const slideContentEl = document.getElementById('slide-content-layer');
+  if (slideContentEl) {
+    const ro = new ResizeObserver(() => {
+      if (!isDrawing) resizeBoardCanvases(false);
+    });
+    ro.observe(slideContentEl);
+  }
+}
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => {
+    if (!isDrawing) resizeBoardCanvases(true);
+  });
+}
 
 function getSlideKey(idx = currentSlideIndex) {
   const s = SLIDES[idx];
@@ -1623,9 +1688,14 @@ function renderCurrentSlideStrokes() {
 
 function getStageCoords(e) {
   if (!cachedCanvasRect) updateCanvasMetrics();
-  const x = e.clientX - cachedCanvasRect.left;
-  const y = e.clientY - cachedCanvasRect.top;
-  return { x, y, nx: x / cachedStageW };
+  const rectW = (cachedCanvasRect && cachedCanvasRect.width > 0) ? cachedCanvasRect.width : cachedStageW;
+  const scale = cachedStageW / rectW;
+  const rawX = (e.clientX - cachedCanvasRect.left) * scale;
+  const rawY = (e.clientY - cachedCanvasRect.top) * scale;
+  const x = Math.round(rawX * 10) / 10;
+  const y = Math.round(rawY * 10) / 10;
+  const nx = Math.round((rawX / cachedStageW) * 100000) / 100000;
+  return { x, y, nx };
 }
 
 function shouldRejectTouchAsPalm(e) {
@@ -1724,6 +1794,7 @@ drawCanvas.addEventListener('pointerdown', (e) => {
     tool: currentDrawTool,
     color: currentPenColor,
     size: Number(currentPenSize),
+    stageW: cachedStageW,
     points: [pt]
   };
 
@@ -1947,6 +2018,51 @@ let persistTimer = null;
 let cloudSyncTimer = null;
 let hasUnsavedAnnotations = false;
 let hasPendingCloudSync = false;
+let lastSyncedUpdatedAt = null;
+let isPullingCloudNotes = false;
+
+function getStrokeFingerprint(s) {
+  if (!s || !Array.isArray(s.points) || s.points.length === 0) return '';
+  const p0 = s.points[0];
+  const pN = s.points[s.points.length - 1];
+  return `${s.tool || 'pen'}|${s.color || ''}|${s.size || 3}|${s.points.length}|${Math.round((p0.x || 0) * 2)}|${Math.round((p0.y || 0) * 2)}|${Math.round((pN.x || 0) * 2)}|${Math.round((pN.y || 0) * 2)}`;
+}
+
+function mergeSlideStrokes(serverArr, localArr) {
+  if (!Array.isArray(serverArr) || serverArr.length === 0) return Array.isArray(localArr) ? localArr : [];
+  if (!Array.isArray(localArr) || localArr.length === 0) return serverArr;
+  const result = [...serverArr];
+  const seen = new Set(serverArr.map(getStrokeFingerprint));
+  for (let i = 0; i < localArr.length; i++) {
+    const s = localArr[i];
+    const fp = getStrokeFingerprint(s);
+    if (fp && !seen.has(fp)) {
+      seen.add(fp);
+      result.push(s);
+    }
+  }
+  return result;
+}
+
+function mergeAnnotationsMaps(serverMap, localMap) {
+  const sMap = (serverMap && typeof serverMap === 'object') ? serverMap : {};
+  const lMap = (localMap && typeof localMap === 'object') ? localMap : {};
+  const allKeys = new Set([...Object.keys(sMap), ...Object.keys(lMap)]);
+  const merged = {};
+  let addedFromLocal = false;
+  for (const k of allKeys) {
+    const sArr = Array.isArray(sMap[k]) ? sMap[k] : [];
+    const lArr = Array.isArray(lMap[k]) ? lMap[k] : [];
+    const combined = mergeSlideStrokes(sArr, lArr);
+    if (combined.length > sArr.length) {
+      addedFromLocal = true;
+    }
+    if (combined.length > 0) {
+      merged[k] = combined;
+    }
+  }
+  return { merged, addedFromLocal };
+}
 
 function persistAnnotationsToStorage() {
   if (persistTimer) {
@@ -2048,8 +2164,10 @@ async function syncNotesToAccountNow(manualClick = false) {
         annotations: slideAnnotations
       })
     });
-    if (res.ok) {
+    const resData = await res.json().catch(() => null);
+    if (res.ok && resData && resData.ok) {
       hasPendingCloudSync = false;
+      if (resData.updatedAt) lastSyncedUpdatedAt = resData.updatedAt;
       const nowTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
       updateAccountSyncUI('saved', `ซิงก์แล้ว ${nowTime}`);
       if (manualClick && typeof SoundFX !== 'undefined' && SoundFX.chime) {
@@ -2066,24 +2184,61 @@ async function syncNotesToAccountNow(manualClick = false) {
 function flushCloudSyncKeepalive() {
   if (!currentAccountUser) return;
   try {
+    const bodyStr = JSON.stringify({
+      lessonId: LESSON_ID,
+      annotations: slideAnnotations
+    });
+    // WebKit/Chrome reject keepalive:true requests if payload exceeds 64KB
+    const useKeepalive = bodyStr.length < 60000;
     fetch('/api/notes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        lessonId: LESSON_ID,
-        annotations: slideAnnotations
-      }),
-      keepalive: true
+      body: bodyStr,
+      keepalive: useKeepalive
     });
     hasPendingCloudSync = false;
   } catch (e) {}
+}
+
+async function pullLatestCloudNotesIfNewer() {
+  if (!currentAccountUser || isDrawing || hasUnsavedAnnotations || hasPendingCloudSync || isPullingCloudNotes) return;
+  isPullingCloudNotes = true;
+  try {
+    const res = await fetch(`/api/notes?lessonId=${encodeURIComponent(LESSON_ID)}`, {
+      method: 'GET',
+      cache: 'no-store'
+    });
+    const data = await res.json();
+    if (data && data.authenticated && data.annotations && typeof data.annotations === 'object') {
+      if (data.updatedAt && data.updatedAt !== lastSyncedUpdatedAt) {
+        lastSyncedUpdatedAt = data.updatedAt;
+        const { merged } = mergeAnnotationsMaps(data.annotations, slideAnnotations);
+        slideAnnotations = merged;
+        try {
+          localStorage.setItem(currentStorageKey, JSON.stringify(slideAnnotations));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(slideAnnotations));
+        } catch (e) {}
+        resizeBoardCanvases(true);
+        const nowTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        updateAccountSyncUI('saved', `ซิงก์ล่าสุด ${nowTime}`);
+      }
+    }
+  } catch (e) {
+  } finally {
+    isPullingCloudNotes = false;
+  }
 }
 
 window.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') {
     if (hasUnsavedAnnotations) persistAnnotationsToStorage();
     if (currentAccountUser && hasPendingCloudSync) flushCloudSyncKeepalive();
+  } else if (document.visibilityState === 'visible') {
+    pullLatestCloudNotesIfNewer();
   }
+});
+window.addEventListener('focus', () => {
+  pullLatestCloudNotesIfNewer();
 });
 window.addEventListener('pagehide', () => {
   if (hasUnsavedAnnotations) persistAnnotationsToStorage();
@@ -2125,6 +2280,7 @@ async function initAccountAndSmartboardNotes() {
 
     if (data && data.authenticated && data.user) {
       currentAccountUser = data.user;
+      if (data.updatedAt) lastSyncedUpdatedAt = data.updatedAt;
       const cleanId = String(data.user.id || data.user.name || 'user').trim().toLowerCase();
       currentStorageKey = `acid_base_smartboard_notes_v1_user_${cleanId}`;
 
@@ -2134,7 +2290,8 @@ async function initAccountAndSmartboardNotes() {
         if (rawUser) {
           const parsedUser = JSON.parse(rawUser);
           if (parsedUser && typeof parsedUser === 'object') {
-            localNotes = { ...localNotes, ...parsedUser };
+            const { merged } = mergeAnnotationsMaps(localNotes, parsedUser);
+            localNotes = merged;
           }
         }
       } catch(e) {}
@@ -2149,20 +2306,21 @@ async function initAccountAndSmartboardNotes() {
         slideAnnotations = localNotes;
         syncNotesToAccountNow(false);
       } else if (hasLocalNotes && hasServerNotes) {
-        // [SMART MERGE] Both exist: combine them so no slide is ever lost!
-        const merged = { ...serverNotes };
-        for (const k of Object.keys(localNotes)) {
-          if (!merged[k] || merged[k].length === 0) {
-            merged[k] = localNotes[k];
-          }
-        }
+        // [SMART PER-STROKE MERGE] Both exist: combine every unique stroke across all slides so nothing is ever lost!
+        const { merged, addedFromLocal } = mergeAnnotationsMaps(serverNotes, localNotes);
         slideAnnotations = merged;
-        syncNotesToAccountNow(false);
+        if (addedFromLocal) {
+          syncNotesToAccountNow(false);
+        } else {
+          updateAccountSyncUI('saved', 'ซิงก์คลาวด์แล้ว');
+        }
       } else if (hasServerNotes) {
         // [CLOUD LOAD] Fresh device/PC: load user's strokes from Cloud DB!
         slideAnnotations = serverNotes;
+        updateAccountSyncUI('saved', 'ซิงก์คลาวด์แล้ว');
       } else {
         slideAnnotations = {};
+        updateAccountSyncUI('saved', 'ซิงก์คลาวด์แล้ว');
       }
 
       // Save merged/latest notes to local storage
@@ -2171,14 +2329,13 @@ async function initAccountAndSmartboardNotes() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(slideAnnotations));
       } catch(e) {}
 
-      renderCurrentSlideStrokes();
-      updateAccountSyncUI('saved', 'ซิงก์คลาวด์แล้ว');
+      resizeBoardCanvases(true);
     } else {
       // Guest mode
       currentAccountUser = null;
       currentStorageKey = STORAGE_KEY;
       loadAnnotationsFromStorage();
-      renderCurrentSlideStrokes();
+      resizeBoardCanvases(true);
       updateAccountSyncUI('guest');
     }
   } catch (err) {
@@ -2186,7 +2343,7 @@ async function initAccountAndSmartboardNotes() {
     currentAccountUser = null;
     currentStorageKey = STORAGE_KEY;
     loadAnnotationsFromStorage();
-    renderCurrentSlideStrokes();
+    resizeBoardCanvases(true);
     updateAccountSyncUI('offline');
   }
 }
@@ -2216,7 +2373,7 @@ function loadNotesJSON(event) {
       if (data && data.annotations) {
         slideAnnotations = data.annotations;
         persistAnnotationsToStorage();
-        renderCurrentSlideStrokes();
+        resizeBoardCanvases(true);
         SoundFX.chime();
         alert('โหลดข้อมูลลายมือเข้าสู่กระดานเรียบร้อยแล้ว!');
       }
@@ -7300,9 +7457,17 @@ function goToSlide(idx) {
   const searchVal = document.getElementById('toc-search-input') ? document.getElementById('toc-search-input').value : '';
   buildSidebarTOC(searchVal);
 
+  const sidebarEl = document.getElementById('sidebar');
+  const tocListEl = document.getElementById('toc-list');
   const activeItem = document.querySelector('#toc-list .toc-item.active, #toc-list .toc-deck-item.active');
-  if (activeItem) {
-    activeItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  if (activeItem && tocListEl && sidebarEl && !sidebarEl.classList.contains('collapsed')) {
+    const itemTop = activeItem.offsetTop;
+    const itemBottom = itemTop + activeItem.offsetHeight;
+    const viewTop = tocListEl.scrollTop;
+    const viewBottom = viewTop + tocListEl.clientHeight;
+    if (itemTop < viewTop || itemBottom > viewBottom) {
+      tocListEl.scrollTop = Math.max(0, itemTop - tocListEl.clientHeight / 2);
+    }
   }
 
   document.getElementById('board-viewport').scrollTop = 0;

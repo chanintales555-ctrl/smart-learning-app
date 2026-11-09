@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
 import { google } from 'googleapis';
 import fs from 'fs';
 import path from 'path';
+import zlib from 'zlib';
 
 export interface StoredUser {
   userId: string;
@@ -39,14 +40,16 @@ function readLocalJson<T>(filePath: string, defaultVal: T): T {
   return defaultVal;
 }
 
-function writeLocalJson<T>(filePath: string, data: T): void {
+function writeLocalJson<T>(filePath: string, data: T): boolean {
   try {
     if (!fs.existsSync(LOCAL_DATA_DIR)) {
       fs.mkdirSync(LOCAL_DATA_DIR, { recursive: true });
     }
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    return true;
   } catch (e) {
-    // Ignore fs errors on read-only serverless environments (Vercel uses Firestore)
+    // Ignore fs errors on read-only serverless environments (Vercel uses Cloud DB / Google Sheets)
+    return false;
   }
 }
 
@@ -57,6 +60,54 @@ function hasGoogleSheetsConfig(): boolean {
       process.env.GOOGLE_SHEET_ID
   );
 }
+
+function getGoogleSheetsClient(readonly = false) {
+  const auth = new google.auth.GoogleAuth({
+    credentials: {
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY
+        ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n').replace(/"/g, '').trim()
+        : undefined,
+    },
+    scopes: [
+      readonly
+        ? 'https://www.googleapis.com/auth/spreadsheets.readonly'
+        : 'https://www.googleapis.com/auth/spreadsheets',
+    ],
+  });
+  return google.sheets({ version: 'v4', auth });
+}
+
+const SHEET_CHUNK_SIZE = 45000;
+const MIN_CHUNK_COLUMNS = 12;
+
+function packCompressedChunks(jsonStr: string): string[] {
+  const compressed = 'ZLIB:' + zlib.deflateSync(Buffer.from(jsonStr, 'utf-8')).toString('base64');
+  const chunks: string[] = [];
+  for (let i = 0; i < compressed.length; i += SHEET_CHUNK_SIZE) {
+    chunks.push(compressed.slice(i, i + SHEET_CHUNK_SIZE));
+  }
+  while (chunks.length < MIN_CHUNK_COLUMNS) {
+    chunks.push('');
+  }
+  return chunks;
+}
+
+function unpackCompressedChunks(cells: any[]): string | null {
+  if (!Array.isArray(cells) || cells.length === 0) return null;
+  const joined = cells
+    .map((c) => (c != null ? String(c) : ''))
+    .join('')
+    .trim();
+  if (!joined) return null;
+  if (joined.startsWith('ZLIB:')) {
+    const buf = Buffer.from(joined.slice(5), 'base64');
+    return zlib.inflateSync(buf).toString('utf-8');
+  }
+  return joined;
+}
+
+const memoryNotesCache = new Map<string, { annotationsJson: string; updatedAt: string }>();
 
 // ==========================================
 // 1. USER REGISTRATION & AUTHENTICATION
@@ -130,8 +181,9 @@ export async function registerUser(params: {
   try {
     const localUsers = readLocalJson<Record<string, StoredUser>>(LOCAL_USERS_FILE, {});
     localUsers[docKey] = newUser;
-    writeLocalJson(LOCAL_USERS_FILE, localUsers);
-    savedSomewhere = true;
+    if (writeLocalJson(LOCAL_USERS_FILE, localUsers)) {
+      savedSomewhere = true;
+    }
   } catch (localErr) {
     console.warn('Local user store warning:', localErr);
   }
@@ -298,6 +350,109 @@ export async function authenticateUser(
 // 2. SMARTBOARD HANDWRITING NOTES PER ACCOUNT
 // ==========================================
 
+async function getRowFromGoogleSheetTab(
+  tabName: string,
+  docKey: string
+): Promise<any[] | null> {
+  if (!hasGoogleSheetsConfig()) return null;
+  try {
+    const sheets = getGoogleSheetsClient(true);
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${tabName}!A1:Z5000`,
+    });
+    const rows = response.data.values;
+    if (!rows || rows.length === 0) return null;
+    let matched: any[] | null = null;
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      if (r && r[0]?.toString().trim() === docKey) {
+        matched = r;
+      }
+    }
+    return matched;
+  } catch (err) {
+    // Tab might not exist yet on first run
+    return null;
+  }
+}
+
+async function saveRowToGoogleSheetTab(
+  tabName: string,
+  docKey: string,
+  rowValues: any[]
+): Promise<boolean> {
+  if (!hasGoogleSheetsConfig()) return false;
+  try {
+    const sheets = getGoogleSheetsClient(false);
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+
+    let rows: any[][] = [];
+    try {
+      const getRes = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: `${tabName}!A1:D5000`,
+      });
+      rows = getRes.data.values || [];
+    } catch (readErr) {
+      // Create the sheet tab if it does not exist yet
+      try {
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId,
+          requestBody: {
+            requests: [
+              {
+                addSheet: {
+                  properties: {
+                    title: tabName,
+                  },
+                },
+              },
+            ],
+          },
+        });
+      } catch (addSheetErr) {
+        // Ignore if another concurrent request just created it
+      }
+      rows = [];
+    }
+
+    let existingRowIndex = -1;
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i]?.[0]?.toString().trim() === docKey) {
+        existingRowIndex = i;
+        break;
+      }
+    }
+
+    if (existingRowIndex >= 0) {
+      await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `${tabName}!A${existingRowIndex + 1}`,
+        valueInputOption: 'RAW',
+        requestBody: {
+          values: [rowValues],
+        },
+      });
+    } else {
+      await sheets.spreadsheets.values.append({
+        spreadsheetId,
+        range: `${tabName}!A1`,
+        valueInputOption: 'RAW',
+        insertDataOption: 'INSERT_ROWS',
+        requestBody: {
+          values: [rowValues],
+        },
+      });
+    }
+    return true;
+  } catch (err) {
+    console.error(`Google Sheets saveRowToGoogleSheetTab (${tabName}) error:`, err);
+    return false;
+  }
+}
+
 export interface SmartboardNoteRecord {
   userId: string;
   lessonId: string;
@@ -311,7 +466,31 @@ export async function getUserSmartboardNotes(
 ): Promise<{ annotations: Record<string, any> | null; updatedAt: string | null }> {
   const docKey = `${sanitizeDocId(userId)}__${sanitizeDocId(lessonId)}`;
 
-  // 1) Try Firebase Firestore (`smartboard_notes` collection)
+  // 1) Try Google Sheets Cloud Storage (`SmartboardNotes` tab) — Primary reliable store on Vercel
+  if (hasGoogleSheetsConfig()) {
+    try {
+      const sheetRow = await getRowFromGoogleSheetTab('SmartboardNotes', docKey);
+      if (sheetRow && sheetRow.length >= 5) {
+        const updatedAt = sheetRow[3]?.toString().trim() || null;
+        const unpackedJson = unpackCompressedChunks(sheetRow.slice(4));
+        if (unpackedJson) {
+          const parsed = JSON.parse(unpackedJson);
+          memoryNotesCache.set(docKey, {
+            annotationsJson: unpackedJson,
+            updatedAt: updatedAt || new Date().toISOString(),
+          });
+          return {
+            annotations: parsed,
+            updatedAt,
+          };
+        }
+      }
+    } catch (sheetErr) {
+      console.warn('Google Sheets getUserSmartboardNotes warning:', sheetErr);
+    }
+  }
+
+  // 2) Try Firebase Firestore (`smartboard_notes` collection)
   try {
     const noteRef = doc(db, 'smartboard_notes', docKey);
     const snap = await getDoc(noteRef);
@@ -329,7 +508,7 @@ export async function getUserSmartboardNotes(
     console.warn('Firestore getUserSmartboardNotes warning:', err);
   }
 
-  // 2) Try Local JSON Fallback
+  // 3) Try Local JSON Fallback
   try {
     const localNotes = readLocalJson<Record<string, { annotationsJson: string; updatedAt: string }>>(
       LOCAL_NOTES_FILE,
@@ -343,6 +522,17 @@ export async function getUserSmartboardNotes(
     }
   } catch (err) {
     console.warn('Local getUserSmartboardNotes warning:', err);
+  }
+
+  // 4) Try In-Memory Server Cache Fallback
+  const mem = memoryNotesCache.get(docKey);
+  if (mem?.annotationsJson) {
+    try {
+      return {
+        annotations: JSON.parse(mem.annotationsJson),
+        updatedAt: mem.updatedAt,
+      };
+    } catch (e) {}
   }
 
   return { annotations: null, updatedAt: null };
@@ -360,9 +550,25 @@ export async function saveUserSmartboardNotes(
     (k) => Array.isArray(annotations[k]) && annotations[k].length > 0
   ).length;
 
+  memoryNotesCache.set(docKey, { annotationsJson, updatedAt });
+
   let saved = false;
 
-  // 1) Save to Firebase Firestore (`smartboard_notes` collection)
+  // 1) Save to Google Sheets Cloud Storage (`SmartboardNotes` tab with zlib compression & multi-column chunking)
+  if (hasGoogleSheetsConfig()) {
+    try {
+      const chunks = packCompressedChunks(annotationsJson);
+      const rowValues = [docKey, userId.trim(), lessonId.trim(), updatedAt, ...chunks];
+      const okSheet = await saveRowToGoogleSheetTab('SmartboardNotes', docKey, rowValues);
+      if (okSheet) {
+        saved = true;
+      }
+    } catch (sheetErr) {
+      console.error('Google Sheets saveUserSmartboardNotes error:', sheetErr);
+    }
+  }
+
+  // 2) Save to Firebase Firestore (`smartboard_notes` collection)
   try {
     const noteRef = doc(db, 'smartboard_notes', docKey);
     await setDoc(
@@ -378,10 +584,10 @@ export async function saveUserSmartboardNotes(
     );
     saved = true;
   } catch (err) {
-    console.error('Firestore saveUserSmartboardNotes error:', err);
+    console.warn('Firestore saveUserSmartboardNotes warning:', err);
   }
 
-  // 2) Save to Local JSON Fallback
+  // 3) Save to Local JSON Fallback (only marks saved=true if fs write actually succeeds)
   try {
     const localNotes = readLocalJson<
       Record<string, { userId: string; lessonId: string; annotationsJson: string; updatedAt: string }>
@@ -392,8 +598,9 @@ export async function saveUserSmartboardNotes(
       annotationsJson,
       updatedAt,
     };
-    writeLocalJson(LOCAL_NOTES_FILE, localNotes);
-    saved = true;
+    if (writeLocalJson(LOCAL_NOTES_FILE, localNotes)) {
+      saved = true;
+    }
   } catch (err) {
     console.warn('Local saveUserSmartboardNotes warning:', err);
   }
@@ -441,7 +648,22 @@ export async function getUserEnglishPretest(
   const docKey = sanitizeDocId(userId);
   if (!docKey) return null;
 
-  // 1) Try Firebase Firestore (`english_pretest_scores` collection)
+  // 1) Try Google Sheets Cloud Storage (`EnglishPretest` tab)
+  if (hasGoogleSheetsConfig()) {
+    try {
+      const sheetRow = await getRowFromGoogleSheetTab('EnglishPretest', docKey);
+      if (sheetRow && sheetRow.length >= 5) {
+        const unpackedJson = unpackCompressedChunks(sheetRow.slice(4));
+        if (unpackedJson) {
+          return JSON.parse(unpackedJson) as EnglishPretestUserData;
+        }
+      }
+    } catch (sheetErr) {
+      console.warn('Google Sheets getUserEnglishPretest warning:', sheetErr);
+    }
+  }
+
+  // 2) Try Firebase Firestore (`english_pretest_scores` collection)
   try {
     const ref = doc(db, 'english_pretest_scores', docKey);
     const snap = await getDoc(ref);
@@ -455,7 +677,7 @@ export async function getUserEnglishPretest(
     console.warn('Firestore getUserEnglishPretest warning:', err);
   }
 
-  // 2) Try Local JSON Fallback
+  // 3) Try Local JSON Fallback
   try {
     const localMap = readLocalJson<Record<string, EnglishPretestUserData>>(
       LOCAL_ENGLISH_PRETEST_FILE,
@@ -514,8 +736,23 @@ export async function saveUserEnglishPretest(
   };
 
   let saved = false;
+  const payloadJson = JSON.stringify(record);
 
-  // 1) Save to Firebase Firestore (`english_pretest_scores` collection)
+  // 1) Save to Google Sheets Cloud Storage (`EnglishPretest` tab)
+  if (hasGoogleSheetsConfig()) {
+    try {
+      const chunks = packCompressedChunks(payloadJson);
+      const rowValues = [docKey, record.userId, record.userName || record.userId, updatedAt, ...chunks];
+      const okSheet = await saveRowToGoogleSheetTab('EnglishPretest', docKey, rowValues);
+      if (okSheet) {
+        saved = true;
+      }
+    } catch (sheetErr) {
+      console.error('Google Sheets saveUserEnglishPretest error:', sheetErr);
+    }
+  }
+
+  // 2) Save to Firebase Firestore (`english_pretest_scores` collection)
   try {
     const ref = doc(db, 'english_pretest_scores', docKey);
     await setDoc(
@@ -527,25 +764,26 @@ export async function saveUserEnglishPretest(
         latestScore: record.latestSummary?.totalScore ?? null,
         latestPercentage: record.latestSummary?.percentage ?? null,
         latestTimeSeconds: record.latestSummary?.elapsedSeconds ?? record.elapsedSeconds,
-        payloadJson: JSON.stringify(record),
+        payloadJson,
         updatedAt,
       },
       { merge: true }
     );
     saved = true;
   } catch (err) {
-    console.error('Firestore saveUserEnglishPretest error:', err);
+    console.warn('Firestore saveUserEnglishPretest warning:', err);
   }
 
-  // 2) Save to Local JSON Fallback
+  // 3) Save to Local JSON Fallback
   try {
     const localMap = readLocalJson<Record<string, EnglishPretestUserData>>(
       LOCAL_ENGLISH_PRETEST_FILE,
       {}
     );
     localMap[docKey] = record;
-    writeLocalJson(LOCAL_ENGLISH_PRETEST_FILE, localMap);
-    saved = true;
+    if (writeLocalJson(LOCAL_ENGLISH_PRETEST_FILE, localMap)) {
+      saved = true;
+    }
   } catch (err) {
     console.warn('Local saveUserEnglishPretest warning:', err);
   }

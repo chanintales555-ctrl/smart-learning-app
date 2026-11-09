@@ -72,9 +72,20 @@ export async function POST(req: Request) {
 
     const result = await saveUserSmartboardNotes(userId, lessonId, annotations);
 
+    if (!result.ok) {
+      return NextResponse.json(
+        {
+          ok: false,
+          authenticated: true,
+          error: 'ไม่สามารถซิงก์ข้อมูลลงฐานข้อมูลคลาวด์ได้ในขณะนี้',
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       {
-        ok: result.ok,
+        ok: true,
         authenticated: true,
         userId,
         lessonId,
