@@ -466,7 +466,32 @@ export async function getUserSmartboardNotes(
 ): Promise<{ annotations: Record<string, any> | null; updatedAt: string | null }> {
   const docKey = `${sanitizeDocId(userId)}__${sanitizeDocId(lessonId)}`;
 
-  // 1) Try Google Sheets Cloud Storage (`SmartboardNotes` tab) — Primary reliable store on Vercel
+  // 1) Primary: Firebase Firestore (`smartboard_notes` collection)
+  try {
+    const noteRef = doc(db, 'smartboard_notes', docKey);
+    const snap = await getDoc(noteRef);
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data && typeof data.annotationsJson === 'string') {
+        const rawStr = data.annotationsJson.startsWith('ZLIB:')
+          ? zlib.inflateSync(Buffer.from(data.annotationsJson.slice(5), 'base64')).toString('utf-8')
+          : data.annotationsJson;
+        const parsed = JSON.parse(rawStr);
+        memoryNotesCache.set(docKey, {
+          annotationsJson: rawStr,
+          updatedAt: data.updatedAt || new Date().toISOString(),
+        });
+        return {
+          annotations: parsed,
+          updatedAt: data.updatedAt || null,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('Firestore getUserSmartboardNotes warning:', err);
+  }
+
+  // 2) Fallback: Google Sheets Cloud Storage (`SmartboardNotes` tab)
   if (hasGoogleSheetsConfig()) {
     try {
       const sheetRow = await getRowFromGoogleSheetTab('SmartboardNotes', docKey);
@@ -490,25 +515,7 @@ export async function getUserSmartboardNotes(
     }
   }
 
-  // 2) Try Firebase Firestore (`smartboard_notes` collection)
-  try {
-    const noteRef = doc(db, 'smartboard_notes', docKey);
-    const snap = await getDoc(noteRef);
-    if (snap.exists()) {
-      const data = snap.data();
-      if (data && typeof data.annotationsJson === 'string') {
-        const parsed = JSON.parse(data.annotationsJson);
-        return {
-          annotations: parsed,
-          updatedAt: data.updatedAt || null,
-        };
-      }
-    }
-  } catch (err) {
-    console.warn('Firestore getUserSmartboardNotes warning:', err);
-  }
-
-  // 3) Try Local JSON Fallback
+  // 3) Fallback: Local JSON
   try {
     const localNotes = readLocalJson<Record<string, { annotationsJson: string; updatedAt: string }>>(
       LOCAL_NOTES_FILE,
@@ -524,7 +531,7 @@ export async function getUserSmartboardNotes(
     console.warn('Local getUserSmartboardNotes warning:', err);
   }
 
-  // 4) Try In-Memory Server Cache Fallback
+  // 4) Fallback: In-Memory Server Cache
   const mem = memoryNotesCache.get(docKey);
   if (mem?.annotationsJson) {
     try {
@@ -553,9 +560,34 @@ export async function saveUserSmartboardNotes(
   memoryNotesCache.set(docKey, { annotationsJson, updatedAt });
 
   let saved = false;
+  let savedToFirestore = false;
 
-  // 1) Save to Google Sheets Cloud Storage (`SmartboardNotes` tab with zlib compression & multi-column chunking)
-  if (hasGoogleSheetsConfig()) {
+  // 1) Primary: Save to Firebase Firestore (`smartboard_notes` collection)
+  try {
+    const noteRef = doc(db, 'smartboard_notes', docKey);
+    const firestorePayloadStr =
+      annotationsJson.length > 750000
+        ? 'ZLIB:' + zlib.deflateSync(Buffer.from(annotationsJson, 'utf-8')).toString('base64')
+        : annotationsJson;
+    await setDoc(
+      noteRef,
+      {
+        userId: userId.trim(),
+        lessonId: lessonId.trim(),
+        annotationsJson: firestorePayloadStr,
+        slideCount,
+        updatedAt,
+      },
+      { merge: true }
+    );
+    saved = true;
+    savedToFirestore = true;
+  } catch (err) {
+    console.warn('Firestore saveUserSmartboardNotes warning:', err);
+  }
+
+  // 2) Fallback: Save to Google Sheets only if Firestore failed
+  if (!savedToFirestore && hasGoogleSheetsConfig()) {
     try {
       const chunks = packCompressedChunks(annotationsJson);
       const rowValues = [docKey, userId.trim(), lessonId.trim(), updatedAt, ...chunks];
@@ -568,26 +600,7 @@ export async function saveUserSmartboardNotes(
     }
   }
 
-  // 2) Save to Firebase Firestore (`smartboard_notes` collection)
-  try {
-    const noteRef = doc(db, 'smartboard_notes', docKey);
-    await setDoc(
-      noteRef,
-      {
-        userId: userId.trim(),
-        lessonId: lessonId.trim(),
-        annotationsJson,
-        slideCount,
-        updatedAt,
-      },
-      { merge: true }
-    );
-    saved = true;
-  } catch (err) {
-    console.warn('Firestore saveUserSmartboardNotes warning:', err);
-  }
-
-  // 3) Save to Local JSON Fallback (only marks saved=true if fs write actually succeeds)
+  // 3) Save to Local JSON Fallback (for local dev)
   try {
     const localNotes = readLocalJson<
       Record<string, { userId: string; lessonId: string; annotationsJson: string; updatedAt: string }>
@@ -648,7 +661,21 @@ export async function getUserEnglishPretest(
   const docKey = sanitizeDocId(userId);
   if (!docKey) return null;
 
-  // 1) Try Google Sheets Cloud Storage (`EnglishPretest` tab)
+  // 1) Primary: Firebase Firestore (`english_pretest_scores` collection)
+  try {
+    const ref = doc(db, 'english_pretest_scores', docKey);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data && typeof data.payloadJson === 'string') {
+        return JSON.parse(data.payloadJson) as EnglishPretestUserData;
+      }
+    }
+  } catch (err) {
+    console.warn('Firestore getUserEnglishPretest warning:', err);
+  }
+
+  // 2) Fallback: Google Sheets Cloud Storage (`EnglishPretest` tab)
   if (hasGoogleSheetsConfig()) {
     try {
       const sheetRow = await getRowFromGoogleSheetTab('EnglishPretest', docKey);
@@ -663,21 +690,7 @@ export async function getUserEnglishPretest(
     }
   }
 
-  // 2) Try Firebase Firestore (`english_pretest_scores` collection)
-  try {
-    const ref = doc(db, 'english_pretest_scores', docKey);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      const data = snap.data();
-      if (data && typeof data.payloadJson === 'string') {
-        return JSON.parse(data.payloadJson) as EnglishPretestUserData;
-      }
-    }
-  } catch (err) {
-    console.warn('Firestore getUserEnglishPretest warning:', err);
-  }
-
-  // 3) Try Local JSON Fallback
+  // 3) Fallback: Local JSON
   try {
     const localMap = readLocalJson<Record<string, EnglishPretestUserData>>(
       LOCAL_ENGLISH_PRETEST_FILE,
@@ -736,23 +749,10 @@ export async function saveUserEnglishPretest(
   };
 
   let saved = false;
+  let savedToFirestore = false;
   const payloadJson = JSON.stringify(record);
 
-  // 1) Save to Google Sheets Cloud Storage (`EnglishPretest` tab)
-  if (hasGoogleSheetsConfig()) {
-    try {
-      const chunks = packCompressedChunks(payloadJson);
-      const rowValues = [docKey, record.userId, record.userName || record.userId, updatedAt, ...chunks];
-      const okSheet = await saveRowToGoogleSheetTab('EnglishPretest', docKey, rowValues);
-      if (okSheet) {
-        saved = true;
-      }
-    } catch (sheetErr) {
-      console.error('Google Sheets saveUserEnglishPretest error:', sheetErr);
-    }
-  }
-
-  // 2) Save to Firebase Firestore (`english_pretest_scores` collection)
+  // 1) Primary: Save to Firebase Firestore (`english_pretest_scores` collection)
   try {
     const ref = doc(db, 'english_pretest_scores', docKey);
     await setDoc(
@@ -770,8 +770,23 @@ export async function saveUserEnglishPretest(
       { merge: true }
     );
     saved = true;
+    savedToFirestore = true;
   } catch (err) {
     console.warn('Firestore saveUserEnglishPretest warning:', err);
+  }
+
+  // 2) Fallback: Save to Google Sheets only if Firestore failed
+  if (!savedToFirestore && hasGoogleSheetsConfig()) {
+    try {
+      const chunks = packCompressedChunks(payloadJson);
+      const rowValues = [docKey, record.userId, record.userName || record.userId, updatedAt, ...chunks];
+      const okSheet = await saveRowToGoogleSheetTab('EnglishPretest', docKey, rowValues);
+      if (okSheet) {
+        saved = true;
+      }
+    } catch (sheetErr) {
+      console.error('Google Sheets saveUserEnglishPretest error:', sheetErr);
+    }
   }
 
   // 3) Save to Local JSON Fallback
