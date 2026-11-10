@@ -1,5 +1,5 @@
 import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, getDocs, query, where, writeBatch } from 'firebase/firestore';
 import { google } from 'googleapis';
 import fs from 'fs';
 import path from 'path';
@@ -619,6 +619,142 @@ export async function saveUserSmartboardNotes(
   }
 
   return { ok: saved, updatedAt };
+}
+
+// ------------------------------------------
+// Per-slide storage (1 Firestore document per slide) — avoids the 1 MiB document
+// limit and Vercel's request body limit that broke whole-lesson saves.
+// ------------------------------------------
+const SLIDE_COLLECTION = 'smartboard_slides';
+const LOCAL_SLIDES_FILE = path.join(LOCAL_DATA_DIR, 'smartboard_slides.json');
+
+function packSlideStrokes(strokes: any[]): string {
+  const json = JSON.stringify(strokes || []);
+  if (json.length > 300000) {
+    return 'ZLIB:' + zlib.deflateSync(Buffer.from(json, 'utf-8')).toString('base64');
+  }
+  return json;
+}
+
+function unpackSlideStrokes(raw: string): any[] {
+  const json = raw.startsWith('ZLIB:')
+    ? zlib.inflateSync(Buffer.from(raw.slice(5), 'base64')).toString('utf-8')
+    : raw;
+  const parsed = JSON.parse(json);
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+export async function getUserSlideNotes(
+  userId: string,
+  lessonId: string
+): Promise<{ annotations: Record<string, any> | null; updatedAt: string | null }> {
+  const userKey = sanitizeDocId(userId);
+  const lessonKey = sanitizeDocId(lessonId);
+  const annotations: Record<string, any> = {};
+  let latest: string | null = null;
+  let found = false;
+
+  // 1) Legacy whole-lesson document (older saves) as base layer
+  try {
+    const legacy = await getUserSmartboardNotes(userId, lessonId);
+    if (legacy.annotations && typeof legacy.annotations === 'object') {
+      Object.assign(annotations, legacy.annotations);
+      latest = legacy.updatedAt;
+      found = Object.keys(annotations).length > 0;
+    }
+  } catch (e) {}
+
+  // 2) Per-slide documents override legacy
+  try {
+    const q = query(
+      collection(db, SLIDE_COLLECTION),
+      where('userKey', '==', userKey),
+      where('lessonKey', '==', lessonKey)
+    );
+    const snap = await getDocs(q);
+    snap.forEach((d) => {
+      const data: any = d.data();
+      if (!data || typeof data.slideKey !== 'string' || typeof data.strokesJson !== 'string') return;
+      try {
+        annotations[data.slideKey] = unpackSlideStrokes(data.strokesJson);
+        found = true;
+        if (data.updatedAt && (!latest || data.updatedAt > latest)) latest = data.updatedAt;
+      } catch (e) {
+        console.warn('Bad slide doc', d.id, e);
+      }
+    });
+  } catch (err) {
+    console.warn('Firestore getUserSlideNotes warning:', err);
+  }
+
+  // 3) Local dev fallback
+  try {
+    const localMap = readLocalJson<Record<string, any>>(LOCAL_SLIDES_FILE, {});
+    for (const rec of Object.values(localMap)) {
+      if (rec && rec.userKey === userKey && rec.lessonKey === lessonKey) {
+        annotations[rec.slideKey] = unpackSlideStrokes(rec.strokesJson);
+        found = true;
+        if (rec.updatedAt && (!latest || rec.updatedAt > latest)) latest = rec.updatedAt;
+      }
+    }
+  } catch (e) {}
+
+  return { annotations: found ? annotations : null, updatedAt: latest };
+}
+
+export async function saveUserSlideNotes(
+  userId: string,
+  lessonId: string,
+  slides: Record<string, any[]>
+): Promise<{ ok: boolean; updatedAt: string; failed: string[] }> {
+  const userKey = sanitizeDocId(userId);
+  const lessonKey = sanitizeDocId(lessonId);
+  const updatedAt = new Date().toISOString();
+  const keys = Object.keys(slides || {}).filter((k) => Array.isArray(slides[k]));
+  const failed: string[] = [];
+
+  const records = keys.map((slideKey) => ({
+    slideKey,
+    id: `${userKey}__${lessonKey}__${sanitizeDocId(slideKey)}`,
+    data: {
+      userId: userId.trim(),
+      lessonId: lessonId.trim(),
+      userKey,
+      lessonKey,
+      slideKey,
+      strokesJson: packSlideStrokes(slides[slideKey]),
+      count: slides[slideKey].length,
+      updatedAt,
+    },
+  }));
+
+  let firestoreOk = true;
+  for (let i = 0; i < records.length; i += 100) {
+    const chunk = records.slice(i, i + 100);
+    try {
+      const batch = writeBatch(db);
+      chunk.forEach((r) => batch.set(doc(db, SLIDE_COLLECTION, r.id), r.data));
+      await batch.commit();
+    } catch (err) {
+      firestoreOk = false;
+      console.error('Firestore saveUserSlideNotes batch error:', err);
+      chunk.forEach((r) => failed.push(r.slideKey));
+    }
+  }
+
+  let localOk = false;
+  if (!firestoreOk) {
+    try {
+      const localMap = readLocalJson<Record<string, any>>(LOCAL_SLIDES_FILE, {});
+      records.forEach((r) => {
+        localMap[r.id] = r.data;
+      });
+      localOk = writeLocalJson(LOCAL_SLIDES_FILE, localMap);
+      if (localOk) failed.length = 0;
+    } catch (e) {}
+  }
+
+  return { ok: failed.length === 0, updatedAt, failed };
 }
 
 // ==========================================

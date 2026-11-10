@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { getUserSmartboardNotes, saveUserSmartboardNotes } from '@/lib/userStore';
+import { getUserSlideNotes, saveUserSlideNotes } from '@/lib/userStore';
 
 export async function GET(req: Request) {
   try {
@@ -22,7 +22,7 @@ export async function GET(req: Request) {
     const userId =
       (session.user as any).id || session.user.name || session.user.email || 'user';
 
-    const { annotations, updatedAt } = await getUserSmartboardNotes(userId, lessonId);
+    const { annotations, updatedAt } = await getUserSlideNotes(userId, lessonId);
 
     return NextResponse.json(
       {
@@ -66,17 +66,19 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const lessonId = body.lessonId || 'chemistry-acid-base';
-    const annotations = body.annotations || {};
+    // Accept per-slide payload (body.slides) or legacy whole map (body.annotations)
+    const slides = (body.slides || body.annotations || {}) as Record<string, any[]>;
     const userId =
       (session.user as any).id || session.user.name || session.user.email || 'user';
 
-    const result = await saveUserSmartboardNotes(userId, lessonId, annotations);
+    const result = await saveUserSlideNotes(userId, lessonId, slides);
 
     if (!result.ok) {
       return NextResponse.json(
         {
           ok: false,
           authenticated: true,
+          failed: result.failed,
           error: 'ไม่สามารถซิงก์ข้อมูลลงฐานข้อมูลคลาวด์ได้ในขณะนี้',
         },
         { status: 500 }

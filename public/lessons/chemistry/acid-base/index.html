@@ -58,6 +58,11 @@ body.light-board {
   -webkit-user-select: none;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 html, body {
   width: 100vw;
   height: 100vh;
@@ -1387,7 +1392,7 @@ function getSlideLogicalWidth(idx = currentSlideIndex) {
   if (Array.isArray(strokes) && strokes.length > 0) {
     for (let i = 0; i < strokes.length; i++) {
       const s = strokes[i];
-      if (s && s.stageW && s.stageW >= 720 && s.stageW <= 1650) {
+      if (s && s.stageW && s.stageW >= 560 && s.stageW <= 2600) {
         return Math.round(s.stageW);
       }
       if (s && Array.isArray(s.points)) {
@@ -1395,7 +1400,7 @@ function getSlideLogicalWidth(idx = currentSlideIndex) {
           const pt = s.points[j];
           if (pt && typeof pt.x === 'number' && typeof pt.nx === 'number' && pt.nx > 0.08 && pt.x > 60) {
             const inferred = Math.round(pt.x / pt.nx);
-            if (inferred >= 720 && inferred <= 1650) {
+            if (inferred >= 560 && inferred <= 2600) {
               return inferred;
             }
           }
@@ -1455,6 +1460,10 @@ function resizeBoardCanvases(forceRedraw = false) {
 
   const logicalW = getSlideLogicalWidth(currentSlideIndex);
   stage.style.width = logicalW + 'px';
+  // Legacy wide-screen strokes were drawn when content was capped at 1520px and centered
+  const legacyWide = logicalW > 1564;
+  contentLayer.style.maxWidth = legacyWide ? '1520px' : 'none';
+  contentLayer.style.margin = legacyWide ? '0 auto' : '0';
 
   const targetHeight = Math.max(1180, contentLayer.scrollHeight + 180, window.innerHeight - 52);
   stage.style.minHeight = targetHeight + 'px';
@@ -2134,7 +2143,9 @@ function updateAccountSyncUI(state, detailText) {
   } else if (state === 'error' || state === 'offline') {
     widget.style.borderColor = 'rgba(248, 113, 113, 0.5)';
     statusEl.style.color = '#f87171';
-    statusEl.textContent = '• ⚠️ ออฟไลน์ (เซฟในเครื่อง)';
+    statusEl.textContent = '• ⚠️ ซิงก์ไม่สำเร็จ' + (detailText ? ': ' + String(detailText).slice(0, 46) : '') + ' (เซฟในเครื่องแล้ว)';
+    widget.title = detailText ? ('สาเหตุ: ' + detailText + ' — แตะเพื่อลองซิงก์ใหม่') : 'แตะเพื่อลองซิงก์ใหม่';
+    if (detailText) statusEl.title = detailText;
   }
 }
 
@@ -2148,55 +2159,127 @@ function scheduleCloudAccountSync() {
   }, 750);
 }
 
+function getSlideSignature(arr) {
+  if (!Array.isArray(arr) || arr.length === 0) return '0';
+  return arr.length + '|' + getStrokeFingerprint(arr[arr.length - 1]) + '|' + getStrokeFingerprint(arr[0]);
+}
+
+// Signatures of what the cloud is known to hold, per slide key
+let syncedSigs = {};
+
+function markAllSyncedFrom(map) {
+  syncedSigs = {};
+  if (map && typeof map === 'object') {
+    for (const k of Object.keys(map)) syncedSigs[k] = getSlideSignature(map[k]);
+  }
+}
+
+function collectDirtySlides() {
+  const dirty = {};
+  const keys = new Set([...Object.keys(slideAnnotations || {}), ...Object.keys(syncedSigs)]);
+  for (const k of keys) {
+    const arr = Array.isArray(slideAnnotations[k]) ? slideAnnotations[k] : [];
+    if (getSlideSignature(arr) !== (syncedSigs[k] || '0')) dirty[k] = arr;
+  }
+  return dirty;
+}
+
+// Split dirty slides into request-sized batches (<~700KB each) to stay far below server limits
+function chunkSlidesForUpload(dirty) {
+  const batches = [];
+  let cur = {};
+  let curSize = 0;
+  for (const k of Object.keys(dirty)) {
+    const size = JSON.stringify(dirty[k]).length;
+    if (Object.keys(cur).length > 0 && curSize + size > 700000) {
+      batches.push(cur);
+      cur = {};
+      curSize = 0;
+    }
+    cur[k] = dirty[k];
+    curSize += size;
+  }
+  if (Object.keys(cur).length > 0) batches.push(cur);
+  return batches;
+}
+
+let syncInFlight = false;
+let syncAgain = false;
+
 async function syncNotesToAccountNow(manualClick = false) {
   if (!currentAccountUser) return;
   if (cloudSyncTimer) {
     clearTimeout(cloudSyncTimer);
     cloudSyncTimer = null;
   }
+  if (syncInFlight) {
+    syncAgain = true;
+    return;
+  }
+  syncInFlight = true;
   updateAccountSyncUI('saving');
+  let failReason = '';
   try {
-    const res = await fetch('/api/notes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        lessonId: LESSON_ID,
-        annotations: slideAnnotations
-      })
-    });
-    const resData = await res.json().catch(() => null);
-    if (res.ok && resData && resData.ok) {
-      hasPendingCloudSync = false;
+    const dirty = collectDirtySlides();
+    const batches = chunkSlidesForUpload(dirty);
+    for (const batch of batches) {
+      const res = await fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lessonId: LESSON_ID, slides: batch })
+      });
+      const resData = await res.json().catch(() => null);
+      if (res.status === 401) {
+        failReason = 'เซสชันหมดอายุ — กรุณาเข้าสู่ระบบใหม่';
+        break;
+      }
+      if (!(res.ok && resData && resData.ok)) {
+        failReason = 'เซิร์ฟเวอร์ตอบกลับ ' + res.status + ((resData && resData.error) ? ' : ' + resData.error : '');
+        break;
+      }
+      for (const k of Object.keys(batch)) syncedSigs[k] = getSlideSignature(batch[k]);
       if (resData.updatedAt) lastSyncedUpdatedAt = resData.updatedAt;
+    }
+    if (!failReason) {
+      hasPendingCloudSync = false;
       const nowTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
       updateAccountSyncUI('saved', `ซิงก์แล้ว ${nowTime}`);
       if (manualClick && typeof SoundFX !== 'undefined' && SoundFX.chime) {
         SoundFX.chime();
       }
-    } else {
-      updateAccountSyncUI('error');
     }
   } catch (err) {
-    updateAccountSyncUI('error');
+    failReason = 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ (' + (err && err.message ? err.message : 'network') + ')';
+  }
+  syncInFlight = false;
+  if (failReason) {
+    console.warn('Cloud sync failed:', failReason);
+    updateAccountSyncUI('error', failReason);
+    // Keep pending and retry automatically in 8s (iPad Safari may suspend network briefly)
+    hasPendingCloudSync = true;
+    if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+    cloudSyncTimer = setTimeout(() => syncNotesToAccountNow(false), 8000);
+  } else if (syncAgain) {
+    syncAgain = false;
+    syncNotesToAccountNow(false);
   }
 }
 
 function flushCloudSyncKeepalive() {
   if (!currentAccountUser) return;
   try {
-    const bodyStr = JSON.stringify({
-      lessonId: LESSON_ID,
-      annotations: slideAnnotations
+    const dirty = collectDirtySlides();
+    const batches = chunkSlidesForUpload(dirty);
+    batches.forEach((batch) => {
+      const bodyStr = JSON.stringify({ lessonId: LESSON_ID, slides: batch });
+      // WebKit/Chrome reject keepalive:true requests if payload exceeds 64KB
+      fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: bodyStr,
+        keepalive: bodyStr.length < 60000
+      }).catch(() => {});
     });
-    // WebKit/Chrome reject keepalive:true requests if payload exceeds 64KB
-    const useKeepalive = bodyStr.length < 60000;
-    fetch('/api/notes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: bodyStr,
-      keepalive: useKeepalive
-    });
-    hasPendingCloudSync = false;
   } catch (e) {}
 }
 
@@ -2212,6 +2295,7 @@ async function pullLatestCloudNotesIfNewer() {
     if (data && data.authenticated && data.annotations && typeof data.annotations === 'object') {
       if (data.updatedAt && data.updatedAt !== lastSyncedUpdatedAt) {
         lastSyncedUpdatedAt = data.updatedAt;
+        markAllSyncedFrom(data.annotations);
         const { merged } = mergeAnnotationsMaps(data.annotations, slideAnnotations);
         slideAnnotations = merged;
         try {
@@ -2219,8 +2303,12 @@ async function pullLatestCloudNotesIfNewer() {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(slideAnnotations));
         } catch (e) {}
         resizeBoardCanvases(true);
-        const nowTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-        updateAccountSyncUI('saved', `ซิงก์ล่าสุด ${nowTime}`);
+        if (Object.keys(collectDirtySlides()).length > 0) {
+          syncNotesToAccountNow(false);
+        } else {
+          const nowTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+          updateAccountSyncUI('saved', `ซิงก์ล่าสุด ${nowTime}`);
+        }
       }
     }
   } catch (e) {
@@ -2301,24 +2389,27 @@ async function initAccountAndSmartboardNotes() {
       const hasLocalNotes = localNotes && typeof localNotes === 'object' && Object.keys(localNotes).length > 0;
 
       if (hasLocalNotes && !hasServerNotes) {
-        // [AUTO-MIGRATE] iPad had notes locally, Cloud DB was empty!
-        // Push all existing local notes directly to Cloud DB immediately!
+        // [AUTO-MIGRATE] This device had notes locally, Cloud DB was empty!
+        syncedSigs = {};
         slideAnnotations = localNotes;
         syncNotesToAccountNow(false);
       } else if (hasLocalNotes && hasServerNotes) {
         // [SMART PER-STROKE MERGE] Both exist: combine every unique stroke across all slides so nothing is ever lost!
-        const { merged, addedFromLocal } = mergeAnnotationsMaps(serverNotes, localNotes);
+        markAllSyncedFrom(serverNotes);
+        const { merged } = mergeAnnotationsMaps(serverNotes, localNotes);
         slideAnnotations = merged;
-        if (addedFromLocal) {
+        if (Object.keys(collectDirtySlides()).length > 0) {
           syncNotesToAccountNow(false);
         } else {
           updateAccountSyncUI('saved', 'ซิงก์คลาวด์แล้ว');
         }
       } else if (hasServerNotes) {
         // [CLOUD LOAD] Fresh device/PC: load user's strokes from Cloud DB!
+        markAllSyncedFrom(serverNotes);
         slideAnnotations = serverNotes;
         updateAccountSyncUI('saved', 'ซิงก์คลาวด์แล้ว');
       } else {
+        syncedSigs = {};
         slideAnnotations = {};
         updateAccountSyncUI('saved', 'ซิงก์คลาวด์แล้ว');
       }
