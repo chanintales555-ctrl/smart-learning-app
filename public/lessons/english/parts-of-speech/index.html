@@ -1144,6 +1144,7 @@ body.light-board .qnav-select {
 }
 #board-stage {
   margin: 0;
+  padding: 28px 44px 150px 44px;
 }
 #btn-manual-cloud-sync {
   display: inline-flex;
@@ -1177,7 +1178,6 @@ body.light-board .qnav-select {
 <body>
 
 <div id="app">
-  <!-- Left Sidebar: Table of Contents -->
   <aside id="sidebar" class="collapsed">
     <div class="sidebar-header">
       <div class="sidebar-brand">
@@ -1195,9 +1195,7 @@ body.light-board .qnav-select {
     <div id="toc-list"></div>
   </aside>
 
-  <!-- Main Smartboard Area -->
   <main id="main-area">
-    <!-- Fixed Top Navigation & Action Bar (Pinned cleanly on zoom) -->
     <header id="topbar">
       <div class="topbar-left">
         <a href="/course/english" class="icon-btn" style="text-decoration:none;" title="กลับหน้าบทเรียนภาษาอังกฤษ">← วิชาอังกฤษ</a>
@@ -1211,9 +1209,8 @@ body.light-board .qnav-select {
       </div>
 
       <div class="topbar-right">
-        <!-- Account Status Pill + Manual Cloud Sync Button -->
         <div id="account-sync-widget" style="display:inline-flex; align-items:center; gap:6px; padding:0 9px; height:33px; border-radius:8px; border:1px solid rgba(129,140,248,0.4); background:rgba(15,23,42,0.78); font-size:12px; transition:all 0.2s; white-space:nowrap;">
-          <span id="account-user-badge" style="font-weight:600; color:#a5b4fc;">👤 ในเครื่อง</span>
+          <span id="account-user-badge" style="font-weight:600; color:#a5b4fc;">👤 บันทึกในเครื่อง</span>
           <span id="account-sync-status" style="font-size:11px; color:#94a3b8;"></span>
         </div>
         <button id="btn-manual-cloud-sync" style="display:none;" title="กดเพื่อซิงก์ลายมือขึ้นคลาวด์">☁️ ซิงก์ขึ้นคลาวด์</button>
@@ -1227,7 +1224,6 @@ body.light-board .qnav-select {
       </div>
     </header>
 
-    <!-- Single Question Navigation Bar -->
     <div id="question-nav-bar">
       <div class="qnav-left">
         <span id="qnav-deck-badge" class="qnav-deck-badge">🏆 ข้อสอบแข่งขันท้ายบท (20 ข้อ)</span>
@@ -1244,7 +1240,6 @@ body.light-board .qnav-select {
       </div>
     </div>
 
-    <!-- Scrollable & Zoomable Smartboard Stage -->
     <div id="board-viewport">
       <div id="board-zoom-wrapper">
         <div id="board-stage">
@@ -1256,7 +1251,6 @@ body.light-board .qnav-select {
       </div>
     </div>
 
-    <!-- Floating Smartboard Pen Toolbar (Fixed size & pinned position during zoom!) -->
     <div id="pen-toolbar">
       <button class="tool-btn active" data-tool="pen" onclick="setDrawTool('pen')" title="ปากกาเขียนกระดาน">✏️</button>
       <button class="tool-btn" data-tool="highlighter" onclick="setDrawTool('highlighter')" title="ปากกาไฮไลต์">🖍️</button>
@@ -1274,7 +1268,6 @@ body.light-board .qnav-select {
 
       <div class="tool-divider"></div>
 
-      <!-- Color Swatches -->
       <div class="color-swatch active" style="background:#ffffff; color:#ffffff;" onclick="setPenColor('#ffffff', this)" title="สีขาว"></div>
       <div class="color-swatch" style="background:#facc15; color:#facc15;" onclick="setPenColor('#facc15', this)" title="สีเหลือง"></div>
       <div class="color-swatch" style="background:#818cf8; color:#818cf8;" onclick="setPenColor('#818cf8', this)" title="สีน้ำเงินคราม"></div>
@@ -1285,7 +1278,6 @@ body.light-board .qnav-select {
 
       <div class="tool-divider"></div>
 
-      <!-- Brush Size -->
       <input type="range" id="pen-size-slider" class="size-slider" min="1" max="18" value="3" oninput="setPenSize(this.value)" title="ขนาดหัวปากกา">
       <span id="pen-size-label" style="font-size:11px; color:var(--text-muted); min-width:24px;">3px</span>
 
@@ -1299,7 +1291,6 @@ body.light-board .qnav-select {
 </div>
 
 <script>
-// Board-only zoom state (keeps #topbar and #pen-toolbar frozen at exact 1:1 size & position!)
 let boardZoom = 1.0;
 
 function setBoardZoom(nextZoom, clientX, clientY) {
@@ -1329,7 +1320,6 @@ function setBoardZoom(nextZoom, clientX, clientY) {
   }
 }
 
-// Pin #topbar, #question-nav-bar, and #pen-toolbar inside visualViewport even during native pinch zoom
 let _pinRafPending = false;
 function schedulePinFloatingUI() {
   if (_pinRafPending) return;
@@ -1377,7 +1367,6 @@ function pinFloatingUIOnZoom() {
     return;
   }
 
-  // Counter-scale fixed UI chrome during native visualViewport zoom so toolbars keep exact visual size & position
   const centerX = vv.offsetLeft + vv.width / 2;
   const bottomY = vv.offsetTop + vv.height - 16 * invScale;
   toolbar.style.position = 'fixed';
@@ -1416,7 +1405,6 @@ if (window.visualViewport) {
 }
 window.addEventListener('resize', schedulePinFloatingUI);
 
-// Intercept Ctrl+Wheel / Trackpad-Pinch & Keyboard Ctrl +/-/0 so ONLY board zooms, leaving toolbars fixed
 window.addEventListener('wheel', (e) => {
   if (e.ctrlKey || e.metaKey) {
     e.preventDefault();
@@ -2727,7 +2715,6 @@ window.AcidBaseSmartboardAPI = {
 };
 
 
-// Two-finger touchscreen/iPad pinch zoom inside #board-viewport (cancels accidental touch strokes cleanly)
 (function attachBoardPinchGesture() {
   const vp = document.getElementById('board-viewport');
   if (!vp) return;
@@ -2780,7 +2767,7 @@ window.AcidBaseSmartboardAPI = {
 
 const SLIDES = [
   // =========================================================================
-  // 0. OVERVIEW (ภาพรวมบทเรียนแบบชีทเรียน)
+  // 0. OVERVIEW (ภาพรวมบทเรียนแบบชีทเรียน — พื้นที่จดกว้าง & ลำดับชัดเจน)
   // =========================================================================
   {
     id: 'ov-1',
@@ -2793,18 +2780,18 @@ const SLIDES = [
         <span class="slide-subtitle-badge">Chapter 02 · Core Grammar Worksheet</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:430px;">
+        <div class="sb-card" style="min-height:480px;">
           <div class="sb-card-title" style="color:var(--accent-yellow);">1) กลุ่มคำหลัก (Content Words) — คำที่แบกความหมาย</div>
-          <div class="sb-branch-list" style="gap:34px;">
+          <div class="sb-branch-list" style="gap:44px; margin-top:20px;">
             <div class="sb-branch-item"><b>1. Noun (คำนาม)</b> : <span class="sb-blank-line"></span></div>
             <div class="sb-branch-item"><b>2. Verb (คำกริยา)</b> : <span class="sb-blank-line"></span></div>
             <div class="sb-branch-item"><b>3. Adjective (คำคุณศัพท์)</b> : <span class="sb-blank-line"></span></div>
             <div class="sb-branch-item"><b>4. Adverb (คำกริยาวิเศษณ์)</b> : <span class="sb-blank-line"></span></div>
           </div>
         </div>
-        <div class="sb-card" style="min-height:430px;">
+        <div class="sb-card" style="min-height:480px;">
           <div class="sb-card-title" style="color:var(--accent-cyan);">2) กลุ่มคำเชื่อม/แทน (Function Words) — ตัวเชื่อมโครงสร้าง</div>
-          <div class="sb-branch-list" style="gap:34px;">
+          <div class="sb-branch-list" style="gap:44px; margin-top:20px;">
             <div class="sb-branch-item"><b>5. Pronoun (คำสรรพนาม)</b> : <span class="sb-blank-line"></span></div>
             <div class="sb-branch-item"><b>6. Preposition (คำบุพบท)</b> : <span class="sb-blank-line"></span></div>
             <div class="sb-branch-item"><b>7. Conjunction (คำสันธาน)</b> : <span class="sb-blank-line"></span></div>
@@ -2812,10 +2799,10 @@ const SLIDES = [
           </div>
         </div>
       </div>
-      <div class="sb-card" style="min-height:220px;">
-        <div class="sb-card-title" style="color:var(--accent-pink);">✏️ พื้นที่จดสรุปรวม: คำ 1 คำ เปลี่ยนชนิดคำได้เมื่อเปลี่ยน Suffix หรือตำแหน่ง!</div>
-        <div style="font-size:19px; color:var(--text-muted); margin-bottom:10px;">ตัวอย่างคำตระกูลเดียวกัน: &nbsp; <b>create</b> (_____) &nbsp;/&nbsp; <b>creation</b> (_____) &nbsp;/&nbsp; <b>creative</b> (_____) &nbsp;/&nbsp; <b>creatively</b> (_____)</div>
-        <div style="height:110px;"></div>
+      <div class="sb-card" style="min-height:230px;">
+        <div class="sb-card-title" style="color:var(--accent-pink);">✏️ พื้นที่จดสรุปรวม: คำ 1 ราก เปลี่ยนชนิดคำได้เมื่อเปลี่ยน Suffix หรือเปลี่ยนตำแหน่ง!</div>
+        <div style="font-size:19px; color:var(--text-muted); margin-bottom:14px;">แยกชนิดคำ: &nbsp; <b>create</b> (...........) &nbsp;/&nbsp; <b>creation</b> (...........) &nbsp;/&nbsp; <b>creative</b> (...........) &nbsp;/&nbsp; <b>creatively</b> (...........)</div>
+        <div style="height:125px;"></div>
       </div>
     `
   },
@@ -2827,52 +2814,53 @@ const SLIDES = [
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title"><span class="slide-num-circle">★</span> กลยุทธ์วิเคราะห์ "ตำแหน่งคำในประโยค" (Sentence Slots)</div>
-        <span class="slide-subtitle-badge">พื้นฐานก่อนลุยข้อสอบ</span>
+        <span class="slide-subtitle-badge">พื้นฐานสำคัญก่อนลุยข้อสอบ</span>
       </div>
       <div class="sb-card" style="margin-bottom:24px;">
-        <div class="sb-card-title" style="color:var(--accent-yellow);">แผนภาพตำแหน่งทองคำ — ระบุ Part of Speech ใต้คำแต่ละคำบนกระดาน</div>
-        <svg viewBox="0 0 1080 240" style="width:100%; height:235px; display:block;">
-          <rect x="20" y="25" width="1040" height="80" rx="14" fill="rgba(15,23,42,0.55)" stroke="#6366f1" stroke-width="2"/>
-          <text x="55" y="74" fill="#facc15" font-size="25" font-weight="bold">The</text>
-          <text x="145" y="74" fill="#f472b6" font-size="25" font-weight="bold">very</text>
-          <text x="240" y="74" fill="#38bdf8" font-size="25" font-weight="bold">smart</text>
-          <text x="355" y="74" fill="#4ade80" font-size="25" font-weight="bold">student</text>
-          <text x="495" y="74" fill="#fb923c" font-size="25" font-weight="bold">answered</text>
-          <text x="655" y="74" fill="#f472b6" font-size="25" font-weight="bold">accurately</text>
-          <text x="820" y="74" fill="#c084fc" font-size="25" font-weight="bold">in</text>
-          <text x="875" y="74" fill="#4ade80" font-size="25" font-weight="bold">class.</text>
+        <div class="sb-card-title" style="color:var(--accent-yellow);">แผนภาพตำแหน่งทองคำ — เขียนระบุชนิดคำลงในกล่องใต้คำแต่ละคำ</div>
+        <svg viewBox="0 0 1080 265" style="width:100%; height:260px; display:block;">
+          <rect x="18" y="20" width="1044" height="82" rx="14" fill="var(--card-bg)" stroke="#6366f1" stroke-width="2.2"/>
+          <text x="64"  y="70" fill="var(--accent-yellow)" font-size="24" font-weight="bold" text-anchor="middle">The</text>
+          <text x="172" y="70" fill="var(--accent-pink)"   font-size="24" font-weight="bold" text-anchor="middle">very</text>
+          <text x="292" y="70" fill="var(--accent-cyan)"   font-size="24" font-weight="bold" text-anchor="middle">smart</text>
+          <text x="425" y="70" fill="var(--accent-green)"  font-size="24" font-weight="bold" text-anchor="middle">student</text>
+          <text x="582" y="70" fill="var(--accent-orange)" font-size="24" font-weight="bold" text-anchor="middle">answered</text>
+          <text x="748" y="70" fill="var(--accent-pink)"   font-size="24" font-weight="bold" text-anchor="middle">accurately</text>
+          <text x="890" y="70" fill="var(--accent-purple)" font-size="24" font-weight="bold" text-anchor="middle">in</text>
+          <text x="990" y="70" fill="var(--accent-green)"  font-size="24" font-weight="bold" text-anchor="middle">class.</text>
 
-          <line x1="75" y1="105" x2="75" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
-          <line x1="170" y1="105" x2="170" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
-          <line x1="275" y1="105" x2="275" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
-          <line x1="400" y1="105" x2="400" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
-          <line x1="555" y1="105" x2="555" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
-          <line x1="720" y1="105" x2="720" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
-          <line x1="830" y1="105" x2="830" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
-          <line x1="910" y1="105" x2="910" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="64"  y1="102" x2="64"  y2="148" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="172" y1="102" x2="172" y2="148" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="292" y1="102" x2="292" y2="148" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="425" y1="102" x2="425" y2="148" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="582" y1="102" x2="582" y2="148" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="748" y1="102" x2="748" y2="148" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="890" y1="102" x2="890" y2="148" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="990" y1="102" x2="990" y2="148" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4,4"/>
 
-          <text x="45" y="185" fill="#94a3b8" font-size="16">(.............)</text>
-          <text x="135" y="185" fill="#94a3b8" font-size="16">(.............)</text>
-          <text x="240" y="185" fill="#94a3b8" font-size="16">(.............)</text>
-          <text x="365" y="185" fill="#94a3b8" font-size="16">(.............)</text>
-          <text x="515" y="185" fill="#94a3b8" font-size="16">(.............)</text>
-          <text x="680" y="185" fill="#94a3b8" font-size="16">(.............)</text>
-          <text x="800" y="185" fill="#94a3b8" font-size="16">(........)</text>
-          <text x="885" y="185" fill="#94a3b8" font-size="16">(........)</text>
+          <rect x="20"  y="150" width="88"  height="84" rx="10" fill="none" stroke="var(--text-muted)" stroke-dasharray="5,4"/>
+          <rect x="122" y="150" width="100" height="84" rx="10" fill="none" stroke="var(--text-muted)" stroke-dasharray="5,4"/>
+          <rect x="236" y="150" width="112" height="84" rx="10" fill="none" stroke="var(--text-muted)" stroke-dasharray="5,4"/>
+          <rect x="364" y="150" width="124" height="84" rx="10" fill="none" stroke="var(--text-muted)" stroke-dasharray="5,4"/>
+          <rect x="506" y="150" width="148" height="84" rx="10" fill="none" stroke="var(--text-muted)" stroke-dasharray="5,4"/>
+          <rect x="670" y="150" width="156" height="84" rx="10" fill="none" stroke="var(--text-muted)" stroke-dasharray="5,4"/>
+          <rect x="842" y="150" width="96"  height="84" rx="10" fill="none" stroke="var(--text-muted)" stroke-dasharray="5,4"/>
+          <rect x="948" y="150" width="98"  height="84" rx="10" fill="none" stroke="var(--text-muted)" stroke-dasharray="5,4"/>
         </svg>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:240px;">
+        <div class="sb-card" style="min-height:280px;">
           <div class="sb-card-title" style="color:var(--accent-green);">ขั้นตอนทำข้อสอบ Word Family (ไม่ต้องแปลก็ตอบได้)</div>
-          <div class="sb-branch-list" style="gap:24px;">
-            <div class="sb-branch-item">ขั้นที่ 1 : ดูตัวเลือก — รากศัพท์เดียวกัน ต่างแค่ ...............</div>
-            <div class="sb-branch-item">ขั้นที่ 2 : ดูหน้า & หลังช่องว่างเพื่อหา ...............</div>
-            <div class="sb-branch-item">ขั้นที่ 3 : เช็กเอกพจน์ / พหูพจน์ / ความหมาย</div>
+          <div class="sb-branch-list" style="gap:30px;">
+            <div class="sb-branch-item">ขั้นที่ 1 : ดูตัวเลือก — รากศัพท์เดียวกัน ต่างแค่ ...................</div>
+            <div class="sb-branch-item">ขั้นที่ 2 : ดูหน้า & หลังช่องว่าง เพื่อเช็ก .........................</div>
+            <div class="sb-branch-item">ขั้นที่ 3 : เช็กเอกพจน์ / พหูพจน์ / Compound Noun / ความหมาย</div>
           </div>
         </div>
-        <div class="sb-card" style="min-height:240px;">
+        <div class="sb-card" style="min-height:280px;">
           <div class="sb-card-title" style="color:var(--accent-orange);">✏️ ลองวิเคราะห์สด: She is an _________ (efficient) worker.</div>
-          <div style="height:165px;"></div>
+          <div style="font-size:17px; color:var(--text-muted); margin-bottom:10px;">1) หน้าช่องว่างมี 'an' / หลังมี Noun 'worker' ➔ ต้องการ ...............</div>
+          <div style="height:155px;"></div>
         </div>
       </div>
     `
@@ -2884,34 +2872,37 @@ const SLIDES = [
   {
     id: 't1-1',
     group: '1. Noun (คำนาม)',
-    title: '1.1 ประเภทของ Noun & Countable vs Uncountable',
+    title: '1.1 ประเภทของ Noun & นามนับได้-นับไม่ได้',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title"><span class="slide-num-circle">1</span> Noun (คำนาม) & การแบ่งประเภท</div>
         <span class="slide-subtitle-badge">เรื่องที่ 1 · Noun</span>
       </div>
-      <div class="sb-card" style="margin-bottom:24px;">
-        <div class="sb-card-title" style="color:var(--accent-yellow);">1) ประเภทหลักของคำนามตามหน้าที่ (จดตัวอย่างบนกระดาน)</div>
+      <div class="sb-card" style="margin-bottom:22px;">
+        <div class="sb-card-title" style="color:var(--accent-yellow);">1) ประเภทหลักของคำนาม (พานักเรียนเติมจุดสังเกตและตัวอย่าง)</div>
         <table class="sb-table">
-          <tr><th style="width:22%;">ประเภท</th><th style="width:38%;">ความหมาย / จุดสังเกต</th><th>ตัวอย่างคำ (เติมเพิ่มตอนสอน)</th></tr>
-          <tr><td><b>Common vs Proper</b></td><td>นามทั่วไป vs ชื่อเฉพาะ (ขึ้นต้น ..........)</td><td style="height:68px;">city / ...................</td></tr>
-          <tr><td><b>Concrete vs Abstract</b></td><td>จับต้องได้ vs นามธรรม (ความรู้สึก/แนวคิด)</td><td style="height:68px;">table / ...................</td></tr>
-          <tr><td><b>Collective Noun</b></td><td>นามกลุ่มก้อน (team, committee, staff)</td><td style="height:68px;">การใช้ V. เอก/พหูพจน์: ......................</td></tr>
+          <tr><th style="width:23%;">ประเภท</th><th style="width:37%;">ความหมาย / จุดสังเกต</th><th>ตัวอย่างคำ + หลักการใช้ (จดเพิ่ม)</th></tr>
+          <tr><td><b>Common vs Proper</b></td><td>นามทั่วไป vs ชื่อเฉพาะ (ขึ้นต้น ..........)</td><td style="height:76px;">city / ....................</td></tr>
+          <tr><td><b>Concrete vs Abstract</b></td><td>จับต้องได้ vs นามธรรม (ความรู้สึก/แนวคิด)</td><td style="height:76px;">table / ....................</td></tr>
+          <tr><td><b>Collective Noun</b></td><td>นามกลุ่มก้อน (team, staff, committee)</td><td style="height:76px;">รวมเป็น 1 ทีม (V......) / แยกคน (V......)</td></tr>
         </table>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:280px;">
-          <div class="sb-card-title" style="color:var(--accent-green);">2) Countable Noun (นามนับได้)</div>
-          <div style="font-size:18px; color:var(--text-muted); margin-bottom:12px;">• มีรูปเอกพจน์ (ใช้กับ a / an) และ พหูพจน์ (เติม ........)</div>
-          <div style="font-size:18px; color:var(--text-muted);">• รูปพหูพจน์เปลี่ยนรูป (Irregular Plural) :</div>
-          <div style="height:145px;"></div>
+        <div class="sb-card" style="min-height:330px;">
+          <div class="sb-card-title" style="color:var(--accent-green);">2) Countable Noun & รูปพหูพจน์เปลี่ยนรูป (Irregular)</div>
+          <div style="font-size:18px; color:var(--text-muted); margin-bottom:14px;">• มีรูปเอกพจน์ (ใช้กับ a / an) และพหูพจน์ (เติม ........)</div>
+          <div style="font-size:18px; line-height:2.2;">
+            man → .......... &nbsp;|&nbsp; child → .......... &nbsp;|&nbsp; person → ..........<br>
+            foot → .......... &nbsp;|&nbsp; criterion → .......... &nbsp;|&nbsp; analysis → ..........
+          </div>
+          <div style="height:75px;"></div>
         </div>
-        <div class="sb-card" style="min-height:280px;">
-          <div class="sb-card-title" style="color:var(--accent-pink);">3) Uncountable Noun (นามนับไม่ได้ — ข้อสอบชอบออก!)</div>
-          <div style="font-size:18px; color:var(--text-muted); margin-bottom:10px;"><b>กฎเหล็ก:</b> ห้ามเติม a/an, ห้ามเติม -s, ใช้กับ V.................. เสมอ</div>
-          <div style="font-size:17px; color:var(--accent-yellow);">information, advice, furniture, luggage, equipment, knowledge, weather, work, ...</div>
-          <div style="height:120px;"></div>
+        <div class="sb-card" style="min-height:330px;">
+          <div class="sb-card-title" style="color:var(--accent-pink);">3) Uncountable Noun (นามนับไม่ได้ — ข้อสอบออกบ่อย!)</div>
+          <div style="font-size:18px; color:var(--text-muted); margin-bottom:10px;"><b>กฎเหล็ก:</b> ห้ามใช้ a/an, ห้ามเติม -s, ใช้กับ V.................. เสมอ</div>
+          <div style="font-size:17px; color:var(--accent-yellow); margin-bottom:10px;">information, advice, furniture, luggage, equipment, knowledge, traffic, news, research</div>
+          <div style="height:125px;"></div>
         </div>
       </div>
     `
@@ -2919,38 +2910,49 @@ const SLIDES = [
   {
     id: 't1-2',
     group: '1. Noun (คำนาม)',
-    title: '1.2 คำนำหน้านาม (Determiners & Quantifiers)',
+    title: '1.2 Determiners, Articles (a/an/the) & Compound Noun',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">1</span> Determiners & Quantifiers คู่คำนาม</div>
+        <div class="slide-main-title"><span class="slide-num-circle">1</span> Determiners, Articles & Compound Nouns</div>
         <span class="slide-subtitle-badge">เรื่องที่ 1 · Noun</span>
       </div>
       <table class="sb-table">
         <thead>
-          <tr><th style="width:28%;">กลุ่มคำบอกปริมาณ</th><th style="width:36%;">ตามด้วย Noun ชนิดใด?</th><th>คำออกสอบและจุดหลอกที่ต้องเติม</th></tr>
+          <tr><th style="width:28%;">กลุ่มคำบอกปริมาณ</th><th style="width:32%;">ใช้กับ Noun ชนิดใด?</th><th>ความหมายต่างกัน & สูตร S-V Agreement</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td class="row-label">many, few, a few,<br>several, both, various</td>
-            <td style="height:120px;"></td>
-            <td style="font-size:18px;">• ความหมายต่างกัน: <b>few</b> (.........) vs <b>a few</b> (.........)<br>• <b>a number of</b> + N.พหู + V........</td>
+            <td class="row-label">many, few, a few,<br>several, both</td>
+            <td style="height:115px;"></td>
+            <td style="font-size:18px;">• <b>few</b> (.........) vs <b>a few</b> (.........)<br>• <b>a number of</b> + N.พหู + V........</td>
           </tr>
           <tr>
-            <td class="row-label">much, little, a little,<br>a great deal of, an amount of</td>
-            <td style="height:120px;"></td>
-            <td style="font-size:18px;">• ความหมายต่างกัน: <b>little</b> (.........) vs <b>a little</b> (.........)<br>• ตัวอย่าง: ............................</td>
+            <td class="row-label">much, little, a little,<br>an amount of</td>
+            <td style="height:115px;"></td>
+            <td style="font-size:18px;">• <b>little</b> (.........) vs <b>a little</b> (.........)<br>• ตัวอย่าง: ............................</td>
           </tr>
           <tr>
-            <td class="row-label">some, any, a lot of,<br>lots of, plenty of, most</td>
+            <td class="row-label">some, any, a lot of,<br>plenty of, most</td>
             <td style="height:110px;"></td>
-            <td style="font-size:18px;">• ผัน Verb ตาม .........................<br>• <b>the number of</b> + N.พหู + V........</td>
+            <td style="font-size:18px;">• ผัน V. ตาม ....................<br>• <b>the number of</b> + N.พหู + V........</td>
           </tr>
         </tbody>
       </table>
-      <div class="sb-card" style="min-height:170px;">
-        <div class="sb-card-title" style="color:var(--accent-cyan);">✏️ สรุปการใช้ a / an / the และคำนามผสม (Compound Noun)</div>
-        <div style="height:95px;"></div>
+      <div class="sb-grid-2">
+        <div class="sb-card" style="min-height:210px;">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">a / an (ไม่ชี้เฉพาะ) vs the (ชี้เฉพาะ)</div>
+          <div style="font-size:18px; line-height:2.0;">
+            • เสียงสระ (an <b>h</b>our, a <b>u</b>niversity) ➔ ..........................<br>
+            • เฉพาะเจาะจง / มีหนึ่งเดียว / ลำดับที่ ➔ ใช้ ...........
+          </div>
+          <div style="height:60px;"></div>
+        </div>
+        <div class="sb-card" style="min-height:210px;">
+          <div class="sb-card-title" style="color:var(--accent-orange);">⚠️ Compound Noun (คำนามประสม Noun + Noun)</div>
+          <div style="font-size:18px; line-height:1.8;">นามตัวหน้าทำหน้าที่ขยายตัวหลัง (มักไม่เติม s!)<br>เช่น <b>customer</b> ............ / <b>marketing</b> ............ / <b>safety</b> rules</div>
+          <div style="height:65px;"></div>
+        </div>
       </div>
     `
   },
@@ -2965,25 +2967,26 @@ const SLIDES = [
         <span class="slide-subtitle-badge">ออกสอบ TOEIC / A-Level บ่อยมาก</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:520px;">
+        <div class="sb-card" style="min-height:580px;">
           <div class="sb-card-title" style="color:var(--accent-green);">5 ตำแหน่งที่บังคับเติม "Noun"</div>
-          <div class="sb-branch-list" style="gap:28px;">
-            <div class="sb-branch-item">1. <b>หน้า Verb แท้ (Subject)</b> :<br><span class="sb-blank-line"></span> helps the team grow.</div>
-            <div class="sb-branch-item">2. <b>หลัง Vt. (Object)</b> :<br>We need <span class="sb-blank-line"></span> right away.</div>
-            <div class="sb-branch-item">3. <b>หลัง Determiner (a / an / the / my)</b> :<br>The <span class="sb-blank-line"></span> of the event...</div>
-            <div class="sb-branch-item">4. <b>หลัง Adjective</b> :<br>a significant <span class="sb-blank-line"></span></div>
-            <div class="sb-branch-item">5. <b>หลัง Preposition (in, on, of, for)</b> :<br>without <span class="sb-blank-line"></span></div>
+          <div class="sb-branch-list" style="gap:34px; margin-top:18px;">
+            <div class="sb-branch-item">1. <b>หน้า Verb แท้ (Subject)</b> :<br><div style="height:36px; border-bottom:1.5px dotted rgba(148,163,184,0.5); margin-top:6px;"></div> helps the team grow.</div>
+            <div class="sb-branch-item">2. <b>หลัง Vt. (Object)</b> :<br>We need <div style="height:36px; border-bottom:1.5px dotted rgba(148,163,184,0.5); margin-top:6px;"></div> right away.</div>
+            <div class="sb-branch-item">3. <b>หลัง Determiner (a / the / my / our)</b> :<br>The <div style="height:36px; border-bottom:1.5px dotted rgba(148,163,184,0.5); margin-top:6px;"></div> of the event...</div>
+            <div class="sb-branch-item">4. <b>หลัง Adjective</b> : a significant .........................</div>
+            <div class="sb-branch-item">5. <b>หลัง Preposition (in, on, of, for)</b> : without ....................</div>
           </div>
         </div>
-        <div class="sb-card" style="min-height:520px;">
-          <div class="sb-card-title" style="color:var(--accent-cyan);">ตาราง Noun Suffixes — พานักเรียนเติมคำศัพท์</div>
+        <div class="sb-card" style="min-height:580px;">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">ตาราง Noun Suffixes — เติมคำศัพท์บนกระดาน</div>
           <table class="sb-table" style="margin-top:8px;">
-            <tr><th>Suffix</th><th>ความหมาย / ประเภท</th><th>ตัวอย่างคำ (จดเพิ่ม)</th></tr>
-            <tr><td><b>-tion / -sion</b></td><td>การ / ความ (สิ่งของ)</td><td style="height:58px;">decision, ..................</td></tr>
-            <tr><td><b>-ment / -ness</b></td><td>การ / สภาพ (สิ่งของ)</td><td style="height:58px;">agreement, .................</td></tr>
-            <tr><td><b>-ity / -ty</b></td><td>ความเป็น (สิ่งของ)</td><td style="height:58px;">quality, .....................</td></tr>
-            <tr><td><b>-ance / -ence</b></td><td>การ / ความ (สิ่งของ)</td><td style="height:58px;">confidence, ................</td></tr>
-            <tr><td><b>-er / -or / -ist / -ant</b></td><td><b>คน</b> / ผู้กระทำ</td><td style="height:58px;">applicant, .................</td></tr>
+            <tr><th>Suffix</th><th>ความหมาย/ประเภท</th><th>ตัวอย่างคำ (จดเพิ่ม)</th></tr>
+            <tr><td><b>-tion / -sion</b></td><td>การ / ความ (สิ่งของ)</td><td style="height:68px;">decision, ..................</td></tr>
+            <tr><td><b>-ment / -ness</b></td><td>การ / สภาพ (สิ่งของ)</td><td style="height:68px;">agreement, .................</td></tr>
+            <tr><td><b>-ity / -ty</b></td><td>ความเป็น (สิ่งของ)</td><td style="height:68px;">quality, .....................</td></tr>
+            <tr><td><b>-ance / -ence</b></td><td>การ / ความ (สิ่งของ)</td><td style="height:68px;">confidence, ................</td></tr>
+            <tr><td><b>-ship / -hood</b></td><td>สถานะ / ความสัมพันธ์</td><td style="height:68px;">leadership, .................</td></tr>
+            <tr><td><b>-er / -or / -ist / -ant</b></td><td><b>คน</b> / ผู้กระทำ</td><td style="height:68px;">applicant, .................</td></tr>
           </table>
         </div>
       </div>
@@ -3142,33 +3145,33 @@ const SLIDES = [
         <div class="slide-main-title"><span class="slide-num-circle">2</span> Pronoun (คำสรรพนามทั้ง 5 รูป)</div>
         <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
       </div>
-      <div class="sb-card" style="margin-bottom:22px;">
+      <div class="sb-card" style="margin-bottom:20px;">
         <div class="sb-card-title" style="color:var(--accent-yellow);">ตารางสรุปสรรพนาม — เติมช่องว่างให้ครบเพื่อใช้แยก Subject / Object / Possessive / Reflexive</div>
         <table class="sb-table" style="font-size:19px;">
           <tr>
-            <th>Subject<br><span style="font-size:14px;">(หน้า Verb)</span></th>
-            <th>Object<br><span style="font-size:14px;">(หลัง Verb / Prep)</span></th>
-            <th>Possessive Adj<br><span style="font-size:14px;">(ต้องตามด้วย Noun)</span></th>
-            <th>Possessive Pron<br><span style="font-size:14px;">(ไม่ต้องมี Noun)</span></th>
-            <th>Reflexive<br><span style="font-size:14px;">(ด้วยตัวเอง)</span></th>
+            <th>Subject<br><span style="font-size:13.5px;">(หน้า Verb)</span></th>
+            <th>Object<br><span style="font-size:13.5px;">(หลัง Verb / Prep)</span></th>
+            <th>Possessive Adj<br><span style="font-size:13.5px;">(ต้องตามด้วย Noun)</span></th>
+            <th>Possessive Pron<br><span style="font-size:13.5px;">(ไม่ต้องมี Noun)</span></th>
+            <th>Reflexive<br><span style="font-size:13.5px;">(ด้วยตัวเอง)</span></th>
           </tr>
-          <tr><td>I</td><td>me</td><td>........</td><td>mine</td><td>....................</td></tr>
-          <tr><td>You</td><td>........</td><td>your</td><td>............</td><td>yourself / yourselves</td></tr>
-          <tr><td>We</td><td>........</td><td>our</td><td>............</td><td>....................</td></tr>
-          <tr><td>They</td><td>them</td><td>........</td><td>theirs</td><td>....................</td></tr>
-          <tr><td>He</td><td>........</td><td>his</td><td>............</td><td>....................</td></tr>
-          <tr><td>She</td><td>her</td><td>........</td><td>hers</td><td>....................</td></tr>
-          <tr><td>It</td><td>........</td><td>........</td><td>(ไม่มี)</td><td>....................</td></tr>
+          <tr><td style="height:56px;">I</td><td>me</td><td></td><td>mine</td><td></td></tr>
+          <tr><td style="height:56px;">You</td><td></td><td>your</td><td></td><td>yourself / yourselves</td></tr>
+          <tr><td style="height:56px;">We</td><td></td><td>our</td><td></td><td></td></tr>
+          <tr><td style="height:56px;">They</td><td>them</td><td></td><td>theirs</td><td></td></tr>
+          <tr><td style="height:56px;">He</td><td></td><td>his</td><td></td><td></td></tr>
+          <tr><td style="height:56px;">She</td><td>her</td><td></td><td>hers</td><td></td></tr>
+          <tr><td style="height:56px;">It</td><td></td><td></td><td>(ไม่มีรูปนี้)</td><td></td></tr>
         </table>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:160px;">
-          <div class="sb-card-title" style="color:var(--accent-pink);">⚠️ กับดักที่ออกสอบทุกสนาม: its vs it's</div>
-          <div style="font-size:18px;">• <b>its</b> (ไม่มี ' ) = ............... เช่น ....................<br>• <b>it's</b> (มี ' ) = ................. เช่น ....................</div>
+        <div class="sb-card" style="min-height:175px;">
+          <div class="sb-card-title" style="color:var(--accent-pink);">⚠️ กับดัก: its vs it's & whose vs who's</div>
+          <div style="font-size:18px; line-height:1.9;">• <b>its</b> = ............... | <b>it's</b> = .....................<br>• รูป Possessive Pronoun <b>ห้ามเติม 's</b> เด็ดขาด!</div>
         </div>
-        <div class="sb-card" style="min-height:160px;">
-          <div class="sb-card-title" style="color:var(--accent-cyan);">✏️ ตัวอย่างการใช้ by + Reflexive Pronoun</div>
-          <div style="height:80px;"></div>
+        <div class="sb-card" style="min-height:175px;">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">✏️ การใช้ by + Reflexive vs การเน้นประธาน</div>
+          <div style="height:105px;"></div>
         </div>
       </div>
     `
@@ -3176,7 +3179,7 @@ const SLIDES = [
   {
     id: 't2-2',
     group: '2. Pronoun (คำสรรพนาม)',
-    title: '2.2 Indefinite Pronouns & เอกพจน์-พหูพจน์',
+    title: '2.2 Indefinite Pronouns & Reciprocal (each other / one another)',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
@@ -3184,25 +3187,26 @@ const SLIDES = [
         <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:460px;">
+        <div class="sb-card" style="min-height:510px;">
           <div class="sb-card-title" style="color:var(--accent-orange);">กลุ่มบังคับ "เอกพจน์เสมอ" (+ V.เอกพจน์)</div>
-          <div class="sb-branch-list" style="gap:24px;">
-            <div class="sb-branch-item">• ขึ้นต้นด้วย <b>every- / some- / any- / no-</b><br>ลงท้ายด้วย -one / -body / -thing → เสมอเป็น .............</div>
+          <div class="sb-branch-list" style="gap:28px;">
+            <div class="sb-branch-item">• ขึ้นต้นด้วย <b>every- / some- / any- / no-</b><br>ลงท้าย -one / -body / -thing → ใช้ V..............</div>
             <div class="sb-branch-item">• <b>each / every + Noun เอกพจน์</b> → ใช้ V..............</div>
             <div class="sb-branch-item">• <b>each / either / neither + of + N.พหูพจน์</b> → ประธานหลักคือตัวข้างหน้า จึงใช้ V..............</div>
           </div>
-          <div style="margin-top:20px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:110px;">
-            <span style="color:var(--text-muted); font-size:16px;">✏️ จดตัวอย่างข้อสอบ: Neither of the plans (is / are) ready yet.</span>
+          <div style="margin-top:22px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:14px; min-height:125px;">
+            <span style="color:var(--text-muted); font-size:16px;">✏️ จดเติม: Neither of the proposals (is / are) ready. | Everyone (has / have) arrived.</span>
           </div>
         </div>
-        <div class="sb-card" style="min-height:460px;">
-          <div class="sb-card-title" style="color:var(--accent-green);">กลุ่มพหูพจน์ vs ผันตามคำหลัง "of" (SANAM)</div>
+        <div class="sb-card" style="min-height:510px;">
+          <div class="sb-card-title" style="color:var(--accent-green);">พหูพจน์ vs SANAM vs Reciprocal Pronouns</div>
           <div class="sb-branch-list" style="gap:24px;">
-            <div class="sb-branch-item">• <b>พหูพจน์เสมอ</b> : both, few, many, several, others → V..............</div>
-            <div class="sb-branch-item">• <b>ผันตามนามหลัง of (SANAM)</b> : Some / Any / None / All / Most + of + ....... → ............</div>
+            <div class="sb-branch-item">• <b>พหูพจน์เสมอ</b> : both, few, many, several → V..............</div>
+            <div class="sb-branch-item">• <b>SANAM + of + Noun</b> (Some / Any / None / All / Most) → ผัน V. ตาม .................</div>
+            <div class="sb-branch-item">• <b>each other</b> (..... คน) vs <b>one another</b> (..... คนขึ้นไป)</div>
           </div>
-          <div style="margin-top:24px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:185px;">
-            <span style="color:var(--text-muted); font-size:16px;">✏️ พื้นที่จดเติมเปรียบเทียบ: All of the water (is / are) / All of the books (is / are)</span>
+          <div style="margin-top:22px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:14px; min-height:130px;">
+            <span style="color:var(--text-muted); font-size:16px;">✏️ จดเทียบ: All of the data (was/were) saved. / Both of them (is/are) engineers.</span>
           </div>
         </div>
       </div>
@@ -3211,27 +3215,27 @@ const SLIDES = [
   {
     id: 't2-3',
     group: '2. Pronoun (คำสรรพนาม)',
-    title: '2.3 Relative Pronouns (who / whom / whose / which / that)',
+    title: '2.3 Relative Pronouns (who / whom / whose / which / that / where)',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title"><span class="slide-num-circle">2</span> Relative Pronouns (คำสรรพนามเชื่อมประโยค)</div>
         <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
       </div>
-      <div class="sb-card" style="margin-bottom:22px;">
+      <div class="sb-card" style="margin-bottom:20px;">
         <div class="sb-card-title" style="color:var(--accent-cyan);">หลักการเลือก Relative Pronoun โดยดู "คำข้างหน้า" + "คำข้างหลัง"</div>
         <table class="sb-table" style="font-size:18px;">
-          <tr><th style="width:18%;">Relative Word</th><th style="width:24%;">ใช้แทนคำนามด้านหน้า</th><th style="width:28%;">สิ่งที่ตามหลังช่องว่าง</th><th>ตัวอย่างประโยค (เติมบนกระดาน)</th></tr>
-          <tr><td><b>who</b></td><td>คน</td><td>ตามด้วย ............. (ทำหน้าที่ประธาน)</td><td style="height:68px;">The woman ______ called...</td></tr>
-          <tr><td><b>whom</b></td><td>คน</td><td>ตามด้วย ............. (ทำหน้าที่กรรม)</td><td style="height:68px;">The client ______ we met...</td></tr>
-          <tr><td><b>whose</b></td><td>คน / สิ่งของ (แสดงความเป็น......)</td><td>ตามด้วย ............. ทันที!</td><td style="height:68px;">The artist ______ painting...</td></tr>
-          <tr><td><b>which / that</b></td><td>สิ่งของ / สัตว์ (that ใช้คนได้)</td><td>ได้ทั้ง Verb หรือ S + V</td><td style="height:68px;">*ห้ามใช้ that หลังจุลภาค ( , )!</td></tr>
-          <tr><td><b>where / when</b></td><td>สถานที่ / เวลา</td><td>ต้องตามด้วยประโยคสมบูรณ์ (S+V+O)</td><td style="height:68px;">The hotel ______ we stayed...</td></tr>
+          <tr><th style="width:17%;">คำเชื่อม</th><th style="width:23%;">คำนามข้างหน้า</th><th style="width:28%;">สิ่งที่ตามหลังช่องว่าง</th><th>ตัวอย่าง (เติมคำตอบบนกระดาน)</th></tr>
+          <tr><td><b>who</b></td><td>คน</td><td>ตามด้วย ............. (ประธาน)</td><td style="height:68px;">The woman ______ called...</td></tr>
+          <tr><td><b>whom</b></td><td>คน</td><td>ตามด้วย ............. (กรรม)</td><td style="height:68px;">The client ______ we met...</td></tr>
+          <tr><td><b>whose</b></td><td>คน / สิ่งของ (ของ...)</td><td>ตามด้วย ............. ทันที!</td><td style="height:68px;">The artist ______ painting...</td></tr>
+          <tr><td><b>which / that</b></td><td>สิ่งของ / สัตว์</td><td>Verb หรือ S + V (ขาด S/O)</td><td style="height:68px;">*ห้ามใช้ that หลังเครื่องหมาย ......</td></tr>
+          <tr><td><b>where / when</b></td><td>สถานที่ / เวลา</td><td>ต้องตามด้วย ............. ครบ!</td><td style="height:68px;">The hotel ______ we stayed...</td></tr>
         </table>
       </div>
-      <div class="sb-card" style="min-height:150px;">
-        <div class="sb-card-title" style="color:var(--accent-yellow);">✏️ ข้อควรระวัง: The office [which / where] I visited vs [which / where] I work</div>
-        <div style="height:75px;"></div>
+      <div class="sb-card" style="min-height:175px;">
+        <div class="sb-card-title" style="color:var(--accent-yellow);">✏️ ข้อควรระวัง: The office [which / where] we visited vs The office [which / where] we work</div>
+        <div style="height:95px;"></div>
       </div>
     `
   },
@@ -3389,28 +3393,29 @@ const SLIDES = [
         <span class="slide-subtitle-badge">เรื่องที่ 3 · Verb</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:530px;">
+        <div class="sb-card" style="min-height:550px;">
           <div class="sb-card-title" style="color:var(--accent-green);">1) Action Verb (กริยาแสดงการกระทำ)</div>
-          <div class="sb-branch-list" style="gap:24px;">
-            <div class="sb-branch-item">• <b>Transitive (Vt.)</b> = กริยา ............. กรรม เช่น discuss, mention, raise, attend → ..................</div>
-            <div class="sb-branch-item">• <b>Intransitive (Vi.)</b> = กริยา ............. กรรม เช่น arrive, happen, rise, exist → ..................</div>
+          <div class="sb-branch-list" style="gap:26px;">
+            <div class="sb-branch-item">• <b>Transitive (Vt.)</b> = กริยา ............. กรรม<br>เช่น discuss, mention, raise, attend → ..................</div>
+            <div class="sb-branch-item">• <b>Intransitive (Vi.)</b> = กริยา ............. กรรม<br>เช่น arrive, happen, rise, exist → ..................</div>
           </div>
-          <div class="sb-card-title" style="color:var(--accent-yellow); margin-top:26px;">2) Helping & Modal Verbs (กริยาช่วย)</div>
+          <div class="sb-card-title" style="color:var(--accent-yellow); margin-top:28px;">2) Helping & Modal Verbs (กริยาช่วย)</div>
           <div class="sb-branch-list" style="gap:18px;">
             <div class="sb-branch-item">• will / would / can / could / may / might / should / must</div>
             <div class="sb-branch-item"><b>กฎเหล็ก:</b> Modal Verb + .................... เสมอ!</div>
           </div>
         </div>
-        <div class="sb-card" style="min-height:530px;">
-          <div class="sb-card-title" style="color:var(--accent-pink);">3) Linking Verb (กริยาเชื่อม — ออกสอบบ่อยที่สุด!)</div>
-          <div style="font-size:19px; color:var(--accent-yellow); margin-bottom:14px;">กฎ: Linking Verb + .......................... (ห้ามตามด้วย Adverb -ly!)</div>
-          <div class="sb-branch-list" style="gap:20px;">
+        <div class="sb-card" style="min-height:550px;">
+          <div class="sb-card-title" style="color:var(--accent-pink);">3) Linking Verb (กริยาเชื่อม) & Pattern พิเศษ</div>
+          <div style="font-size:19px; color:var(--accent-yellow); margin-bottom:14px;">กฎ: Linking Verb + .......................... (ห้าม Adverb!)</div>
+          <div class="sb-branch-list" style="gap:18px;">
             <div class="sb-branch-item">• <b>V. to be</b> (is, am, are, was, were, be, been)</div>
             <div class="sb-branch-item">• <b>ประสาทสัมผัส</b> : look, sound, smell, taste, feel</div>
-            <div class="sb-branch-item">• <b>เปลี่ยนสภาพ/คงสภาพ</b> : become, seem, appear, remain, stay, grow, turn, prove</div>
+            <div class="sb-branch-item">• <b>เปลี่ยน/คงสภาพ</b> : become, seem, appear, remain, stay, grow, turn, prove</div>
+            <div class="sb-branch-item">• <b>กริยา + O + Adj</b> : make / keep / find + O + ..........</div>
           </div>
-          <div style="margin-top:22px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:14px; min-height:135px;">
-            <span style="color:var(--text-muted); font-size:16px;">✏️ จดเติม: The team remained (calm / calmly). | The soup smells (good / well).</span>
+          <div style="margin-top:20px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:110px;">
+            <span style="color:var(--text-muted); font-size:16px;">✏️ จดเติม: The team remained (calm / calmly). | make the job (easy / easily).</span>
           </div>
         </div>
       </div>
@@ -3419,32 +3424,33 @@ const SLIDES = [
   {
     id: 't3-2',
     group: '3. Verb (คำกริยา)',
-    title: '3.2 กริยาแท้ vs กริยาไม่แท้ & Verb Suffixes',
+    title: '3.2 กริยาแท้ vs กริยาไม่แท้ & Verb Suffixes/Prefixes',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">3</span> Finite vs Non-Finite Verb & Verb Suffixes</div>
+        <div class="slide-main-title"><span class="slide-num-circle">3</span> Finite vs Non-Finite Verb & Verb Formation</div>
         <span class="slide-subtitle-badge">แยกให้ออก ประโยคนี้ขาดกริยาแท้หรือยัง?</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:460px;">
+        <div class="sb-card" style="min-height:500px;">
           <div class="sb-card-title" style="color:var(--accent-orange);">กริยาแท้ (Finite) vs กริยาไม่แท้ (Non-Finite)</div>
-          <div class="sb-branch-list" style="gap:22px;">
-            <div class="sb-branch-item">• 1 ประโยคหลัก ต้องมีกริยาแท้อย่างน้อย ...... ตัว (ผันตาม Tense และประธาน)</div>
+          <div class="sb-branch-list" style="gap:24px;">
+            <div class="sb-branch-item">• 1 ประโยคหลัก ต้องมีกริยาแท้อย่างน้อย ...... ตัว (ผันตาม Tense & Subject)</div>
             <div class="sb-branch-item">• <b>3 รูปที่ไม่ใช่กริยาแท้</b> (ห้ามใช้เป็นกริยาหลักเดี่ยวๆ!) :<br>1) .................... &nbsp; 2) .................... &nbsp; 3) ....................</div>
           </div>
-          <div style="margin-top:20px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:175px;">
-            <span style="color:var(--text-muted); font-size:16px;">✏️ ทดสอบ: The man standing over there (be) my boss.</span>
+          <div style="margin-top:22px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:14px; min-height:185px;">
+            <span style="color:var(--text-muted); font-size:16px;">✏️ วิเคราะห์สด: The man <u>standing</u> near the door (is / being) our director.</span>
           </div>
         </div>
-        <div class="sb-card" style="min-height:460px;">
-          <div class="sb-card-title" style="color:var(--accent-cyan);">ตาราง Verb Suffixes — เห็นหางคำรู้ทันทีว่าเป็น Verb</div>
+        <div class="sb-card" style="min-height:500px;">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">ตาราง Verb Affixes — เห็นปุ๊บรู้ทันทีว่าเป็น Verb</div>
           <table class="sb-table" style="margin-top:10px;">
-            <tr><th>Suffix</th><th>ความหมาย</th><th>ตัวอย่างคำ (จดเพิ่มบนกระดาน)</th></tr>
-            <tr><td><b>-ize / -ise</b></td><td>ทำให้เป็น...</td><td style="height:75px;">finalize, organize, ...................</td></tr>
-            <tr><td><b>-ify</b></td><td>ทำให้กลายเป็น...</td><td style="height:75px;">clarify, simplify, ....................</td></tr>
-            <tr><td><b>-ate</b></td><td>กระทำ / สร้าง</td><td style="height:75px;">motivate, evaluate, .................</td></tr>
-            <tr><td><b>-en</b></td><td>ทำให้...ขึ้น</td><td style="height:75px;">strengthen, shorten, ................</td></tr>
+            <tr><th>Prefix / Suffix</th><th>ความหมาย</th><th>ตัวอย่างคำ (จดเพิ่ม)</th></tr>
+            <tr><td><b>-ize / -ise</b></td><td>ทำให้เป็น...</td><td style="height:68px;">finalize, organize, ...............</td></tr>
+            <tr><td><b>-ify</b></td><td>ทำให้กลายเป็น...</td><td style="height:68px;">clarify, simplify, .................</td></tr>
+            <tr><td><b>-ate</b></td><td>กระทำ / สร้าง</td><td style="height:68px;">motivate, evaluate, ..............</td></tr>
+            <tr><td><b>-en</b></td><td>ทำให้...ขึ้น</td><td style="height:68px;">strengthen, shorten, .............</td></tr>
+            <tr><td><b>en- / em-</b> (นำหน้า)</td><td>ทำให้เข้าสู่สภาพ...</td><td style="height:68px;">enable, encourage, ..............</td></tr>
           </table>
         </div>
       </div>
@@ -3460,15 +3466,15 @@ const SLIDES = [
         <div class="slide-main-title"><span class="slide-num-circle">3</span> Confusing Verbs ที่ข้อสอบชอบเอามาหลอก!</div>
         <span class="slide-subtitle-badge">เรื่องที่ 3 · Verb</span>
       </div>
-      <div class="sb-card" style="margin-bottom:24px;">
+      <div class="sb-card" style="margin-bottom:22px;">
         <div class="sb-card-title" style="color:var(--accent-yellow);">ตารางฝึกผัน V1 - V2 - V3 และความต้องการกรรม (Vt. vs Vi.)</div>
         <table class="sb-table" style="font-size:19px;">
           <tr><th>กริยา V1</th><th>V2 (อดีต)</th><th>V3 (Past Participle)</th><th>ต้องการกรรม?</th><th>ความหมาย (จดบนกระดาน)</th></tr>
-          <tr><td><b>rise</b></td><td style="height:74px;"></td><td></td><td>Vi. (ไม่เอากรรม)</td><td></td></tr>
-          <tr><td><b>raise</b></td><td style="height:74px;"></td><td></td><td>Vt. (ต้องมีกรรม)</td><td></td></tr>
-          <tr><td><b>lie</b> (นอน/อยู่)</td><td style="height:74px;"></td><td></td><td>Vi. (ไม่เอากรรม)</td><td></td></tr>
-          <tr><td><b>lay</b> (วางสิ่งของ)</td><td style="height:74px;"></td><td></td><td>Vt. (ต้องมีกรรม)</td><td></td></tr>
-          <tr><td><b>sit / set</b></td><td style="height:74px;"></td><td></td><td>Vi. vs Vt.</td><td></td></tr>
+          <tr><td><b>rise</b></td><td style="height:76px;"></td><td></td><td>Vi. (ไม่เอากรรม)</td><td></td></tr>
+          <tr><td><b>raise</b></td><td style="height:76px;"></td><td></td><td>Vt. (ต้องมีกรรม)</td><td></td></tr>
+          <tr><td><b>lie</b> (นอน/ตั้งอยู่)</td><td style="height:76px;"></td><td></td><td>Vi. (ไม่เอากรรม)</td><td></td></tr>
+          <tr><td><b>lay</b> (วางสิ่งของ)</td><td style="height:76px;"></td><td></td><td>Vt. (ต้องมีกรรม)</td><td></td></tr>
+          <tr><td><b>find / found</b></td><td style="height:76px;"></td><td></td><td>Vt. (ต่างความหมาย)</td><td>find=พบ / found=.......</td></tr>
         </table>
       </div>
       <div class="sb-card" style="min-height:175px;">
@@ -3631,17 +3637,17 @@ const SLIDES = [
         <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:380px;">
+        <div class="sb-card" style="min-height:330px;">
           <div class="sb-card-title" style="color:var(--accent-yellow);">3 ตำแหน่งหลักที่เติม Adjective</div>
           <div class="sb-branch-list" style="gap:28px;">
-            <div class="sb-branch-item">1. <b>หน้าคำนาม</b> : an <span class="sb-blank-line"></span> plan</div>
-            <div class="sb-branch-item">2. <b>หลัง Linking Verb</b> : stays <span class="sb-blank-line"></span></div>
-            <div class="sb-branch-item">3. <b>หลัง -thing / -one / -body</b> : something <span class="sb-blank-line"></span></div>
+            <div class="sb-branch-item">1. <b>หน้าคำนาม</b> : an ......................... plan</div>
+            <div class="sb-branch-item">2. <b>หลัง Linking Verb</b> : stays .........................</div>
+            <div class="sb-branch-item">3. <b>หลัง -thing / -one / -body</b> : something ...............</div>
           </div>
         </div>
-        <div class="sb-card" style="min-height:380px;">
+        <div class="sb-card" style="min-height:330px;">
           <div class="sb-card-title" style="color:var(--accent-cyan);">Adjective Suffixes (จดคำศัพท์ตัวอย่าง)</div>
-          <div class="sb-branch-list" style="gap:18px;">
+          <div class="sb-branch-list" style="gap:20px;">
             <div class="sb-branch-item">• <b>-ful / -less</b> : useful / ....................</div>
             <div class="sb-branch-item">• <b>-ous / -ive</b> : famous / creative / ...................</div>
             <div class="sb-branch-item">• <b>-able / -ible</b> : reliable / ....................</div>
@@ -3649,12 +3655,15 @@ const SLIDES = [
           </div>
         </div>
       </div>
-      <div class="sb-card" style="min-height:220px;">
-        <div class="sb-card-title" style="color:var(--accent-pink);">ลำดับการเรียง Adjective หลายตัว (OSASCOMP) — เติมคำย่อแต่ละตัว</div>
-        <div style="font-size:24px; font-weight:700; letter-spacing:3px; color:var(--accent-yellow); margin:8px 0 18px 0;">
-          O &nbsp; → &nbsp; S &nbsp; → &nbsp; A &nbsp; → &nbsp; S &nbsp; → &nbsp; C &nbsp; → &nbsp; O &nbsp; → &nbsp; M &nbsp; → &nbsp; P &nbsp; (+ Noun)
-        </div>
-        <div style="height:105px;"></div>
+      <div class="sb-card">
+        <div class="sb-card-title" style="color:var(--accent-pink);">ลำดับการเรียง Adjective หลายตัว (OSASCOMP) — เติมคำแปล + ตัวอย่างในช่อง</div>
+        <table class="sb-table" style="text-align:center; font-size:17px;">
+          <tr><th>O</th><th>S</th><th>A</th><th>S</th><th>C</th><th>O</th><th>M</th><th>P (+ Noun)</th></tr>
+          <tr>
+            <td style="height:90px;">.......</td><td>.......</td><td>.......</td><td>.......</td>
+            <td>.......</td><td>.......</td><td>.......</td><td>.......</td>
+          </tr>
+        </table>
       </div>
     `
   },
@@ -3669,23 +3678,23 @@ const SLIDES = [
         <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:210px;">
+        <div class="sb-card" style="min-height:220px;">
           <div class="sb-card-title" style="color:var(--accent-green);">1) V-ing Adjective = "น่า..." (ผู้กระทำ/ต้นเหตุ)</div>
-          <div style="font-size:18px; color:var(--text-muted);">ใช้บอกลักษณะของคน/สิ่งของที่เป็นตัวก่อความรู้สึกนั้น<br>เช่น an <b>interesting</b> report / ......................</div>
+          <div style="font-size:18px; color:var(--text-muted); line-height:1.8;">ใช้บอกลักษณะของคน/สิ่งของที่เป็นตัวก่อความรู้สึกนั้น<br>เช่น an <b>interesting</b> report / .........................</div>
         </div>
-        <div class="sb-card" style="min-height:210px;">
+        <div class="sb-card" style="min-height:220px;">
           <div class="sb-card-title" style="color:var(--accent-pink);">2) V-ed Adjective = "รู้สึก..." (ผู้ได้รับผล)</div>
-          <div style="font-size:18px; color:var(--text-muted);">มักใช้วางหลัง be/feel หรือหน้าคำนามที่ถูกกระทำ<br>เช่น feels <b>interested</b> / a <b>damaged</b> car / ................</div>
+          <div style="font-size:18px; color:var(--text-muted); line-height:1.8;">มักใช้วางหลัง be/feel หรือหน้าคำนามที่ถูกกระทำ<br>เช่น feels <b>interested</b> / a <b>damaged</b> car / .................</div>
         </div>
       </div>
       <div class="sb-card">
         <div class="sb-card-title" style="color:var(--accent-yellow);">ตารางฝึกแยกคู่ V-ing / V-ed พร้อม Preposition ที่ใช้คู่กัน</div>
         <table class="sb-table" style="font-size:18px;">
           <tr><th>กริยาต้นแบบ</th><th>V-ing (น่า...)</th><th>V-ed (รู้สึก...) + Preposition คู่กัน</th><th>ตัวอย่างประโยค (จดเพิ่ม)</th></tr>
-          <tr><td><b>interest</b></td><td>interesting</td><td>interested + ..........</td><td style="height:56px;"></td></tr>
-          <tr><td><b>satisfy</b></td><td>satisfying</td><td>satisfied + ..........</td><td style="height:56px;"></td></tr>
-          <tr><td><b>excite / bore</b></td><td>exciting / boring</td><td>excited + ........ / bored + ........</td><td style="height:56px;"></td></tr>
-          <tr><td><b>confuse / tire</b></td><td>confusing / tiring</td><td>confused / tired (+ .......)</td><td style="height:56px;"></td></tr>
+          <tr><td><b>interest</b></td><td>interesting</td><td>interested + ..........</td><td style="height:68px;"></td></tr>
+          <tr><td><b>satisfy / please</b></td><td>satisfying / pleasing</td><td>satisfied / pleased + ..........</td><td style="height:68px;"></td></tr>
+          <tr><td><b>excite / bore</b></td><td>exciting / boring</td><td>excited + ...... / bored + ......</td><td style="height:68px;"></td></tr>
+          <tr><td><b>confuse / tire</b></td><td>confusing / tiring</td><td>confused / tired (+ ......)</td><td style="height:68px;"></td></tr>
         </table>
       </div>
     `
@@ -3701,26 +3710,57 @@ const SLIDES = [
         <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:460px;">
+        <div class="sb-card" style="min-height:490px;">
           <div class="sb-card-title" style="color:var(--accent-cyan);">Adverb ขยายได้ 4 อย่าง (ห้ามขยาย Noun!)</div>
-          <div class="sb-branch-list" style="gap:24px;">
+          <div class="sb-branch-list" style="gap:28px; margin-top:16px;">
             <div class="sb-branch-item">1. ขยาย <b>Verb</b> : speaks <u>fluently</u> / works ...........</div>
             <div class="sb-branch-item">2. ขยาย <b>Adjective</b> : <u>extremely</u> busy / .............</div>
             <div class="sb-branch-item">3. ขยาย <b>Adverb</b> : runs <u>very</u> quickly / .............</div>
             <div class="sb-branch-item">4. ขยาย <b>ทั้งประโยค</b> : <u>Fortunately</u>, we arrived early.</div>
           </div>
+          <div style="margin-top:24px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:95px;">
+            <span style="color:var(--text-muted); font-size:15.5px;">✏️ จุดวาง Adverb ในประโยค (Front / Mid: หน้า V.แท้ หลัง V.ช่วย / End)</span>
+          </div>
         </div>
-        <div class="sb-card" style="min-height:460px;">
+        <div class="sb-card" style="min-height:490px;">
           <div class="sb-card-title" style="color:var(--accent-orange);">⚠️ กับดักที่ออกสอบบ่อยที่สุด</div>
           <table class="sb-table" style="margin-top:8px;">
             <tr><th>คู่คำหลอก</th><th>ความหมายต่างกันอย่างไร (พานักเรียนเติม)</th></tr>
-            <tr><td><b>hard</b> vs <b>hardly</b></td><td style="height:64px;">hard = ............... / hardly = ...............</td></tr>
-            <tr><td><b>late</b> vs <b>lately</b></td><td style="height:64px;">late = ............... / lately = ...............</td></tr>
-            <tr><td><b>high</b> vs <b>highly</b></td><td style="height:64px;">high = ............... / highly = ...............</td></tr>
-            <tr><td><b>good</b> vs <b>well</b></td><td style="height:64px;">good (ชนิด: .......) / well (ชนิด: .......)</td></tr>
-            <tr><td><b>friendly / lovely / costly</b></td><td style="height:64px;">ลงท้าย -ly แต่เป็น ................... !</td></tr>
+            <tr><td><b>hard</b> vs <b>hardly</b></td><td style="height:68px;">hard = ............... / hardly = ...............</td></tr>
+            <tr><td><b>late</b> vs <b>lately</b></td><td style="height:68px;">late = ............... / lately = ...............</td></tr>
+            <tr><td><b>near / high</b> (+ -ly)</td><td style="height:68px;">nearly = ............ / highly = ...............</td></tr>
+            <tr><td><b>good</b> vs <b>well</b></td><td style="height:68px;">good (ชนิด: .......) / well (ชนิด: .......)</td></tr>
+            <tr><td><b>friendly / lovely / costly</b></td><td style="height:68px;">ลงท้าย -ly แต่เป็น ................... !</td></tr>
           </table>
         </div>
+      </div>
+    `
+  },
+  {
+    id: 't4-4',
+    group: '4. Adjective & Adverb',
+    title: '4.4 ตารางฝึกแปลงตระกูลคำ (Word Family Matrix) & ขั้นกว่า',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">4</span> Word Family Matrix & Comparative Clues</div>
+        <span class="slide-subtitle-badge">เชื่อมเรื่อง 1–4 เข้าด้วยกัน</span>
+      </div>
+      <div class="sb-card" style="margin-bottom:20px;">
+        <div class="sb-card-title" style="color:var(--accent-yellow);">ตารางฝึกแปลง Word Family 4 ชนิดคำ (พานักเรียนเติมพร้อมกัน)</div>
+        <table class="sb-table" style="font-size:18px;">
+          <tr><th>Verb (กริยา)</th><th>Noun (คำนาม)</th><th>Adjective (คุณศัพท์)</th><th>Adverb (กริยาวิเศษณ์)</th></tr>
+          <tr><td>succeed</td><td style="height:60px;"></td><td></td><td></td></tr>
+          <tr><td>decide</td><td style="height:60px;"></td><td></td><td></td></tr>
+          <tr><td>satisfy</td><td style="height:60px;"></td><td></td><td></td></tr>
+          <tr><td>rely</td><td style="height:60px;"></td><td></td><td></td></tr>
+          <tr><td>(efficient) → —</td><td style="height:60px;"></td><td>efficient</td><td></td></tr>
+        </table>
+      </div>
+      <div class="sb-card" style="min-height:175px;">
+        <div class="sb-card-title" style="color:var(--accent-green);">✏️ คำขยายขั้นกว่า/ขั้นสุดที่ออกสอบบ่อย: [much / far / even / significantly] + Adj/Adv ขั้นกว่า</div>
+        <div style="font-size:18px; color:var(--text-muted); margin-bottom:10px;">เช่น: This system is _____________ faster than the old one. | (ห้ามใช้ very + faster!)</div>
+        <div style="height:65px;"></div>
       </div>
     `
   },
@@ -3878,32 +3918,34 @@ const SLIDES = [
         <span class="slide-subtitle-badge">เรื่องที่ 5 · Preposition</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:470px;">
+        <div class="sb-card" style="min-height:530px;">
           <div class="sb-card-title" style="color:var(--accent-yellow);">สามเหลี่ยมจำแม่น IN / ON / AT (ใหญ่ ➔ กลาง ➔ เล็ก/เป๊ะ)</div>
-          <svg viewBox="0 0 480 280" style="width:100%; height:265px; display:block;">
-            <polygon points="240,20 440,250 40,250" fill="rgba(56,189,248,0.08)" stroke="#38bdf8" stroke-width="2.5"/>
-            <line x1="173" y1="96" x2="307" y2="96" stroke="#facc15" stroke-width="2" stroke-dasharray="5,4"/>
-            <line x1="107" y1="172" x2="373" y2="172" stroke="#facc15" stroke-width="2" stroke-dasharray="5,4"/>
-            <text x="225" y="72" fill="#f87171" font-size="24" font-weight="bold">AT</text>
-            <text x="218" y="145" fill="#facc15" font-size="24" font-weight="bold">ON</text>
-            <text x="223" y="222" fill="#4ade80" font-size="26" font-weight="bold">IN</text>
-            <text x="320" y="72" fill="#94a3b8" font-size="14">เวลาเป๊ะ / จุดเฉพาะ</text>
-            <text x="355" y="145" fill="#94a3b8" font-size="14">วัน / วันที่ / พื้นผิว</text>
-            <text x="415" y="222" fill="#94a3b8" font-size="14">ปี/เดือน/เมือง</text>
+          <svg viewBox="0 0 500 280" style="width:100%; height:265px; display:block;">
+            <polygon points="180,22 330,248 30,248" fill="rgba(56,189,248,0.1)" stroke="var(--accent-cyan)" stroke-width="2.5"/>
+            <line x1="130" y1="98" x2="230" y2="98" stroke="var(--accent-yellow)" stroke-width="2" stroke-dasharray="5,4"/>
+            <line x1="80" y1="173" x2="280" y2="173" stroke="var(--accent-yellow)" stroke-width="2" stroke-dasharray="5,4"/>
+            <text x="180" y="74"  fill="var(--accent-red)"   font-size="24" font-weight="bold" text-anchor="middle">AT</text>
+            <text x="180" y="146" fill="var(--accent-orange)" font-size="24" font-weight="bold" text-anchor="middle">ON</text>
+            <text x="180" y="224" fill="var(--accent-green)" font-size="26" font-weight="bold" text-anchor="middle">IN</text>
+            <text x="255" y="72"  fill="var(--text-main)" font-size="15.5">เวลาเป๊ะ / จุดเฉพาะ</text>
+            <text x="295" y="146" fill="var(--text-main)" font-size="15.5">วัน / วันที่ / พื้นผิว</text>
+            <text x="342" y="222" fill="var(--text-main)" font-size="15.5">ปี / เดือน / ประเทศ</text>
           </svg>
-          <div style="font-size:17px; color:var(--text-muted); margin-top:8px;">
-            ✏️ เติมตัวอย่าง: IN (.......) / ON (.......) / AT (.......)
+          <div style="font-size:17.5px; color:var(--text-muted); line-height:2.1; margin-top:8px;">
+            ✏️ ตัวอย่าง <b>AT</b> : ...........................................<br>
+            ✏️ ตัวอย่าง <b>ON</b> : ...........................................<br>
+            ✏️ ตัวอย่าง <b>IN</b> : ...........................................
           </div>
         </div>
-        <div class="sb-card" style="min-height:470px;">
+        <div class="sb-card" style="min-height:530px;">
           <div class="sb-card-title" style="color:var(--accent-cyan);">กฎเหล็กหลัง Preposition (ห้ามลืมเด็ดขาด!)</div>
-          <div class="sb-branch-list" style="gap:24px;">
+          <div class="sb-branch-list" style="gap:26px;">
             <div class="sb-branch-item">หลัง Preposition ต้องตามด้วย 3 อย่างเท่านั้น:<br>1) .............. &nbsp; 2) ................ &nbsp; 3) ................ (เช่น after finishing)</div>
             <div class="sb-branch-item"><b>⚠️ ห้ามตามด้วย ประโยค (S+V) หรือ V.1 เด็ดขาด!</b></div>
-            <div class="sb-branch-item">ข้อยกเว้น "to" : look forward to / used to / object to + ...............</div>
+            <div class="sb-branch-item">ข้อยกเว้นคำว่า "to" ที่เป็น Preposition:<br>look forward to / be used to / object to + ...............</div>
           </div>
-          <div style="margin-top:20px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:110px;">
-            <span style="color:var(--text-muted); font-size:16px;">✏️ จดเติม: Before (enter / entering) the room, turn off the lights.</span>
+          <div style="margin-top:22px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:14px; min-height:130px;">
+            <span style="color:var(--text-muted); font-size:16px;">✏️ จดเติม: Before (enter / entering) the lab... | look forward to (see / seeing) you</span>
           </div>
         </div>
       </div>
@@ -3916,29 +3958,30 @@ const SLIDES = [
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">5</span> Preposition ออกสอบบ่อย & Preposition Collocations</div>
+        <div class="slide-main-title"><span class="slide-num-circle">5</span> Preposition ออกสอบบ่อย & Collocations คู่คำ</div>
         <span class="slide-subtitle-badge">เรื่องที่ 5 · Preposition</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:470px;">
-          <div class="sb-card-title" style="color:var(--accent-orange);">กลุ่มคำบุพบทเชื่อมความ (ตามด้วย Noun Phrase / V.ing)</div>
+        <div class="sb-card" style="min-height:510px;">
+          <div class="sb-card-title" style="color:var(--accent-orange);">กลุ่มบุพบทเชื่อมความ (ตามด้วย Noun Phrase / V.ing)</div>
           <table class="sb-table" style="margin-top:8px;">
             <tr><th>ความหมาย</th><th>คำที่ใช้บ่อย (เติมตัวที่เหลือ)</th></tr>
-            <tr><td><b>เพราะว่า</b></td><td style="height:78px;">because of, due to, .........................</td></tr>
-            <tr><td><b>แม้ว่า (ขัดแย้ง)</b></td><td style="height:78px;">despite, ......................... (*ห้าม despite of!)</td></tr>
-            <tr><td><b>ระหว่าง (ช่วงเวลา)</b></td><td style="height:78px;">during (+ Noun) เช่น during ..................</td></tr>
-            <tr><td><b>ยกเว้น / เกี่ยวกับ</b></td><td style="height:78px;">except for, regarding, concerning</td></tr>
+            <tr><td><b>เพราะว่า</b></td><td style="height:82px;">because of, due to, .........................</td></tr>
+            <tr><td><b>แม้ว่า (ขัดแย้ง)</b></td><td style="height:82px;">despite, ......................... (*ห้าม despite of!)</td></tr>
+            <tr><td><b>ระหว่าง (ช่วงเวลา)</b></td><td style="height:82px;">during (+ Noun) เช่น during ..................</td></tr>
+            <tr><td><b>ยกเว้น / เกี่ยวกับ</b></td><td style="height:82px;">except for, regarding, concerning</td></tr>
           </table>
         </div>
-        <div class="sb-card" style="min-height:470px;">
+        <div class="sb-card" style="min-height:510px;">
           <div class="sb-card-title" style="color:var(--accent-pink);">Preposition คู่กริยา/Adj ยอดฮิต (เติมคำบุพบทที่คู่กัน)</div>
-          <div class="sb-branch-list" style="gap:20px;">
+          <div class="sb-branch-list" style="gap:24px; margin-top:16px;">
             <div class="sb-branch-item">• responsible _______ (รับผิดชอบต่อ...)</div>
-            <div class="sb-branch-item">• interested _______ (สนใจใน...)</div>
+            <div class="sb-branch-item">• interested _______ / familiar _______</div>
             <div class="sb-branch-item">• depend _______ / rely _______ (ขึ้นอยู่กับ...)</div>
-            <div class="sb-branch-item">• comply _______ (ปฏิบัติตาม...)</div>
+            <div class="sb-branch-item">• comply _______ (ปฏิบัติตามกฎ...)</div>
             <div class="sb-branch-item">• apologize _______ someone _______ something</div>
           </div>
+          <div style="height:75px;"></div>
         </div>
       </div>
     `
@@ -4074,35 +4117,38 @@ const SLIDES = [
         <span class="slide-subtitle-badge">เรื่องที่ 6 · Conjunction</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card" style="min-height:310px;">
+        <div class="sb-card" style="min-height:330px;">
           <div class="sb-card-title" style="color:var(--accent-green);">1) Coordinating Conjunction (FANBOYS)</div>
-          <div style="font-size:18px; color:var(--text-muted); margin-bottom:12px;">เชื่อมคำ วลี หรือประโยคระดับเดียวกัน (หน้า & หลังรูปเดียวกัน)</div>
-          <div class="sb-branch-list" style="gap:12px; font-size:19px;">
+          <div style="font-size:17.5px; color:var(--text-muted); margin-bottom:14px;">เชื่อมคำ/วลี/ประโยคระดับเดียวกัน (Parallel Structure!)</div>
+          <div class="sb-branch-list" style="gap:18px; font-size:19px;">
             <div class="sb-branch-item"><b>F</b>or (______) · <b>A</b>nd (______) · <b>N</b>or (______)</div>
             <div class="sb-branch-item"><b>B</b>ut (______) · <b>O</b>r (______) · <b>Y</b>et (______) · <b>S</b>o (______)</div>
           </div>
+          <div style="height:75px;"></div>
         </div>
-        <div class="sb-card" style="min-height:310px;">
+        <div class="sb-card" style="min-height:330px;">
           <div class="sb-card-title" style="color:var(--accent-pink);">2) Subordinating Conjunction (+ ประโยค S + V)</div>
-          <div class="sb-branch-list" style="gap:16px; font-size:19px;">
+          <div class="sb-branch-list" style="gap:20px; font-size:19px;">
             <div class="sb-branch-item">• <b>เหตุผล</b> : because, since, as, now that</div>
-            <div class="sb-branch-item">• <b>ขัดแย้ง</b> : although, though, even though</div>
-            <div class="sb-branch-item">• <b>เงื่อนไข/เวลา</b> : if, unless, while, until, once</div>
+            <div class="sb-branch-item">• <b>ขัดแย้ง</b> : although, though, even though, whereas</div>
+            <div class="sb-branch-item">• <b>เงื่อนไข/เวลา</b> : if, unless (= if not), while, until, once</div>
           </div>
+          <div style="height:60px;"></div>
         </div>
       </div>
-      <div class="sb-card" style="min-height:240px;">
+      <div class="sb-card" style="min-height:260px;">
         <div class="sb-card-title" style="color:var(--accent-yellow);">3) Correlative Conjunction (สันธานคู่ — พานักเรียนเติมคู่ + กฎผันกริยา)</div>
         <div class="sb-grid-2" style="margin-bottom:0;">
-          <div style="font-size:19px; line-height:2.1;">
+          <div style="font-size:19px; line-height:2.3;">
             • <b>both</b> A _________ B (ใช้ V..............)<br>
             • <b>either</b> A _________ B (ผันตามตัว........)
           </div>
-          <div style="font-size:19px; line-height:2.1;">
+          <div style="font-size:19px; line-height:2.3;">
             • <b>neither</b> A _________ B (ผันตามตัว........)<br>
             • <b>not only</b> A _________ B (ผันตามตัว........)
           </div>
         </div>
+        <div style="height:70px;"></div>
       </div>
     `
   },
@@ -4116,19 +4162,20 @@ const SLIDES = [
         <div class="slide-main-title"><span class="slide-num-circle">6</span> ตารางตัดสินข้อสอบตัวเชื่อม & Interjection</div>
         <span class="slide-subtitle-badge">เรื่องที่ 6 · จุดตัดคะแนนในข้อสอบ</span>
       </div>
-      <div class="sb-card" style="margin-bottom:24px;">
-        <div class="sb-card-title" style="color:var(--accent-cyan);">ตารางเปรียบเทียบ 3 กลุ่มตัวเชื่อม — ฝึกเติมกลุ่มคำที่ตรงความหมายให้ครบ</div>
+      <div class="sb-card" style="margin-bottom:22px;">
+        <div class="sb-card-title" style="color:var(--accent-cyan);">ตารางเปรียบเทียบ 3 กลุ่มตัวเชื่อม (เช็กโครงสร้างข้างหลัง + เครื่องหมายวรรคตอน!)</div>
         <table class="sb-table" style="font-size:18px;">
           <tr><th>ความหมาย</th><th>1. Conjunction<br><span style="font-size:14px;">(+ S + V)</span></th><th>2. Preposition<br><span style="font-size:14px;">(+ Noun / V.ing)</span></th><th>3. Conjunctive Adverb<br><span style="font-size:14px;">(หลัง ; / จุด . และหน้า ,)</span></th></tr>
           <tr><td><b>เหตุผล (เพราะ/ดังนั้น)</b></td><td>because, since, as</td><td style="height:82px;">because of, .................</td><td>therefore, ....................</td></tr>
           <tr><td><b>ขัดแย้ง (แม้ว่า/อย่างไรก็ตาม)</b></td><td>although, even though</td><td style="height:82px;">despite, ......................</td><td>however, .....................</td></tr>
-          <tr><td><b>เพิ่มเติม (นอกจากนี้)</b></td><td>and, as well as</td><td style="height:78px;">in addition to, besides</td><td>moreover, ....................</td></tr>
-          <tr><td><b>เวลา (ระหว่างที่)</b></td><td>while, when</td><td style="height:78px;">...............................</td><td>meanwhile</td></tr>
+          <tr><td><b>เพิ่มเติม (นอกจากนี้)</b></td><td>and, as well as</td><td style="height:80px;">in addition to, besides</td><td>moreover, ....................</td></tr>
+          <tr><td><b>เวลา (ระหว่างที่)</b></td><td>while, when</td><td style="height:80px;">...............................</td><td>meanwhile</td></tr>
         </table>
       </div>
-      <div class="sb-card" style="min-height:145px;">
-        <div class="sb-card-title" style="color:var(--accent-orange);">4) Interjection (คำอุทาน) : Wow!, Oh!, Ouch!, Alas!, Congratulations!</div>
-        <div style="font-size:18px; color:var(--text-muted);">หน้าที่: แสดงอารมณ์ความรู้สึก ไม่ผูกติดโครงสร้างประโยคหลัก — จดตัวอย่างเพิ่ม: .......................</div>
+      <div class="sb-card" style="min-height:175px;">
+        <div class="sb-card-title" style="color:var(--accent-orange);">4) Interjection (คำอุทาน) : Wow!, Oh!, Ouch!, Alas!, Hey!, Congratulations!</div>
+        <div style="font-size:18px; color:var(--text-muted); margin-bottom:10px;">หน้าที่: แสดงอารมณ์ ความรู้สึก มักตามด้วยเครื่องหมายอัศเจรีย์ (!) ไม่ผูกติดโครงสร้างไวยากรณ์หลักของประโยค</div>
+        <div style="height:65px;"></div>
       </div>
     `
   },
@@ -5034,7 +5081,7 @@ function goToSlide(idx) {
   // Show/hide small feature buttons on topbar
   const btn3d = document.getElementById('btn-open-3d');
   const btnAnim = document.getElementById('btn-open-anim');
-  // Clean topbar without Chemistry 3D modal buttons
+  // Clean topbar without Chemistry modal buttons
 
   // Update Single Question Navigation Bar
   updateQuestionNavBar(idx);
@@ -5125,7 +5172,6 @@ window.addEventListener('keydown', (e) => {
 
 
 
-// Initialize Application on Load
 window.addEventListener('DOMContentLoaded', () => {
   loadAnnotationsFromStorage();
   buildSidebarTOC();
