@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>NJ Tutor · English Chapter 2 : Parts of Speech (Smartboard)</title>
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sarabun:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg-board: #14171c;
@@ -1077,55 +1078,85 @@ body.light-board .qnav-select {
     height: auto !important;
   }
 }
-</style>
-</head>
 
-<body>
-
-/* English Chapter 2 Indigo Accent Tweaks & Pinned Toolbar Enhancements */
-.zoom-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  background: rgba(15, 23, 42, 0.78);
-  border: 1px solid rgba(129, 140, 248, 0.38);
-  border-radius: 8px;
-  padding: 2px 5px;
-  height: 34px;
+/* English Chapter 2 Enhancements (Cleanly inside <style>) */
+#main-area {
+  padding-top: 52px;
 }
-.zoom-pill button {
-  background: transparent;
-  border: none;
-  color: #e2e8f0;
-  cursor: pointer;
-  padding: 3px 7px;
-  border-radius: 5px;
-  font-size: 13px;
-  font-weight: 700;
+#topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 52px;
+  padding: 0 10px;
+  z-index: 80;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
-.zoom-pill button:hover {
-  background: rgba(129, 140, 248, 0.25);
+#topbar::-webkit-scrollbar {
+  height: 0px;
 }
-#board-zoom-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: #a5b4fc;
-  min-width: 44px;
-  text-align: center;
-  cursor: pointer;
+.topbar-left, .topbar-right {
+  gap: 5px;
+  flex-shrink: 0;
+}
+.icon-btn {
+  height: 32px;
+  padding: 0 8px;
+  font-size: 11.8px;
+  gap: 4px;
+  white-space: nowrap;
+}
+.slide-nav-pill {
+  gap: 4px;
+  padding: 3px 6px;
+}
+#page-indicator {
+  min-width: 78px;
+  font-size: 12.5px;
+}
+#current-section-badge {
+  white-space: nowrap;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 1580px) {
+  #current-section-badge {
+    display: none;
+  }
+}
+#btn-palm-reject {
+  white-space: nowrap;
+}
+#board-viewport {
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+#board-zoom-wrapper {
+  position: relative;
+  flex-shrink: 0;
+  margin: 0 auto;
+}
+#board-stage {
+  margin: 0;
 }
 #btn-manual-cloud-sync {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  height: 34px;
-  padding: 0 12px;
+  height: 33px;
+  padding: 0 11px;
   border-radius: 8px;
   border: 1px solid #818cf8;
-  background: rgba(79, 70, 229, 0.35);
+  background: rgba(79, 70, 229, 0.42);
   color: #ffffff;
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
@@ -1135,8 +1166,10 @@ body.light-board .qnav-select {
   transform: translateY(-1px);
   filter: brightness(1.1);
 }
-/* Ensure floating toolbar and topbar pin cleanly on visualViewport zoom */
-#pen-toolbar, #topbar {
+#pen-toolbar {
+  z-index: 85;
+}
+#topbar, #pen-toolbar, #question-nav-bar {
   will-change: transform;
 }
 </style>
@@ -1164,7 +1197,7 @@ body.light-board .qnav-select {
 
   <!-- Main Smartboard Area -->
   <main id="main-area">
-    <!-- Top Navigation & Action Bar -->
+    <!-- Fixed Top Navigation & Action Bar (Pinned cleanly on zoom) -->
     <header id="topbar">
       <div class="topbar-left">
         <a href="/course/english" class="icon-btn" style="text-decoration:none;" title="กลับหน้าบทเรียนภาษาอังกฤษ">← วิชาอังกฤษ</a>
@@ -1174,20 +1207,13 @@ body.light-board .qnav-select {
           <span id="page-indicator" onclick="promptJumpPage()" title="คลิกเพื่อระบุเลขหน้า">หน้า 1 / 1</span>
           <button class="icon-btn" onclick="nextSlide()" title="หน้าถัดไป (→)">ถัดไป ▶</button>
         </div>
-        <span id="current-section-badge" style="font-size:13px; color:var(--text-muted); margin-left:6px;"></span>
+        <span id="current-section-badge" style="font-size:12.5px; color:var(--text-muted); margin-left:4px;"></span>
       </div>
 
       <div class="topbar-right">
-        <!-- Board Zoom Controls (keeps #pen-toolbar fixed!) -->
-        <div class="zoom-pill" title="ซูมกระดาน (แถบเครื่องมือปากกาจะถูกตรึงไว้เสมอ)">
-          <button onclick="changeBoardZoom(-0.15)" title="ซูมออก">🔍-</button>
-          <span id="board-zoom-label" onclick="resetBoardZoom()" title="คลิกรีเซ็ต 100%">100%</span>
-          <button onclick="changeBoardZoom(0.15)" title="ซูมเข้า">🔍+</button>
-        </div>
-
-        <!-- Account Sync Widget + Manual Cloud Sync Button -->
-        <div id="account-sync-widget" style="display:inline-flex; align-items:center; gap:6px; padding:0 10px; height:34px; border-radius:8px; border:1px solid rgba(129,140,248,0.4); background:rgba(15,23,42,0.75); font-size:12px; transition:all 0.2s; white-space:nowrap;">
-          <span id="account-user-badge" style="font-weight:600; color:#a5b4fc;">⏳ ตรวจสอบบัญชี...</span>
+        <!-- Account Status Pill + Manual Cloud Sync Button -->
+        <div id="account-sync-widget" style="display:inline-flex; align-items:center; gap:6px; padding:0 9px; height:33px; border-radius:8px; border:1px solid rgba(129,140,248,0.4); background:rgba(15,23,42,0.78); font-size:12px; transition:all 0.2s; white-space:nowrap;">
+          <span id="account-user-badge" style="font-weight:600; color:#a5b4fc;">👤 ในเครื่อง</span>
           <span id="account-sync-status" style="font-size:11px; color:#94a3b8;"></span>
         </div>
         <button id="btn-manual-cloud-sync" style="display:none;" title="กดเพื่อซิงก์ลายมือขึ้นคลาวด์">☁️ ซิงก์ขึ้นคลาวด์</button>
@@ -1218,25 +1244,27 @@ body.light-board .qnav-select {
       </div>
     </div>
 
-    <!-- Scrollable Smartboard Stage -->
+    <!-- Scrollable & Zoomable Smartboard Stage -->
     <div id="board-viewport">
-      <div id="board-stage">
-        <div id="slide-content-layer"></div>
-        <canvas id="drawing-canvas"></canvas>
-        <canvas id="active-stroke-canvas"></canvas>
-        <canvas id="laser-canvas"></canvas>
+      <div id="board-zoom-wrapper">
+        <div id="board-stage">
+          <div id="slide-content-layer"></div>
+          <canvas id="drawing-canvas"></canvas>
+          <canvas id="active-stroke-canvas"></canvas>
+          <canvas id="laser-canvas"></canvas>
+        </div>
       </div>
     </div>
 
-    <!-- Floating Smartboard Pen Toolbar (Pinned during zoom!) -->
+    <!-- Floating Smartboard Pen Toolbar (Fixed size & pinned position during zoom!) -->
     <div id="pen-toolbar">
-      <button class="tool-btn active" data-tool="pen" onclick="setDrawTool('pen')" title="ปากกาเขียนกระดาน (P)">✏️</button>
-      <button class="tool-btn" data-tool="highlighter" onclick="setDrawTool('highlighter')" title="ปากกาไฮไลต์ (H)">🖍️</button>
-      <button class="tool-btn" data-tool="line" onclick="setDrawTool('line')" title="ลากเส้นตรง (L)">📏</button>
-      <button class="tool-btn" data-tool="rect" onclick="setDrawTool('rect')" title="วาดกรอบสี่เหลี่ยม (R)">⬜</button>
-      <button class="tool-btn" data-tool="eraser" onclick="setDrawTool('eraser')" title="ยางลบ (E)">🧽</button>
-      <button class="tool-btn" data-tool="laser" onclick="setDrawTool('laser')" title="เลเซอร์พอยเตอร์ชี้กระดาน (Q)">🔴</button>
-      <button class="tool-btn" data-tool="pan" onclick="setDrawTool('pan')" title="โหมดเลื่อนหน้าจอ / มือจับ (Space)">✋</button>
+      <button class="tool-btn active" data-tool="pen" onclick="setDrawTool('pen')" title="ปากกาเขียนกระดาน">✏️</button>
+      <button class="tool-btn" data-tool="highlighter" onclick="setDrawTool('highlighter')" title="ปากกาไฮไลต์">🖍️</button>
+      <button class="tool-btn" data-tool="line" onclick="setDrawTool('line')" title="ลากเส้นตรง">📏</button>
+      <button class="tool-btn" data-tool="rect" onclick="setDrawTool('rect')" title="วาดกรอบสี่เหลี่ยม">⬜</button>
+      <button class="tool-btn" data-tool="eraser" onclick="setDrawTool('eraser')" title="ยางลบ">🧽</button>
+      <button class="tool-btn" data-tool="laser" onclick="setDrawTool('laser')" title="เลเซอร์พอยเตอร์ชี้กระดาน">🔴</button>
+      <button class="tool-btn" data-tool="pan" onclick="setDrawTool('pan')" title="โหมดเลื่อนหน้าจอ / มือจับ">✋</button>
 
       <div class="tool-divider"></div>
 
@@ -1271,37 +1299,87 @@ body.light-board .qnav-select {
 </div>
 
 <script>
-// In-board Zoom state & VisualViewport Toolbar Pinning
+// Board-only zoom state (keeps #topbar and #pen-toolbar frozen at exact 1:1 size & position!)
 let boardZoom = 1.0;
 
-function changeBoardZoom(delta) {
-  if (typeof SoundFX !== 'undefined' && SoundFX.click) SoundFX.click();
-  boardZoom = Math.min(2.4, Math.max(0.6, Math.round((boardZoom + delta) * 100) / 100));
-  const lbl = document.getElementById('board-zoom-label');
-  if (lbl) lbl.textContent = Math.round(boardZoom * 100) + '%';
+function setBoardZoom(nextZoom, clientX, clientY) {
+  const viewport = document.getElementById('board-viewport');
+  const prevZoom = boardZoom;
+  boardZoom = Math.min(2.8, Math.max(0.55, Math.round(nextZoom * 1000) / 1000));
+  if (Math.abs(boardZoom - prevZoom) < 0.001) return;
+
+  let anchorRatioX = 0.5, anchorRatioY = 0.2;
+  let relX = 0, relY = 0;
+  if (viewport && typeof clientX === 'number' && typeof clientY === 'number') {
+    const vr = viewport.getBoundingClientRect();
+    relX = clientX - vr.left;
+    relY = clientY - vr.top;
+    const totalW = Math.max(1, viewport.scrollWidth);
+    const totalH = Math.max(1, viewport.scrollHeight);
+    anchorRatioX = (viewport.scrollLeft + relX) / totalW;
+    anchorRatioY = (viewport.scrollTop + relY) / totalH;
+  }
+
   resizeBoardCanvases(false);
+
+  if (viewport && typeof clientX === 'number' && typeof clientY === 'number') {
+    viewport.scrollLeft = Math.max(0, anchorRatioX * viewport.scrollWidth - relX);
+    viewport.scrollTop = Math.max(0, anchorRatioY * viewport.scrollHeight - relY);
+    if (typeof updateCanvasMetrics === 'function') updateCanvasMetrics();
+  }
 }
 
-function resetBoardZoom() {
-  if (typeof SoundFX !== 'undefined' && SoundFX.click) SoundFX.click();
-  boardZoom = 1.0;
-  const lbl = document.getElementById('board-zoom-label');
-  if (lbl) lbl.textContent = '100%';
-  resizeBoardCanvases(false);
+// Pin #topbar, #question-nav-bar, and #pen-toolbar inside visualViewport even during native pinch zoom
+let _pinRafPending = false;
+function schedulePinFloatingUI() {
+  if (_pinRafPending) return;
+  _pinRafPending = true;
+  requestAnimationFrame(() => {
+    _pinRafPending = false;
+    pinFloatingUIOnZoom();
+  });
 }
 
-// Pin #pen-toolbar and #topbar inside the visible screen even during native pinch-zoom / browser zoom
 function pinFloatingUIOnZoom() {
   const vv = window.visualViewport;
   const toolbar = document.getElementById('pen-toolbar');
   const topbar = document.getElementById('topbar');
+  const qnav = document.getElementById('question-nav-bar');
   if (!vv || !toolbar) return;
 
-  const invScale = 1 / (vv.scale || 1);
-  // Keep toolbar anchored at the bottom-center of the visible visualViewport
+  const scale = vv.scale || 1;
+  const invScale = 1 / scale;
+
+  if (scale <= 1.005) {
+    toolbar.style.position = 'fixed';
+    toolbar.style.left = '50%';
+    toolbar.style.top = 'auto';
+    toolbar.style.bottom = '16px';
+    toolbar.style.transformOrigin = 'bottom center';
+    toolbar.style.transform = 'translateX(-50%)';
+
+    if (topbar) {
+      topbar.style.position = 'fixed';
+      topbar.style.left = '0px';
+      topbar.style.top = '0px';
+      topbar.style.width = '100%';
+      topbar.style.transformOrigin = 'top left';
+      topbar.style.transform = 'none';
+    }
+    if (qnav) {
+      qnav.style.position = '';
+      qnav.style.left = '';
+      qnav.style.top = '';
+      qnav.style.width = '';
+      qnav.style.transform = '';
+      qnav.style.zIndex = '';
+    }
+    return;
+  }
+
+  // Counter-scale fixed UI chrome during native visualViewport zoom so toolbars keep exact visual size & position
   const centerX = vv.offsetLeft + vv.width / 2;
   const bottomY = vv.offsetTop + vv.height - 16 * invScale;
-
   toolbar.style.position = 'fixed';
   toolbar.style.left = centerX + 'px';
   toolbar.style.top = bottomY + 'px';
@@ -1309,21 +1387,158 @@ function pinFloatingUIOnZoom() {
   toolbar.style.transformOrigin = 'bottom center';
   toolbar.style.transform = `translate(-50%, -100%) scale(${invScale})`;
 
-  if (topbar && vv.scale && vv.scale > 1.02) {
+  if (topbar) {
+    topbar.style.position = 'fixed';
+    topbar.style.left = vv.offsetLeft + 'px';
+    topbar.style.top = vv.offsetTop + 'px';
+    topbar.style.width = (vv.width * scale) + 'px';
     topbar.style.transformOrigin = 'top left';
-    topbar.style.transform = `translate(${vv.offsetLeft}px, ${vv.offsetTop}px) scale(${invScale})`;
-    topbar.style.width = (vv.width * vv.scale) + 'px';
-  } else if (topbar) {
-    topbar.style.transform = '';
-    topbar.style.width = '';
+    topbar.style.transform = `scale(${invScale})`;
+  }
+
+  if (qnav && qnav.classList.contains('show')) {
+    qnav.style.position = 'fixed';
+    qnav.style.left = vv.offsetLeft + 'px';
+    qnav.style.top = (vv.offsetTop + 52 * invScale) + 'px';
+    qnav.style.width = (vv.width * scale) + 'px';
+    qnav.style.transformOrigin = 'top left';
+    qnav.style.transform = `scale(${invScale})`;
+    qnav.style.zIndex = '75';
+  } else if (qnav) {
+    qnav.style.position = '';
+    qnav.style.transform = '';
   }
 }
 
 if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', pinFloatingUIOnZoom);
-  window.visualViewport.addEventListener('scroll', pinFloatingUIOnZoom);
+  window.visualViewport.addEventListener('resize', schedulePinFloatingUI);
+  window.visualViewport.addEventListener('scroll', schedulePinFloatingUI);
 }
+window.addEventListener('resize', schedulePinFloatingUI);
 
+// Intercept Ctrl+Wheel / Trackpad-Pinch & Keyboard Ctrl +/-/0 so ONLY board zooms, leaving toolbars fixed
+window.addEventListener('wheel', (e) => {
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    const factor = Math.exp(-e.deltaY * 0.0022);
+    setBoardZoom(boardZoom * factor, e.clientX, e.clientY);
+  }
+}, { passive: false });
+
+window.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '=')) {
+    e.preventDefault();
+    setBoardZoom(boardZoom + 0.15, window.innerWidth / 2, window.innerHeight / 2);
+  } else if ((e.ctrlKey || e.metaKey) && (e.key === '-' || e.key === '_')) {
+    e.preventDefault();
+    setBoardZoom(boardZoom - 0.15, window.innerWidth / 2, window.innerHeight / 2);
+  } else if ((e.ctrlKey || e.metaKey) && e.key === '0') {
+    e.preventDefault();
+    setBoardZoom(1.0);
+  }
+}, { passive: false });
+
+const SoundFX = {
+  ctx: null,
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  },
+  click() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(620, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(220, this.ctx.currentTime + 0.045);
+      gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.045);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.05);
+    } catch(e) {}
+  },
+  drop() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(980, this.ctx.currentTime + 0.09);
+      gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.1);
+    } catch(e) {}
+  },
+  fizz() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const bufferSize = this.ctx.sampleRate * 0.35;
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1800;
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.09, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.002, this.ctx.currentTime + 0.35);
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+      noise.start();
+    } catch(e) {}
+  },
+  chime() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      [523.25, 659.25, 783.99].forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.06);
+        gain.gain.setValueAtTime(0.09, this.ctx.currentTime + idx * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.06 + 0.25);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(this.ctx.currentTime + idx * 0.06);
+        osc.stop(this.ctx.currentTime + idx * 0.06 + 0.26);
+      });
+    } catch(e) {}
+  }
+};
+
+// ====================================================
+// 2. SMARTBOARD DRAWING & ACCOUNT STORAGE ENGINE
+// ====================================================
+let currentSlideIndex = 0;
+let currentDrawTool = 'pen';
+let currentPenColor = '#ffffff';
+let currentPenSize = 3;
+let isDrawing = false;
+let currentStroke = null;
+
+// Apple Pencil & Palm Rejection State
+let palmRejectionEnabled = true; // เปิดโหมดกันอุ้งมือเป็นค่าเริ่มต้นสำหรับผู้ใช้ Apple Pencil
+let activePointerId = null;
+let activePointerType = null;
 let lastPenTimestamp = 0;
 
 // Cached Canvas Metrics & Dirty-Rect State (Zero-Reflow & O(1) Incremental Rendering)
@@ -1430,19 +1645,27 @@ function resizeBoardCanvases(forceRedraw = false) {
   const targetHeight = Math.max(1180, contentLayer.scrollHeight + 180, window.innerHeight - 52);
   stage.style.minHeight = targetHeight + 'px';
 
+  const zoomWrap = document.getElementById('board-zoom-wrapper');
   const viewportW = (viewport && viewport.clientWidth) ? viewport.clientWidth : window.innerWidth;
   const baseScale = (viewportW > 0 && viewportW < logicalW) ? (viewportW / logicalW) : 1;
-  const totalScale = baseScale * (typeof boardZoom === 'number' ? boardZoom : 1);
+  const z = (typeof boardZoom === 'number' && boardZoom > 0) ? boardZoom : 1;
+  const totalScale = baseScale * z;
+
+  if (zoomWrap) {
+    zoomWrap.style.width = Math.round(logicalW * totalScale) + 'px';
+    zoomWrap.style.height = Math.round(targetHeight * totalScale) + 'px';
+  }
+
   if (Math.abs(totalScale - 1) > 0.002) {
     stage.style.transformOrigin = 'top left';
     stage.style.transform = `scale(${totalScale})`;
-    stage.style.marginLeft = (totalScale < 1 && viewportW > logicalW * totalScale) ? 'auto' : '0px';
-    stage.style.marginRight = `${Math.max(0, Math.round(logicalW * (totalScale - 1)))}px`;
-    stage.style.marginBottom = `${Math.round(targetHeight * (totalScale - 1))}px`;
+    stage.style.marginLeft = '0px';
+    stage.style.marginRight = '0px';
+    stage.style.marginBottom = '0px';
   } else {
     stage.style.transform = 'none';
-    stage.style.marginLeft = 'auto';
-    stage.style.marginRight = 'auto';
+    stage.style.marginLeft = '0px';
+    stage.style.marginRight = '0px';
     stage.style.marginBottom = '0px';
   }
 
@@ -2049,14 +2272,12 @@ function persistAnnotationsToStorage() {
     }
   } catch(e) {}
 
-  // Local-first: do NOT auto-sync on every stroke (prevents writing lag).
-  // Instead, update pending indicator so user can press the Cloud Sync button when ready!
+  // Local-first: do NOT auto-sync on every stroke (prevents lag/stutter while writing).
+  // Save locally first; user clicks the Cloud Sync button when finished writing.
   if (currentAccountUser) {
     const dirtyCount = Object.keys(collectDirtySlides()).length;
     hasPendingCloudSync = dirtyCount > 0;
-    if (hasPendingCloudSync) {
-      updateAccountSyncUI('pending');
-    }
+    updateAccountSyncUI(hasPendingCloudSync ? 'pending' : 'saved', hasPendingCloudSync ? '' : 'ซิงก์แล้ว');
   }
 
   // Trigger custom hook for backend user account integration
@@ -2086,21 +2307,22 @@ function updateAccountSyncUI(state, detailText) {
 
   if (!currentAccountUser) {
     widget.style.borderColor = 'rgba(251, 146, 60, 0.45)';
-    widget.style.background = 'rgba(15, 23, 42, 0.75)';
+    widget.style.background = 'rgba(15, 23, 42, 0.78)';
     widget.style.cursor = 'pointer';
-    widget.title = 'คุณกำลังใช้งานในโหมดผู้เยี่ยมชม (คลิกเพื่อเข้าสู่ระบบและซิงก์ข้ามเครื่อง iPad ⇄ คอม)';
+    widget.title = 'กำลังบันทึกลายมือไว้ในเครื่องนี้ — คลิกเพื่อเข้าสู่ระบบและซิงก์ขึ้นคลาวด์';
     widget.onclick = () => {
       window.location.href = '/login?callbackUrl=' + encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
     };
-    badgeEl.style.color = '#fb923c';
-    badgeEl.innerHTML = '👤 ผู้เยี่ยมชม';
-    statusEl.innerHTML = '<span style="color:#facc15; font-weight:700; padding:2px 7px; border-radius:5px; background:rgba(250,204,21,0.15); border:1px solid rgba(250,204,21,0.4);">🔐 เข้าสู่ระบบเพื่อซิงก์</span>';
+    badgeEl.style.color = '#fbbf24';
+    badgeEl.innerHTML = '👤 บันทึกในเครื่อง';
+    statusEl.innerHTML = '<span style="color:#fde047; font-weight:700; padding:1px 6px; border-radius:5px; background:rgba(250,204,21,0.14); border:1px solid rgba(250,204,21,0.35);">🔐 เข้าสู่ระบบเพื่อซิงก์</span>';
     if (syncBtn) syncBtn.style.display = 'none';
     return;
   }
 
-  widget.style.cursor = 'default';
-  widget.onclick = null;
+  widget.style.cursor = 'pointer';
+  widget.title = `บัญชี: ${currentAccountUser.name} (คลิกเพื่อซิงก์ขึ้นคลาวด์)`;
+  widget.onclick = () => syncNotesToAccountNow(true);
   badgeEl.style.color = '#a5b4fc';
   badgeEl.textContent = `👤 ${currentAccountUser.name}`;
 
@@ -2111,7 +2333,7 @@ function updateAccountSyncUI(state, detailText) {
 
   if (state === 'saving') {
     widget.style.borderColor = 'rgba(250, 204, 21, 0.65)';
-    widget.style.background = 'rgba(15, 23, 42, 0.8)';
+    widget.style.background = 'rgba(15, 23, 42, 0.85)';
     statusEl.style.color = '#facc15';
     statusEl.textContent = '• ⏳ กำลังซิงก์...';
     if (syncBtn) {
@@ -2122,40 +2344,40 @@ function updateAccountSyncUI(state, detailText) {
       syncBtn.textContent = '⏳ กำลังซิงก์...';
     }
   } else if (state === 'pending') {
-    widget.style.borderColor = 'rgba(251, 191, 36, 0.6)';
-    widget.style.background = 'rgba(15, 23, 42, 0.8)';
-    statusEl.style.color = '#fbbf24';
-    statusEl.textContent = '• เซฟในเครื่องแล้ว (รอซิงก์)';
+    widget.style.borderColor = 'rgba(129, 140, 248, 0.65)';
+    widget.style.background = 'rgba(15, 23, 42, 0.85)';
+    statusEl.style.color = '#c7d2fe';
+    statusEl.textContent = '• เซฟในเครื่องแล้ว';
     if (syncBtn) {
       syncBtn.disabled = false;
-      syncBtn.style.background = 'rgba(79, 70, 229, 0.35)';
+      syncBtn.style.background = 'rgba(79, 70, 229, 0.42)';
       syncBtn.style.borderColor = '#818cf8';
       syncBtn.style.color = '#ffffff';
       syncBtn.textContent = '☁️ ซิงก์ขึ้นคลาวด์';
     }
   } else if (state === 'saved') {
-    widget.style.borderColor = 'rgba(34, 197, 94, 0.75)';
-    widget.style.background = 'rgba(20, 83, 45, 0.35)';
+    widget.style.borderColor = 'rgba(34, 197, 94, 0.78)';
+    widget.style.background = 'rgba(20, 83, 45, 0.36)';
     statusEl.style.color = '#4ade80';
     statusEl.textContent = detailText ? `• ✓ ${detailText}` : '• ✓ ซิงก์แล้ว';
     if (syncBtn) {
       syncBtn.disabled = false;
-      syncBtn.style.background = 'rgba(22, 163, 74, 0.32)';
+      syncBtn.style.background = 'rgba(22, 163, 74, 0.34)';
       syncBtn.style.borderColor = '#22c55e';
       syncBtn.style.color = '#4ade80';
       syncBtn.textContent = '✅ ซิงก์ขึ้นคลาวด์แล้ว';
     }
   } else if (state === 'error' || state === 'offline') {
     widget.style.borderColor = 'rgba(248, 113, 113, 0.55)';
-    widget.style.background = 'rgba(15, 23, 42, 0.8)';
+    widget.style.background = 'rgba(15, 23, 42, 0.85)';
     statusEl.style.color = '#f87171';
-    statusEl.textContent = '• ⚠️ ซิงก์ไม่สำเร็จ (เซฟในเครื่องแล้ว)';
+    statusEl.textContent = '• ⚠️ ยังไม่ซิงก์ (เซฟในเครื่องแล้ว)';
     if (syncBtn) {
       syncBtn.disabled = false;
-      syncBtn.style.background = 'rgba(220, 38, 38, 0.25)';
+      syncBtn.style.background = 'rgba(220, 38, 38, 0.28)';
       syncBtn.style.borderColor = '#f87171';
       syncBtn.style.color = '#fecaca';
-      syncBtn.textContent = '↻ ลองซิงก์ใหม่';
+      syncBtn.textContent = '↻ ซิงก์ขึ้นคลาวด์อีกครั้ง';
     }
   }
 }
@@ -2266,10 +2488,7 @@ async function syncNotesToAccountNow(manualClick = false) {
   if (failReason) {
     console.warn('Cloud sync failed:', failReason);
     updateAccountSyncUI('error', failReason);
-    // Keep pending and retry automatically in 8s (iPad Safari may suspend network briefly)
     hasPendingCloudSync = true;
-    if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
-    cloudSyncTimer = setTimeout(() => syncNotesToAccountNow(false), 8000);
   } else if (syncAgain) {
     syncAgain = false;
     syncNotesToAccountNow(false);
@@ -2298,10 +2517,14 @@ async function pullLatestCloudNotesIfNewer() {
   if (!currentAccountUser || isDrawing || hasUnsavedAnnotations || hasPendingCloudSync || isPullingCloudNotes) return;
   isPullingCloudNotes = true;
   try {
+    const ac = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    const tid = ac ? setTimeout(() => ac.abort(), 4000) : null;
     const res = await fetch(`/api/notes?lessonId=${encodeURIComponent(LESSON_ID)}`, {
       method: 'GET',
-      cache: 'no-store'
+      cache: 'no-store',
+      signal: ac ? ac.signal : undefined
     });
+    if (tid) clearTimeout(tid);
     const data = await res.json();
     if (data && data.authenticated && data.annotations && typeof data.annotations === 'object') {
       if (data.updatedAt && data.updatedAt !== lastSyncedUpdatedAt) {
@@ -2332,14 +2555,9 @@ async function pullLatestCloudNotesIfNewer() {
 window.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') {
     if (hasUnsavedAnnotations) persistAnnotationsToStorage();
-    if (currentAccountUser && hasPendingCloudSync) flushCloudSyncKeepalive();
-  } else if (document.visibilityState === 'visible') {
-    pullLatestCloudNotesIfNewer();
   }
 });
-window.addEventListener('focus', () => {
-  pullLatestCloudNotesIfNewer();
-});
+
 window.addEventListener('pagehide', () => {
   if (hasUnsavedAnnotations) persistAnnotationsToStorage();
   if (currentAccountUser && hasPendingCloudSync) flushCloudSyncKeepalive();
@@ -2372,10 +2590,14 @@ async function initAccountAndSmartboardNotes() {
   } catch(e) {}
 
   try {
+    const ac = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    const tid = ac ? setTimeout(() => ac.abort(), 4000) : null;
     const res = await fetch(`/api/notes?lessonId=${encodeURIComponent(LESSON_ID)}`, {
       method: 'GET',
-      cache: 'no-store'
+      cache: 'no-store',
+      signal: ac ? ac.signal : undefined
     });
+    if (tid) clearTimeout(tid);
     const data = await res.json();
 
     if (data && data.authenticated && data.user) {
@@ -2448,7 +2670,7 @@ async function initAccountAndSmartboardNotes() {
     currentStorageKey = STORAGE_KEY;
     loadAnnotationsFromStorage();
     resizeBoardCanvases(true);
-    updateAccountSyncUI('offline');
+    updateAccountSyncUI('guest');
   }
 }
 
@@ -2456,7 +2678,7 @@ async function initAccountAndSmartboardNotes() {
 function saveNotesJSON() {
   SoundFX.click();
   const payload = {
-    course: 'English Chapter 02 : Parts of Speech',
+    course: 'เคมี ม.5 : กรด-เบส',
     savedAt: new Date().toISOString(),
     annotations: slideAnnotations
   };
@@ -2505,80 +2727,191 @@ window.AcidBaseSmartboardAPI = {
 };
 
 
+// Two-finger touchscreen/iPad pinch zoom inside #board-viewport (cancels accidental touch strokes cleanly)
+(function attachBoardPinchGesture() {
+  const vp = document.getElementById('board-viewport');
+  if (!vp) return;
+  let pinchStartDist = 0;
+  let pinchStartZoom = 1;
+  let lastMidX = 0;
+  let lastMidY = 0;
+
+  vp.addEventListener('touchstart', (e) => {
+    if (e.touches && e.touches.length === 2) {
+      if (isDrawing && activePointerType === 'touch') {
+        clearActiveDirtyBox();
+        currentStroke = null;
+        isDrawing = false;
+        activePointerId = null;
+        document.body.classList.remove('is-drawing');
+      }
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      pinchStartDist = Math.hypot(dx, dy) || 1;
+      pinchStartZoom = boardZoom;
+      lastMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      lastMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    }
+  }, { capture: true, passive: true });
+
+  vp.addEventListener('touchmove', (e) => {
+    if (e.touches && e.touches.length === 2 && pinchStartDist > 0) {
+      if (e.cancelable) e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const curDist = Math.hypot(dx, dy) || pinchStartDist;
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      vp.scrollLeft -= (midX - lastMidX);
+      vp.scrollTop -= (midY - lastMidY);
+      lastMidX = midX;
+      lastMidY = midY;
+      setBoardZoom(pinchStartZoom * (curDist / pinchStartDist), midX, midY);
+    }
+  }, { capture: true, passive: false });
+
+  vp.addEventListener('touchend', (e) => {
+    if (!e.touches || e.touches.length < 2) {
+      pinchStartDist = 0;
+    }
+  }, { capture: true, passive: true });
+})();
 
 
 const SLIDES = [
   // =========================================================================
-  // 0. OVERVIEW
+  // 0. OVERVIEW (ภาพรวมบทเรียนแบบชีทเรียน)
   // =========================================================================
   {
     id: 'ov-1',
     group: '0. ภาพรวมบทเรียน (Overview)',
-    title: 'ผังโครงสร้าง Parts of Speech ทั้ง 8 ชนิด',
+    title: 'ผังมโนทัศน์ 8 Parts of Speech (ภาพรวมหน้า 1/2)',
     badge: 'Overview',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">★</span> หน้าที่ของคำ 8 ชนิด (8 Parts of Speech)</div>
-        <span class="slide-subtitle-badge">Chapter 02 · Core Grammar</span>
+        <div class="slide-main-title"><span class="slide-num-circle">★</span> ภาพรวม : หน้าที่ของคำ 8 ชนิด (8 Parts of Speech)</div>
+        <span class="slide-subtitle-badge">Chapter 02 · Core Grammar Worksheet</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-yellow);">กลุ่มคำหลัก (Content Words) — มีความหมายในตัวเอง</div>
-          <div class="sb-branch-list">
-            <div class="sb-branch-item"><b>1. Noun (คำนาม)</b> : คน สัตว์ สิ่งของ สถานที่ ความคิด → ....................................</div>
-            <div class="sb-branch-item"><b>2. Verb (คำกริยา)</b> : การกระทำ หรือ สภาวะ → ....................................</div>
-            <div class="sb-branch-item"><b>3. Adjective (คำคุณศัพท์)</b> : ขยาย Noun / Pronoun → ....................................</div>
-            <div class="sb-branch-item"><b>4. Adverb (คำกริยาวิเศษณ์)</b> : ขยาย V / Adj / Adv / ทั้งประโยค → ....................................</div>
+        <div class="sb-card" style="min-height:430px;">
+          <div class="sb-card-title" style="color:var(--accent-yellow);">1) กลุ่มคำหลัก (Content Words) — คำที่แบกความหมาย</div>
+          <div class="sb-branch-list" style="gap:34px;">
+            <div class="sb-branch-item"><b>1. Noun (คำนาม)</b> : <span class="sb-blank-line"></span></div>
+            <div class="sb-branch-item"><b>2. Verb (คำกริยา)</b> : <span class="sb-blank-line"></span></div>
+            <div class="sb-branch-item"><b>3. Adjective (คำคุณศัพท์)</b> : <span class="sb-blank-line"></span></div>
+            <div class="sb-branch-item"><b>4. Adverb (คำกริยาวิเศษณ์)</b> : <span class="sb-blank-line"></span></div>
           </div>
         </div>
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-cyan);">กลุ่มคำเชื่อมและแทนคำ (Function Words) — เชื่อมโครงสร้าง</div>
-          <div class="sb-branch-list">
-            <div class="sb-branch-item"><b>5. Pronoun (คำสรรพนาม)</b> : ใช้แทนคำนามไม่ให้ซ้ำ → ....................................</div>
-            <div class="sb-branch-item"><b>6. Preposition (คำบุพบท)</b> : บอกเวลา สถานที่ ทิศทาง (+ Noun) → ....................................</div>
-            <div class="sb-branch-item"><b>7. Conjunction (คำสันธาน)</b> : เชื่อมคำ วลี หรือประโยค → ....................................</div>
-            <div class="sb-branch-item"><b>8. Interjection (คำอุทาน)</b> : แสดงอารมณ์ ความรู้สึก → ....................................</div>
+        <div class="sb-card" style="min-height:430px;">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">2) กลุ่มคำเชื่อม/แทน (Function Words) — ตัวเชื่อมโครงสร้าง</div>
+          <div class="sb-branch-list" style="gap:34px;">
+            <div class="sb-branch-item"><b>5. Pronoun (คำสรรพนาม)</b> : <span class="sb-blank-line"></span></div>
+            <div class="sb-branch-item"><b>6. Preposition (คำบุพบท)</b> : <span class="sb-blank-line"></span></div>
+            <div class="sb-branch-item"><b>7. Conjunction (คำสันธาน)</b> : <span class="sb-blank-line"></span></div>
+            <div class="sb-branch-item"><b>8. Interjection (คำอุทาน)</b> : <span class="sb-blank-line"></span></div>
           </div>
         </div>
       </div>
-      <div class="sb-write-space" style="border:1.5px dashed rgba(129,140,248,0.4); border-radius:12px; padding:16px; min-height:170px;">
-        <span style="color:var(--accent-cyan); font-size:16px; font-weight:700;">✏️ สรุปหลักการจำ 1 ประโยค (เขียนจุดสังเกตที่ต้องระวังในการทำข้อสอบ):</span>
+      <div class="sb-card" style="min-height:220px;">
+        <div class="sb-card-title" style="color:var(--accent-pink);">✏️ พื้นที่จดสรุปรวม: คำ 1 คำ เปลี่ยนชนิดคำได้เมื่อเปลี่ยน Suffix หรือตำแหน่ง!</div>
+        <div style="font-size:19px; color:var(--text-muted); margin-bottom:10px;">ตัวอย่างคำตระกูลเดียวกัน: &nbsp; <b>create</b> (_____) &nbsp;/&nbsp; <b>creation</b> (_____) &nbsp;/&nbsp; <b>creative</b> (_____) &nbsp;/&nbsp; <b>creatively</b> (_____)</div>
+        <div style="height:110px;"></div>
+      </div>
+    `
+  },
+  {
+    id: 'ov-2',
+    group: '0. ภาพรวมบทเรียน (Overview)',
+    title: 'แผนภาพโครงสร้างตำแหน่งคำในประโยค (Sentence Anatomy 2/2)',
+    badge: 'Overview',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">★</span> กลยุทธ์วิเคราะห์ "ตำแหน่งคำในประโยค" (Sentence Slots)</div>
+        <span class="slide-subtitle-badge">พื้นฐานก่อนลุยข้อสอบ</span>
+      </div>
+      <div class="sb-card" style="margin-bottom:24px;">
+        <div class="sb-card-title" style="color:var(--accent-yellow);">แผนภาพตำแหน่งทองคำ — ระบุ Part of Speech ใต้คำแต่ละคำบนกระดาน</div>
+        <svg viewBox="0 0 1080 240" style="width:100%; height:235px; display:block;">
+          <rect x="20" y="25" width="1040" height="80" rx="14" fill="rgba(15,23,42,0.55)" stroke="#6366f1" stroke-width="2"/>
+          <text x="55" y="74" fill="#facc15" font-size="25" font-weight="bold">The</text>
+          <text x="145" y="74" fill="#f472b6" font-size="25" font-weight="bold">very</text>
+          <text x="240" y="74" fill="#38bdf8" font-size="25" font-weight="bold">smart</text>
+          <text x="355" y="74" fill="#4ade80" font-size="25" font-weight="bold">student</text>
+          <text x="495" y="74" fill="#fb923c" font-size="25" font-weight="bold">answered</text>
+          <text x="655" y="74" fill="#f472b6" font-size="25" font-weight="bold">accurately</text>
+          <text x="820" y="74" fill="#c084fc" font-size="25" font-weight="bold">in</text>
+          <text x="875" y="74" fill="#4ade80" font-size="25" font-weight="bold">class.</text>
+
+          <line x1="75" y1="105" x2="75" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="170" y1="105" x2="170" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="275" y1="105" x2="275" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="400" y1="105" x2="400" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="555" y1="105" x2="555" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="720" y1="105" x2="720" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="830" y1="105" x2="830" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+          <line x1="910" y1="105" x2="910" y2="155" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4"/>
+
+          <text x="45" y="185" fill="#94a3b8" font-size="16">(.............)</text>
+          <text x="135" y="185" fill="#94a3b8" font-size="16">(.............)</text>
+          <text x="240" y="185" fill="#94a3b8" font-size="16">(.............)</text>
+          <text x="365" y="185" fill="#94a3b8" font-size="16">(.............)</text>
+          <text x="515" y="185" fill="#94a3b8" font-size="16">(.............)</text>
+          <text x="680" y="185" fill="#94a3b8" font-size="16">(.............)</text>
+          <text x="800" y="185" fill="#94a3b8" font-size="16">(........)</text>
+          <text x="885" y="185" fill="#94a3b8" font-size="16">(........)</text>
+        </svg>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card" style="min-height:240px;">
+          <div class="sb-card-title" style="color:var(--accent-green);">ขั้นตอนทำข้อสอบ Word Family (ไม่ต้องแปลก็ตอบได้)</div>
+          <div class="sb-branch-list" style="gap:24px;">
+            <div class="sb-branch-item">ขั้นที่ 1 : ดูตัวเลือก — รากศัพท์เดียวกัน ต่างแค่ ...............</div>
+            <div class="sb-branch-item">ขั้นที่ 2 : ดูหน้า & หลังช่องว่างเพื่อหา ...............</div>
+            <div class="sb-branch-item">ขั้นที่ 3 : เช็กเอกพจน์ / พหูพจน์ / ความหมาย</div>
+          </div>
+        </div>
+        <div class="sb-card" style="min-height:240px;">
+          <div class="sb-card-title" style="color:var(--accent-orange);">✏️ ลองวิเคราะห์สด: She is an _________ (efficient) worker.</div>
+          <div style="height:165px;"></div>
+        </div>
       </div>
     `
   },
 
   // =========================================================================
-  // 1. NOUN (คำนาม) & DETERMINERS
+  // 1. NOUN (คำนาม)
   // =========================================================================
   {
     id: 't1-1',
     group: '1. Noun (คำนาม)',
-    title: '1.1 ประเภทของคำนาม & นามนับได้-นับไม่ได้',
+    title: '1.1 ประเภทของ Noun & Countable vs Uncountable',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">1.1</span> Noun (คำนาม) & Countable vs Uncountable</div>
+        <div class="slide-main-title"><span class="slide-num-circle">1</span> Noun (คำนาม) & การแบ่งประเภท</div>
         <span class="slide-subtitle-badge">เรื่องที่ 1 · Noun</span>
       </div>
+      <div class="sb-card" style="margin-bottom:24px;">
+        <div class="sb-card-title" style="color:var(--accent-yellow);">1) ประเภทหลักของคำนามตามหน้าที่ (จดตัวอย่างบนกระดาน)</div>
+        <table class="sb-table">
+          <tr><th style="width:22%;">ประเภท</th><th style="width:38%;">ความหมาย / จุดสังเกต</th><th>ตัวอย่างคำ (เติมเพิ่มตอนสอน)</th></tr>
+          <tr><td><b>Common vs Proper</b></td><td>นามทั่วไป vs ชื่อเฉพาะ (ขึ้นต้น ..........)</td><td style="height:68px;">city / ...................</td></tr>
+          <tr><td><b>Concrete vs Abstract</b></td><td>จับต้องได้ vs นามธรรม (ความรู้สึก/แนวคิด)</td><td style="height:68px;">table / ...................</td></tr>
+          <tr><td><b>Collective Noun</b></td><td>นามกลุ่มก้อน (team, committee, staff)</td><td style="height:68px;">การใช้ V. เอก/พหูพจน์: ......................</td></tr>
+        </table>
+      </div>
       <div class="sb-grid-2">
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-yellow);">1) แบ่งตามลักษณะการนับ (Countability)</div>
-          <table class="sb-table" style="margin-top:8px;">
-            <tr><th>ประเภท</th><th>ลักษณะสำคัญ</th><th>ตัวอย่างคำออกสอบบ่อย (จดเพิ่ม)</th></tr>
-            <tr><td><b>Countable Noun</b><br>(นามนับได้)</td><td>มีรูปเอกพจน์ (a/an) และพหูพจน์ (-s/-es)</td><td style="height:64px;">book, ..............................</td></tr>
-            <tr><td><b>Uncountable Noun</b><br>(นามนับไม่ได้)</td><td>ห้ามเติม a/an และ <b>ห้ามเติม -s</b> ใช้กับ V.เอกพจน์เสมอ</td><td style="height:82px;">information, advice, furniture, luggage, equipment, ....................</td></tr>
-          </table>
+        <div class="sb-card" style="min-height:280px;">
+          <div class="sb-card-title" style="color:var(--accent-green);">2) Countable Noun (นามนับได้)</div>
+          <div style="font-size:18px; color:var(--text-muted); margin-bottom:12px;">• มีรูปเอกพจน์ (ใช้กับ a / an) และ พหูพจน์ (เติม ........)</div>
+          <div style="font-size:18px; color:var(--text-muted);">• รูปพหูพจน์เปลี่ยนรูป (Irregular Plural) :</div>
+          <div style="height:145px;"></div>
         </div>
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-pink);">2) คำนำหน้านาม (Determiners) ที่ต้องเช็กคู่กัน</div>
-          <div class="sb-branch-list" style="gap:18px;">
-            <div class="sb-branch-item">• ใช้กับ <b>นับได้พหูพจน์</b> : many, a few, few, several, a number of → ..........................</div>
-            <div class="sb-branch-item">• ใช้กับ <b>นับไม่ได้</b> : much, a little, little, an amount of → ..........................</div>
-            <div class="sb-branch-item">• ใช้ได้ <b>ทั้งสองแบบ</b> : some, any, a lot of, plenty of → ..........................</div>
-          </div>
-          <div class="sb-write-space" style="margin-top:14px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:110px;">
-            <span style="color:var(--text-muted); font-size:15px;">✏️ จดสูตรจำ: a number of + N.พหูพจน์ + V........ / the number of + N.พหูพจน์ + V........</span>
-          </div>
+        <div class="sb-card" style="min-height:280px;">
+          <div class="sb-card-title" style="color:var(--accent-pink);">3) Uncountable Noun (นามนับไม่ได้ — ข้อสอบชอบออก!)</div>
+          <div style="font-size:18px; color:var(--text-muted); margin-bottom:10px;"><b>กฎเหล็ก:</b> ห้ามเติม a/an, ห้ามเติม -s, ใช้กับ V.................. เสมอ</div>
+          <div style="font-size:17px; color:var(--accent-yellow);">information, advice, furniture, luggage, equipment, knowledge, weather, work, ...</div>
+          <div style="height:120px;"></div>
         </div>
       </div>
     `
@@ -2586,96 +2919,213 @@ const SLIDES = [
   {
     id: 't1-2',
     group: '1. Noun (คำนาม)',
-    title: '1.2 ตำแหน่งของ Noun และ Noun Suffixes',
+    title: '1.2 คำนำหน้านาม (Determiners & Quantifiers)',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">1.2</span> ตำแหน่งของ Noun ในประโยค & การดู Suffixes</div>
+        <div class="slide-main-title"><span class="slide-num-circle">1</span> Determiners & Quantifiers คู่คำนาม</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 1 · Noun</span>
+      </div>
+      <table class="sb-table">
+        <thead>
+          <tr><th style="width:28%;">กลุ่มคำบอกปริมาณ</th><th style="width:36%;">ตามด้วย Noun ชนิดใด?</th><th>คำออกสอบและจุดหลอกที่ต้องเติม</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">many, few, a few,<br>several, both, various</td>
+            <td style="height:120px;"></td>
+            <td style="font-size:18px;">• ความหมายต่างกัน: <b>few</b> (.........) vs <b>a few</b> (.........)<br>• <b>a number of</b> + N.พหู + V........</td>
+          </tr>
+          <tr>
+            <td class="row-label">much, little, a little,<br>a great deal of, an amount of</td>
+            <td style="height:120px;"></td>
+            <td style="font-size:18px;">• ความหมายต่างกัน: <b>little</b> (.........) vs <b>a little</b> (.........)<br>• ตัวอย่าง: ............................</td>
+          </tr>
+          <tr>
+            <td class="row-label">some, any, a lot of,<br>lots of, plenty of, most</td>
+            <td style="height:110px;"></td>
+            <td style="font-size:18px;">• ผัน Verb ตาม .........................<br>• <b>the number of</b> + N.พหู + V........</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="sb-card" style="min-height:170px;">
+        <div class="sb-card-title" style="color:var(--accent-cyan);">✏️ สรุปการใช้ a / an / the และคำนามผสม (Compound Noun)</div>
+        <div style="height:95px;"></div>
+      </div>
+    `
+  },
+  {
+    id: 't1-3',
+    group: '1. Noun (คำนาม)',
+    title: '1.3 5 ตำแหน่งทองคำของ Noun และ Noun Suffixes',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">1</span> ตำแหน่งวาง Noun ในประโยค & หางคำ (Suffixes)</div>
         <span class="slide-subtitle-badge">ออกสอบ TOEIC / A-Level บ่อยมาก</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-green);">5 ตำแหน่งหลักที่ต้องเติม "Noun"</div>
-          <div class="sb-branch-list" style="gap:16px;">
-            <div class="sb-branch-item">1. <b>หน้ากริยา (Subject)</b> : _________ is very important.</div>
-            <div class="sb-branch-item">2. <b>หลังกริยา (Object)</b> : We need _________ immediately.</div>
-            <div class="sb-branch-item">3. <b>หลัง a / an / the / this / my</b> : The _________ of the project...</div>
-            <div class="sb-branch-item">4. <b>หลัง Adjective</b> : a significant _________</div>
-            <div class="sb-branch-item">5. <b>หลัง Preposition (in, on, of, for, with)</b> : without _________</div>
+        <div class="sb-card" style="min-height:520px;">
+          <div class="sb-card-title" style="color:var(--accent-green);">5 ตำแหน่งที่บังคับเติม "Noun"</div>
+          <div class="sb-branch-list" style="gap:28px;">
+            <div class="sb-branch-item">1. <b>หน้า Verb แท้ (Subject)</b> :<br><span class="sb-blank-line"></span> helps the team grow.</div>
+            <div class="sb-branch-item">2. <b>หลัง Vt. (Object)</b> :<br>We need <span class="sb-blank-line"></span> right away.</div>
+            <div class="sb-branch-item">3. <b>หลัง Determiner (a / an / the / my)</b> :<br>The <span class="sb-blank-line"></span> of the event...</div>
+            <div class="sb-branch-item">4. <b>หลัง Adjective</b> :<br>a significant <span class="sb-blank-line"></span></div>
+            <div class="sb-branch-item">5. <b>หลัง Preposition (in, on, of, for)</b> :<br>without <span class="sb-blank-line"></span></div>
           </div>
         </div>
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-cyan);">หางคำ (Noun Suffixes) — เห็นปุ๊บรู้ทันทีว่าเป็นคำนาม</div>
+        <div class="sb-card" style="min-height:520px;">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">ตาราง Noun Suffixes — พานักเรียนเติมคำศัพท์</div>
           <table class="sb-table" style="margin-top:8px;">
-            <tr><th>Suffix</th><th>ความหมาย/ประเภท</th><th>ตัวอย่าง (เติมเพิ่มบนกระดาน)</th></tr>
-            <tr><td><b>-tion / -sion</b></td><td>การ... / ความ...</td><td>decision, ............................</td></tr>
-            <tr><td><b>-ment / -ness</b></td><td>การ... / สภาพ</td><td>management, ......................</td></tr>
-            <tr><td><b>-ity / -ty</b></td><td>ความเป็น...</td><td>productivity, .......................</td></tr>
-            <tr><td><b>-ance / -ence</b></td><td>การ... / ความ...</td><td>performance, ......................</td></tr>
-            <tr><td><b>-er / -or / -ist</b></td><td>ผู้กระทำ (คน)</td><td>applicant, ..........................</td></tr>
+            <tr><th>Suffix</th><th>ความหมาย / ประเภท</th><th>ตัวอย่างคำ (จดเพิ่ม)</th></tr>
+            <tr><td><b>-tion / -sion</b></td><td>การ / ความ (สิ่งของ)</td><td style="height:58px;">decision, ..................</td></tr>
+            <tr><td><b>-ment / -ness</b></td><td>การ / สภาพ (สิ่งของ)</td><td style="height:58px;">agreement, .................</td></tr>
+            <tr><td><b>-ity / -ty</b></td><td>ความเป็น (สิ่งของ)</td><td style="height:58px;">quality, .....................</td></tr>
+            <tr><td><b>-ance / -ence</b></td><td>การ / ความ (สิ่งของ)</td><td style="height:58px;">confidence, ................</td></tr>
+            <tr><td><b>-er / -or / -ist / -ant</b></td><td><b>คน</b> / ผู้กระทำ</td><td style="height:58px;">applicant, .................</td></tr>
           </table>
         </div>
       </div>
     `
   },
+  
   {
-    id: 'q1-1',
-    group: '1. Noun (คำนาม)',
-    title: 'แบบฝึกหัด 1.1 : Noun & Determiners (ข้อ 1 - 3)',
-    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    id: "q1-1",
+    group: "1. Noun (คำนาม)",
+    title: "แบบฝึกหัด 1.1 : Uncountable Noun & Suffix",
+    badge: "แบบฝึกหัดย่อย",
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Noun (ข้อ 1 - 3)</div>
-        <span class="slide-subtitle-badge">Part 1 · ฝึกวิเคราะห์ตำแหน่งและชนิดคำนาม</span>
+        <div class="slide-main-title">📝 แบบฝึกหัด 1.1 : Uncountable Noun & Suffix</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 1 · Noun</span>
       </div>
       <div class="quiz-problem-box">
         <div class="quiz-question-text">1. The manager gave us very useful ________ about how to improve our presentation.</div>
         <div class="quiz-choices-grid">
-          <div>A. advise</div><div>B. advices</div><div>C. advice</div><div>D. advising</div>
+          <div>A. advise</div>
+          <div>B. advices</div>
+          <div>C. advice</div>
+          <div>D. advising</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q1-2",
+    group: "1. Noun (คำนาม)",
+    title: "แบบฝึกหัด 1.2 : Quantifier + Uncountable Noun",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 1.2 : Quantifier + Uncountable Noun</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 1 · Noun</span>
       </div>
       <div class="quiz-problem-box">
         <div class="quiz-question-text">2. Because of the heavy rain, there was ________ traffic on the main highway this morning.</div>
         <div class="quiz-choices-grid">
-          <div>A. many</div><div>B. a few</div><div>C. much</div><div>D. several</div>
+          <div>A. many</div>
+          <div>B. a few</div>
+          <div>C. much</div>
+          <div>D. several</div>
         </div>
       </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">3. The ________ of the new software will take place next Monday at 9:00 a.m.</div>
-        <div class="quiz-choices-grid">
-          <div>A. install</div><div>B. installation</div><div>C. installed</div><div>D. installing</div>
-        </div>
-      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
     `
   },
   {
-    id: 'q1-2',
-    group: '1. Noun (คำนาม)',
-    title: 'แบบฝึกหัด 1.2 : Noun Suffixes & Usage (ข้อ 4 - 6)',
-    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    id: "q1-3",
+    group: "1. Noun (คำนาม)",
+    title: "แบบฝึกหัด 1.3 : ตำแหน่งหลัง The ... of",
+    badge: "แบบฝึกหัดย่อย",
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Noun (ข้อ 4 - 6)</div>
-        <span class="slide-subtitle-badge">Part 1 · ฝึกวิเคราะห์ตำแหน่งและชนิดคำนาม</span>
+        <div class="slide-main-title">📝 แบบฝึกหัด 1.3 : ตำแหน่งหลัง The ... of</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 1 · Noun</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">4. All ________ for the marketing position must submit their resumes before Friday.</div>
+        <div class="quiz-question-text">3. The ________ of the new accounting software will take place next Monday at 9:00 a.m.</div>
         <div class="quiz-choices-grid">
-          <div>A. apply</div><div>B. applications</div><div>C. applicants</div><div>D. applicable</div>
+          <div>A. install</div>
+          <div>B. installation</div>
+          <div>C. installed</div>
+          <div>D. installing</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q1-4",
+    group: "1. Noun (คำนาม)",
+    title: "แบบฝึกหัด 1.4 : Noun Suffix (คน vs สิ่งของ)",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 1.4 : Noun Suffix (คน vs สิ่งของ)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 1 · Noun</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">5. We need to buy some new office ________ before the branch opens next month.</div>
+        <div class="quiz-question-text">4. All ________ for the senior marketing position must submit their resumes before Friday.</div>
         <div class="quiz-choices-grid">
-          <div>A. furnitures</div><div>B. furniture</div><div>C. a furniture</div><div>D. many furniture</div>
+          <div>A. apply</div>
+          <div>B. applications</div>
+          <div>C. applicants</div>
+          <div>D. applicable</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q1-5",
+    group: "1. Noun (คำนาม)",
+    title: "แบบฝึกหัด 1.5 : Uncountable Noun Trap",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 1.5 : Uncountable Noun Trap</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 1 · Noun</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">6. Employee ________ has increased significantly since the company introduced flexible hours.</div>
+        <div class="quiz-question-text">5. We need to purchase some modern office ________ before the new branch opens next month.</div>
         <div class="quiz-choices-grid">
-          <div>A. satisfy</div><div>B. satisfied</div><div>C. satisfactory</div><div>D. satisfaction</div>
+          <div>A. furnitures</div>
+          <div>B. furniture</div>
+          <div>C. a furniture</div>
+          <div>D. many furniture</div>
         </div>
       </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q1-6",
+    group: "1. Noun (คำนาม)",
+    title: "แบบฝึกหัด 1.6 : A number of vs The number of",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 1.6 : A number of vs The number of</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 1 · Noun</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">6. A large number of international students ________ attending the orientation workshop today.</div>
+        <div class="quiz-choices-grid">
+          <div>A. is</div>
+          <div>B. are</div>
+          <div>C. was</div>
+          <div>D. has</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
     `
   },
 
@@ -2685,125 +3135,243 @@ const SLIDES = [
   {
     id: 't2-1',
     group: '2. Pronoun (คำสรรพนาม)',
-    title: '2.1 ตารางคำสรรพนามทั้ง 5 รูป (ฝึกเติมบนกระดาน)',
+    title: '2.1 ตารางคำสรรพนาม 5 รูป (พานักเรียนเติมครบตาราง)',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">2.1</span> Pronoun (คำสรรพนาม 5 รูป)</div>
+        <div class="slide-main-title"><span class="slide-num-circle">2</span> Pronoun (คำสรรพนามทั้ง 5 รูป)</div>
         <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
       </div>
-      <div class="sb-card">
-        <div class="sb-card-title" style="color:var(--accent-yellow);">ตารางสรุปสรรพนาม — เติมช่องว่างให้ครบเพื่อใช้แยกตำแหน่ง Subject / Object / Possessive</div>
-        <table class="sb-table" style="margin-top:10px; font-size:18px;">
+      <div class="sb-card" style="margin-bottom:22px;">
+        <div class="sb-card-title" style="color:var(--accent-yellow);">ตารางสรุปสรรพนาม — เติมช่องว่างให้ครบเพื่อใช้แยก Subject / Object / Possessive / Reflexive</div>
+        <table class="sb-table" style="font-size:19px;">
           <tr>
-            <th>Subject (ประธาน)</th>
-            <th>Object (กรรม)</th>
-            <th>Possessive Adj (+ Noun)</th>
-            <th>Possessive Pronoun (ไม่ต้องมี Noun)</th>
-            <th>Reflexive (ด้วยตัวเอง)</th>
+            <th>Subject<br><span style="font-size:14px;">(หน้า Verb)</span></th>
+            <th>Object<br><span style="font-size:14px;">(หลัง Verb / Prep)</span></th>
+            <th>Possessive Adj<br><span style="font-size:14px;">(ต้องตามด้วย Noun)</span></th>
+            <th>Possessive Pron<br><span style="font-size:14px;">(ไม่ต้องมี Noun)</span></th>
+            <th>Reflexive<br><span style="font-size:14px;">(ด้วยตัวเอง)</span></th>
           </tr>
-          <tr><td>I</td><td>me</td><td>my</td><td>mine</td><td>....................</td></tr>
-          <tr><td>You</td><td>....................</td><td>your</td><td>....................</td><td>yourself / yourselves</td></tr>
-          <tr><td>We</td><td>us</td><td>....................</td><td>ours</td><td>....................</td></tr>
-          <tr><td>They</td><td>....................</td><td>their</td><td>....................</td><td>themselves</td></tr>
-          <tr><td>He</td><td>him</td><td>....................</td><td>his</td><td>....................</td></tr>
-          <tr><td>She</td><td>....................</td><td>her</td><td>....................</td><td>herself</td></tr>
-          <tr><td>It</td><td>it</td><td>....................</td><td>(ไม่มี)</td><td>....................</td></tr>
+          <tr><td>I</td><td>me</td><td>........</td><td>mine</td><td>....................</td></tr>
+          <tr><td>You</td><td>........</td><td>your</td><td>............</td><td>yourself / yourselves</td></tr>
+          <tr><td>We</td><td>........</td><td>our</td><td>............</td><td>....................</td></tr>
+          <tr><td>They</td><td>them</td><td>........</td><td>theirs</td><td>....................</td></tr>
+          <tr><td>He</td><td>........</td><td>his</td><td>............</td><td>....................</td></tr>
+          <tr><td>She</td><td>her</td><td>........</td><td>hers</td><td>....................</td></tr>
+          <tr><td>It</td><td>........</td><td>........</td><td>(ไม่มี)</td><td>....................</td></tr>
         </table>
       </div>
-      <div class="sb-write-space" style="border:1.5px dashed rgba(129,140,248,0.4); border-radius:12px; padding:14px; min-height:110px;">
-        <span style="color:var(--accent-cyan); font-size:15px;">✏️ ข้อควรระวัง: <b>it's</b> = it is / it has | ส่วน <b>its</b> (ไม่มี ' ) = ของมัน (Possessive Adj)</span>
+      <div class="sb-grid-2">
+        <div class="sb-card" style="min-height:160px;">
+          <div class="sb-card-title" style="color:var(--accent-pink);">⚠️ กับดักที่ออกสอบทุกสนาม: its vs it's</div>
+          <div style="font-size:18px;">• <b>its</b> (ไม่มี ' ) = ............... เช่น ....................<br>• <b>it's</b> (มี ' ) = ................. เช่น ....................</div>
+        </div>
+        <div class="sb-card" style="min-height:160px;">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">✏️ ตัวอย่างการใช้ by + Reflexive Pronoun</div>
+          <div style="height:80px;"></div>
+        </div>
       </div>
     `
   },
   {
     id: 't2-2',
     group: '2. Pronoun (คำสรรพนาม)',
-    title: '2.2 Indefinite Pronouns & Relative Pronouns',
+    title: '2.2 Indefinite Pronouns & เอกพจน์-พหูพจน์',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">2.2</span> Indefinite & Relative Pronouns</div>
-        <span class="slide-subtitle-badge">ออกสอบบ่อยเรื่องเอกพจน์-พหูพจน์</span>
+        <div class="slide-main-title"><span class="slide-num-circle">2</span> Indefinite Pronouns & S-V Agreement</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-orange);">1) Indefinite Pronouns (สรรพนามไม่ชี้เฉพาะ)</div>
-          <div class="sb-branch-list" style="gap:16px;">
-            <div class="sb-branch-item">• กลุ่ม <b>เอกพจน์เสมอ (+ V.เอกพจน์)</b> :<br>every-, some-, any-, no- (+ body / one / thing)<br>เช่น Everyone _______ (be) ready.</div>
-            <div class="sb-branch-item">• <b>each / every / either / neither + of + N.พหูพจน์</b> → ใช้ V..............</div>
-            <div class="sb-branch-item">• กลุ่ม <b>พหูพจน์เสมอ (+ V.พหูพจน์)</b> :<br>both, few, many, several → .............................</div>
+        <div class="sb-card" style="min-height:460px;">
+          <div class="sb-card-title" style="color:var(--accent-orange);">กลุ่มบังคับ "เอกพจน์เสมอ" (+ V.เอกพจน์)</div>
+          <div class="sb-branch-list" style="gap:24px;">
+            <div class="sb-branch-item">• ขึ้นต้นด้วย <b>every- / some- / any- / no-</b><br>ลงท้ายด้วย -one / -body / -thing → เสมอเป็น .............</div>
+            <div class="sb-branch-item">• <b>each / every + Noun เอกพจน์</b> → ใช้ V..............</div>
+            <div class="sb-branch-item">• <b>each / either / neither + of + N.พหูพจน์</b> → ประธานหลักคือตัวข้างหน้า จึงใช้ V..............</div>
+          </div>
+          <div style="margin-top:20px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:110px;">
+            <span style="color:var(--text-muted); font-size:16px;">✏️ จดตัวอย่างข้อสอบ: Neither of the plans (is / are) ready yet.</span>
           </div>
         </div>
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-cyan);">2) Relative Pronouns (สรรพนามเชื่อมประโยค)</div>
-          <div class="sb-branch-list" style="gap:16px;">
-            <div class="sb-branch-item">• <b>who</b> (คน/ประธาน) vs <b>whom</b> (คน/กรรม): ........................</div>
-            <div class="sb-branch-item">• <b>whose + Noun</b> (แสดงความเป็นเจ้าของ): ........................</div>
-            <div class="sb-branch-item">• <b>which</b> (สิ่งของ/สัตว์) vs <b>that</b> (คน/สิ่งของ): ........................</div>
+        <div class="sb-card" style="min-height:460px;">
+          <div class="sb-card-title" style="color:var(--accent-green);">กลุ่มพหูพจน์ vs ผันตามคำหลัง "of" (SANAM)</div>
+          <div class="sb-branch-list" style="gap:24px;">
+            <div class="sb-branch-item">• <b>พหูพจน์เสมอ</b> : both, few, many, several, others → V..............</div>
+            <div class="sb-branch-item">• <b>ผันตามนามหลัง of (SANAM)</b> : Some / Any / None / All / Most + of + ....... → ............</div>
+          </div>
+          <div style="margin-top:24px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:185px;">
+            <span style="color:var(--text-muted); font-size:16px;">✏️ พื้นที่จดเติมเปรียบเทียบ: All of the water (is / are) / All of the books (is / are)</span>
           </div>
         </div>
       </div>
     `
   },
   {
-    id: 'q2-1',
+    id: 't2-3',
     group: '2. Pronoun (คำสรรพนาม)',
-    title: 'แบบฝึกหัด 2.1 : Pronoun Forms (ข้อ 1 - 3)',
-    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    title: '2.3 Relative Pronouns (who / whom / whose / which / that)',
+    badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Pronoun (ข้อ 1 - 3)</div>
-        <span class="slide-subtitle-badge">Part 2 · เลือกรูปสรรพนามให้ถูกตำแหน่ง</span>
+        <div class="slide-main-title"><span class="slide-num-circle">2</span> Relative Pronouns (คำสรรพนามเชื่อมประโยค)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
       </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">1. Ms. Clara completed the entire annual financial report by ________.</div>
-        <div class="quiz-choices-grid">
-          <div>A. she</div><div>B. her</div><div>C. hers</div><div>D. herself</div>
-        </div>
+      <div class="sb-card" style="margin-bottom:22px;">
+        <div class="sb-card-title" style="color:var(--accent-cyan);">หลักการเลือก Relative Pronoun โดยดู "คำข้างหน้า" + "คำข้างหลัง"</div>
+        <table class="sb-table" style="font-size:18px;">
+          <tr><th style="width:18%;">Relative Word</th><th style="width:24%;">ใช้แทนคำนามด้านหน้า</th><th style="width:28%;">สิ่งที่ตามหลังช่องว่าง</th><th>ตัวอย่างประโยค (เติมบนกระดาน)</th></tr>
+          <tr><td><b>who</b></td><td>คน</td><td>ตามด้วย ............. (ทำหน้าที่ประธาน)</td><td style="height:68px;">The woman ______ called...</td></tr>
+          <tr><td><b>whom</b></td><td>คน</td><td>ตามด้วย ............. (ทำหน้าที่กรรม)</td><td style="height:68px;">The client ______ we met...</td></tr>
+          <tr><td><b>whose</b></td><td>คน / สิ่งของ (แสดงความเป็น......)</td><td>ตามด้วย ............. ทันที!</td><td style="height:68px;">The artist ______ painting...</td></tr>
+          <tr><td><b>which / that</b></td><td>สิ่งของ / สัตว์ (that ใช้คนได้)</td><td>ได้ทั้ง Verb หรือ S + V</td><td style="height:68px;">*ห้ามใช้ that หลังจุลภาค ( , )!</td></tr>
+          <tr><td><b>where / when</b></td><td>สถานที่ / เวลา</td><td>ต้องตามด้วยประโยคสมบูรณ์ (S+V+O)</td><td style="height:68px;">The hotel ______ we stayed...</td></tr>
+        </table>
       </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">2. Please send ________ a confirmation email once the package arrives.</div>
-        <div class="quiz-choices-grid">
-          <div>A. we</div><div>B. us</div><div>C. our</div><div>D. ours</div>
-        </div>
-      </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">3. The company updated ________ privacy policy to protect customer data.</div>
-        <div class="quiz-choices-grid">
-          <div>A. it</div><div>B. its</div><div>C. it's</div><div>D. itself</div>
-        </div>
+      <div class="sb-card" style="min-height:150px;">
+        <div class="sb-card-title" style="color:var(--accent-yellow);">✏️ ข้อควรระวัง: The office [which / where] I visited vs [which / where] I work</div>
+        <div style="height:75px;"></div>
       </div>
     `
   },
+  
   {
-    id: 'q2-2',
-    group: '2. Pronoun (คำสรรพนาม)',
-    title: 'แบบฝึกหัด 2.2 : Indefinite & Relative Pronouns (ข้อ 4 - 6)',
-    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    id: "q2-1",
+    group: "2. Pronoun (คำสรรพนาม)",
+    title: "แบบฝึกหัด 2.1 : Reflexive Pronoun",
+    badge: "แบบฝึกหัดย่อย",
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Pronoun (ข้อ 4 - 6)</div>
-        <span class="slide-subtitle-badge">Part 2 · เลือกรูปสรรพนามให้ถูกตำแหน่ง</span>
+        <div class="slide-main-title">📝 แบบฝึกหัด 2.1 : Reflexive Pronoun</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">4. Everyone in the conference room ________ asked to turn off mobile phones.</div>
+        <div class="quiz-question-text">1. Ms. Clara completed the entire annual financial report by ________ without any help.</div>
         <div class="quiz-choices-grid">
-          <div>A. was</div><div>B. were</div><div>C. are</div><div>D. have</div>
+          <div>A. she</div>
+          <div>B. her</div>
+          <div>C. hers</div>
+          <div>D. herself</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q2-2",
+    group: "2. Pronoun (คำสรรพนาม)",
+    title: "แบบฝึกหัด 2.2 : Object Pronoun",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 2.2 : Object Pronoun</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">5. My laptop is broken, so may I borrow ________ for an hour?</div>
+        <div class="quiz-question-text">2. Please send ________ a confirmation email as soon as the shipment arrives at the warehouse.</div>
         <div class="quiz-choices-grid">
-          <div>A. you</div><div>B. your</div><div>C. yours</div><div>D. yourself</div>
+          <div>A. we</div>
+          <div>B. us</div>
+          <div>C. our</div>
+          <div>D. ours</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q2-3",
+    group: "2. Pronoun (คำสรรพนาม)",
+    title: "แบบฝึกหัด 2.3 : Possessive Adjective (its vs it's)",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 2.3 : Possessive Adjective (its vs it's)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">6. The candidate ________ resume impressed the director was invited for a second interview.</div>
+        <div class="quiz-question-text">3. The software company recently updated ________ privacy policy to protect user data.</div>
         <div class="quiz-choices-grid">
-          <div>A. who</div><div>B. whom</div><div>C. whose</div><div>D. which</div>
+          <div>A. it</div>
+          <div>B. its</div>
+          <div>C. it's</div>
+          <div>D. itself</div>
         </div>
       </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q2-4",
+    group: "2. Pronoun (คำสรรพนาม)",
+    title: "แบบฝึกหัด 2.4 : Indefinite Pronoun",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 2.4 : Indefinite Pronoun</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">4. Everyone in the conference hall ________ asked to switch mobile phones to silent mode.</div>
+        <div class="quiz-choices-grid">
+          <div>A. was</div>
+          <div>B. were</div>
+          <div>C. are</div>
+          <div>D. have</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q2-5",
+    group: "2. Pronoun (คำสรรพนาม)",
+    title: "แบบฝึกหัด 2.5 : Possessive Pronoun",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 2.5 : Possessive Pronoun</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">5. My laptop battery ran out during the lecture, so may I borrow ________ for an hour?</div>
+        <div class="quiz-choices-grid">
+          <div>A. you</div>
+          <div>B. your</div>
+          <div>C. yours</div>
+          <div>D. yourself</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q2-6",
+    group: "2. Pronoun (คำสรรพนาม)",
+    title: "แบบฝึกหัด 2.6 : Relative Pronoun",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 2.6 : Relative Pronoun</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">6. The candidate ________ portfolio impressed the board was offered the position immediately.</div>
+        <div class="quiz-choices-grid">
+          <div>A. who</div>
+          <div>B. whom</div>
+          <div>C. whose</div>
+          <div>D. which</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
     `
   },
 
@@ -2813,35 +3381,36 @@ const SLIDES = [
   {
     id: 't3-1',
     group: '3. Verb (คำกริยา)',
-    title: '3.1 Action Verb, Linking Verb & Helping Verb',
+    title: '3.1 Action Verb, Helping Verb & Linking Verb',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">3.1</span> ประเภทของคำกริยา (Verb Categories)</div>
+        <div class="slide-main-title"><span class="slide-num-circle">3</span> Verb Categories (Action / Helping / Linking)</div>
         <span class="slide-subtitle-badge">เรื่องที่ 3 · Verb</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-green);">1) Action Verb (กริยาแสดงอาการ)</div>
-          <div class="sb-branch-list" style="gap:16px;">
-            <div class="sb-branch-item">• <b>Transitive Verb (Vt. - ต้องการกรรม)</b> :<br>ต้องมี Object มารับ เช่น make, discuss, attend → .........................</div>
-            <div class="sb-branch-item">• <b>Intransitive Verb (Vi. - ไม่ต้องมีกรรม)</b> :<br>จบในตัว เช่น arrive, happen, sleep → .........................</div>
+        <div class="sb-card" style="min-height:530px;">
+          <div class="sb-card-title" style="color:var(--accent-green);">1) Action Verb (กริยาแสดงการกระทำ)</div>
+          <div class="sb-branch-list" style="gap:24px;">
+            <div class="sb-branch-item">• <b>Transitive (Vt.)</b> = กริยา ............. กรรม เช่น discuss, mention, raise, attend → ..................</div>
+            <div class="sb-branch-item">• <b>Intransitive (Vi.)</b> = กริยา ............. กรรม เช่น arrive, happen, rise, exist → ..................</div>
           </div>
-          <div class="sb-card-title" style="color:var(--accent-yellow); margin-top:22px;">2) Helping / Modal Verbs (กริยาช่วย)</div>
-          <div class="sb-branch-list">
-            <div class="sb-branch-item">• will, would, can, could, may, might, must, should<br><b>กฎเหล็ก:</b> Modal Verb + ............................ เสมอ!</div>
+          <div class="sb-card-title" style="color:var(--accent-yellow); margin-top:26px;">2) Helping & Modal Verbs (กริยาช่วย)</div>
+          <div class="sb-branch-list" style="gap:18px;">
+            <div class="sb-branch-item">• will / would / can / could / may / might / should / must</div>
+            <div class="sb-branch-item"><b>กฎเหล็ก:</b> Modal Verb + .................... เสมอ!</div>
           </div>
         </div>
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-pink);">3) Linking Verb (กริยาเชื่อม) — ออกสอบบ่อยมาก!</div>
-          <p style="font-size:17px; color:var(--text-muted); margin-bottom:12px;">ตามด้วย <b>Adjective</b> (ห้ามตามด้วย Adverb -ly!)</p>
-          <div class="sb-branch-list" style="gap:14px;">
-            <div class="sb-branch-item">• <b>V. to be</b> (is, am, are, was, were)</div>
-            <div class="sb-branch-item">• <b>กลุ่มประสาทสัมผัส</b> : look, sound, smell, taste, feel</div>
-            <div class="sb-branch-item">• <b>กลุ่มเปลี่ยนสภาพ/คงสภาพ</b> : become, seem, appear, remain, stay, grow, turn</div>
+        <div class="sb-card" style="min-height:530px;">
+          <div class="sb-card-title" style="color:var(--accent-pink);">3) Linking Verb (กริยาเชื่อม — ออกสอบบ่อยที่สุด!)</div>
+          <div style="font-size:19px; color:var(--accent-yellow); margin-bottom:14px;">กฎ: Linking Verb + .......................... (ห้ามตามด้วย Adverb -ly!)</div>
+          <div class="sb-branch-list" style="gap:20px;">
+            <div class="sb-branch-item">• <b>V. to be</b> (is, am, are, was, were, be, been)</div>
+            <div class="sb-branch-item">• <b>ประสาทสัมผัส</b> : look, sound, smell, taste, feel</div>
+            <div class="sb-branch-item">• <b>เปลี่ยนสภาพ/คงสภาพ</b> : become, seem, appear, remain, stay, grow, turn, prove</div>
           </div>
-          <div class="sb-write-space" style="margin-top:14px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:90px;">
-            <span style="color:var(--text-muted); font-size:15px;">✏️ ตัวอย่าง: The soup smells (good / well). / She looks (happy / happily).</span>
+          <div style="margin-top:22px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:14px; min-height:135px;">
+            <span style="color:var(--text-muted); font-size:16px;">✏️ จดเติม: The team remained (calm / calmly). | The soup smells (good / well).</span>
           </div>
         </div>
       </div>
@@ -2850,95 +3419,201 @@ const SLIDES = [
   {
     id: 't3-2',
     group: '3. Verb (คำกริยา)',
-    title: '3.2 Verb Suffixes & กริยา 3 ช่องที่ชอบสับสน',
+    title: '3.2 กริยาแท้ vs กริยาไม่แท้ & Verb Suffixes',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">3.2</span> Verb Suffixes & Confusing Verbs</div>
-        <span class="slide-subtitle-badge">จับคู่คำกริยาให้แม่น</span>
+        <div class="slide-main-title"><span class="slide-num-circle">3</span> Finite vs Non-Finite Verb & Verb Suffixes</div>
+        <span class="slide-subtitle-badge">แยกให้ออก ประโยคนี้ขาดกริยาแท้หรือยัง?</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-cyan);">หางคำที่ชี้ว่าเป็น "Verb" (Verb Suffixes)</div>
-          <table class="sb-table" style="margin-top:10px;">
-            <tr><th>Suffix</th><th>ตัวอย่างคำ</th><th>ความหมาย / ตัวอย่างเพิ่ม</th></tr>
-            <tr><td><b>-ize / -ise</b></td><td>organize, realize</td><td>จัดระเบียบ / ...........................</td></tr>
-            <tr><td><b>-ify</b></td><td>clarify, simplify</td><td>ทำให้ชัดเจน / ........................</td></tr>
-            <tr><td><b>-ate</b></td><td>create, motivate</td><td>สร้างสรรค์ / .........................</td></tr>
-            <tr><td><b>-en</b></td><td>strengthen, shorten</td><td>ทำให้แข็งแรง / .....................</td></tr>
-          </table>
+        <div class="sb-card" style="min-height:460px;">
+          <div class="sb-card-title" style="color:var(--accent-orange);">กริยาแท้ (Finite) vs กริยาไม่แท้ (Non-Finite)</div>
+          <div class="sb-branch-list" style="gap:22px;">
+            <div class="sb-branch-item">• 1 ประโยคหลัก ต้องมีกริยาแท้อย่างน้อย ...... ตัว (ผันตาม Tense และประธาน)</div>
+            <div class="sb-branch-item">• <b>3 รูปที่ไม่ใช่กริยาแท้</b> (ห้ามใช้เป็นกริยาหลักเดี่ยวๆ!) :<br>1) .................... &nbsp; 2) .................... &nbsp; 3) ....................</div>
+          </div>
+          <div style="margin-top:20px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:175px;">
+            <span style="color:var(--text-muted); font-size:16px;">✏️ ทดสอบ: The man standing over there (be) my boss.</span>
+          </div>
         </div>
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-orange);">กริยาคู่สับสน (เติม V2 - V3 และความหมาย)</div>
+        <div class="sb-card" style="min-height:460px;">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">ตาราง Verb Suffixes — เห็นหางคำรู้ทันทีว่าเป็น Verb</div>
           <table class="sb-table" style="margin-top:10px;">
-            <tr><th>V1</th><th>V2 / V3</th><th>ต้องการกรรม?</th></tr>
-            <tr><td><b>rise</b> (ขึ้นเอง)</td><td>............ / ............</td><td>Vi. (ไม่มีกรรม)</td></tr>
-            <tr><td><b>raise</b> (ยกขึ้น)</td><td>............ / ............</td><td>Vt. (มีกรรม)</td></tr>
-            <tr><td><b>lie</b> (นอน/วางตัว)</td><td>............ / ............</td><td>Vi. (ไม่มีกรรม)</td></tr>
-            <tr><td><b>lay</b> (วางสิ่งของ)</td><td>............ / ............</td><td>Vt. (มีกรรม)</td></tr>
+            <tr><th>Suffix</th><th>ความหมาย</th><th>ตัวอย่างคำ (จดเพิ่มบนกระดาน)</th></tr>
+            <tr><td><b>-ize / -ise</b></td><td>ทำให้เป็น...</td><td style="height:75px;">finalize, organize, ...................</td></tr>
+            <tr><td><b>-ify</b></td><td>ทำให้กลายเป็น...</td><td style="height:75px;">clarify, simplify, ....................</td></tr>
+            <tr><td><b>-ate</b></td><td>กระทำ / สร้าง</td><td style="height:75px;">motivate, evaluate, .................</td></tr>
+            <tr><td><b>-en</b></td><td>ทำให้...ขึ้น</td><td style="height:75px;">strengthen, shorten, ................</td></tr>
           </table>
         </div>
       </div>
     `
   },
   {
-    id: 'q3-1',
+    id: 't3-3',
     group: '3. Verb (คำกริยา)',
-    title: 'แบบฝึกหัด 3.1 : Verb Recognition & Modals (ข้อ 1 - 3)',
-    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    title: '3.3 กริยาคู่สับสนออกสอบประจำ (rise/raise, lie/lay, affect/effect)',
+    badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Verb (ข้อ 1 - 3)</div>
-        <span class="slide-subtitle-badge">Part 3 · แยกกริยาแท้ กริยาช่วย และ Linking Verb</span>
+        <div class="slide-main-title"><span class="slide-num-circle">3</span> Confusing Verbs ที่ข้อสอบชอบเอามาหลอก!</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 3 · Verb</span>
       </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">1. We must ________ the budget proposal before the board meeting starts.</div>
-        <div class="quiz-choices-grid">
-          <div>A. final</div><div>B. finally</div><div>C. finalize</div><div>D. finalization</div>
-        </div>
+      <div class="sb-card" style="margin-bottom:24px;">
+        <div class="sb-card-title" style="color:var(--accent-yellow);">ตารางฝึกผัน V1 - V2 - V3 และความต้องการกรรม (Vt. vs Vi.)</div>
+        <table class="sb-table" style="font-size:19px;">
+          <tr><th>กริยา V1</th><th>V2 (อดีต)</th><th>V3 (Past Participle)</th><th>ต้องการกรรม?</th><th>ความหมาย (จดบนกระดาน)</th></tr>
+          <tr><td><b>rise</b></td><td style="height:74px;"></td><td></td><td>Vi. (ไม่เอากรรม)</td><td></td></tr>
+          <tr><td><b>raise</b></td><td style="height:74px;"></td><td></td><td>Vt. (ต้องมีกรรม)</td><td></td></tr>
+          <tr><td><b>lie</b> (นอน/อยู่)</td><td style="height:74px;"></td><td></td><td>Vi. (ไม่เอากรรม)</td><td></td></tr>
+          <tr><td><b>lay</b> (วางสิ่งของ)</td><td style="height:74px;"></td><td></td><td>Vt. (ต้องมีกรรม)</td><td></td></tr>
+          <tr><td><b>sit / set</b></td><td style="height:74px;"></td><td></td><td>Vi. vs Vt.</td><td></td></tr>
+        </table>
       </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">2. Despite the strict deadline, the new team remained ________ under pressure.</div>
-        <div class="quiz-choices-grid">
-          <div>A. calm</div><div>B. calmly</div><div>C. calmness</div><div>D. calmed</div>
-        </div>
-      </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">3. The CEO will ________ the new sustainability plan during tomorrow's press conference.</div>
-        <div class="quiz-choices-grid">
-          <div>A. clarity</div><div>B. clear</div><div>C. clarify</div><div>D. clearly</div>
-        </div>
+      <div class="sb-card" style="min-height:175px;">
+        <div class="sb-card-title" style="color:var(--accent-pink);">✏️ คู่สับสนคลาสสิก: affect (ชนิดคำ: ..........) vs effect (ชนิดคำ: ..........)</div>
+        <div style="height:95px;"></div>
       </div>
     `
   },
+  
   {
-    id: 'q3-2',
-    group: '3. Verb (คำกริยา)',
-    title: 'แบบฝึกหัด 3.2 : Transitive & Confusing Verbs (ข้อ 4 - 6)',
-    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    id: "q3-1",
+    group: "3. Verb (คำกริยา)",
+    title: "แบบฝึกหัด 3.1 : Modal Verb + Base Verb",
+    badge: "แบบฝึกหัดย่อย",
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Verb (ข้อ 4 - 6)</div>
-        <span class="slide-subtitle-badge">Part 3 · แยกกริยาแท้ กริยาช่วย และ Linking Verb</span>
+        <div class="slide-main-title">📝 แบบฝึกหัด 3.1 : Modal Verb + Base Verb</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 3 · Verb</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">4. Electricity prices have ________ by nearly 10 percent over the past year.</div>
+        <div class="quiz-question-text">1. We must ________ the budget proposal before the executive board meeting starts tomorrow.</div>
         <div class="quiz-choices-grid">
-          <div>A. raised</div><div>B. risen</div><div>C. rose</div><div>D. raising</div>
+          <div>A. final</div>
+          <div>B. finally</div>
+          <div>C. finalize</div>
+          <div>D. finalization</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q3-2",
+    group: "3. Verb (คำกริยา)",
+    title: "แบบฝึกหัด 3.2 : Linking Verb + Adjective",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 3.2 : Linking Verb + Adjective</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 3 · Verb</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">5. Please ________ your hand if you have any questions about the assignment.</div>
+        <div class="quiz-question-text">2. Despite the strict deadline and heavy workload, the engineering team remained ________.</div>
         <div class="quiz-choices-grid">
-          <div>A. rise</div><div>B. raise</div><div>C. arisen</div><div>D. risen</div>
+          <div>A. calm</div>
+          <div>B. calmly</div>
+          <div>C. calmness</div>
+          <div>D. calmed</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q3-3",
+    group: "3. Verb (คำกริยา)",
+    title: "แบบฝึกหัด 3.3 : Verb Suffix (-ify)",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 3.3 : Verb Suffix (-ify)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 3 · Verb</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">6. Regular practice can significantly ________ your confidence when speaking in public.</div>
+        <div class="quiz-question-text">3. The spokesperson will ________ the new refund guidelines during tomorrow's press briefing.</div>
         <div class="quiz-choices-grid">
-          <div>A. strong</div><div>B. strength</div><div>C. strongly</div><div>D. strengthen</div>
+          <div>A. clarity</div>
+          <div>B. clearly</div>
+          <div>C. clarify</div>
+          <div>D. clarification</div>
         </div>
       </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q3-4",
+    group: "3. Verb (คำกริยา)",
+    title: "แบบฝึกหัด 3.4 : Confusing Verbs (rise vs raise)",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 3.4 : Confusing Verbs (rise vs raise)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 3 · Verb</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">4. Electricity prices have ________ by nearly 12 percent over the past fiscal year.</div>
+        <div class="quiz-choices-grid">
+          <div>A. raised</div>
+          <div>B. risen</div>
+          <div>C. rose</div>
+          <div>D. raising</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q3-5",
+    group: "3. Verb (คำกริยา)",
+    title: "แบบฝึกหัด 3.5 : Transitive Verb (ต้องการกรรม)",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 3.5 : Transitive Verb (ต้องการกรรม)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 3 · Verb</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">5. Please ________ your hand if you have any questions about the laboratory safety rules.</div>
+        <div class="quiz-choices-grid">
+          <div>A. rise</div>
+          <div>B. raise</div>
+          <div>C. arisen</div>
+          <div>D. risen</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q3-6",
+    group: "3. Verb (คำกริยา)",
+    title: "แบบฝึกหัด 3.6 : Verb Suffix (-en)",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 3.6 : Verb Suffix (-en)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 3 · Verb</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">6. Daily speaking practice can significantly ________ your confidence in front of an audience.</div>
+        <div class="quiz-choices-grid">
+          <div>A. strong</div>
+          <div>B. strength</div>
+          <div>C. strongly</div>
+          <div>D. strengthen</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
     `
   },
 
@@ -2948,174 +3623,287 @@ const SLIDES = [
   {
     id: 't4-1',
     group: '4. Adjective & Adverb',
-    title: '4.1 Adjective (คำคุณศัพท์) & -ing vs -ed',
+    title: '4.1 ตำแหน่งของ Adjective, Order (OSASCOMP) & Suffixes',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">4.1</span> Adjective (คำคุณศัพท์)</div>
-        <span class="slide-subtitle-badge">เรื่องที่ 4 · Modifiers</span>
+        <div class="slide-main-title"><span class="slide-num-circle">4</span> Adjective (คำคุณศัพท์) — ขยาย Noun/Pronoun</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-yellow);">ตำแหน่งวาง Adjective & Suffixes</div>
-          <div class="sb-branch-list" style="gap:16px;">
-            <div class="sb-branch-item">1. <b>หน้า Noun</b> : an <u>innovative</u> solution</div>
-            <div class="sb-branch-item">2. <b>หลัง Linking Verb</b> : The task seems <u>difficult</u>.</div>
-            <div class="sb-branch-item">3. <b>หลัง -thing / -one / -body</b> : something <u>special</u></div>
-            <div class="sb-branch-item">• <b>Adj Suffixes</b> : -ful, -less, -ous, -ive, -able/-ible, -al, -ic → ตัวอย่าง: ............................</div>
+        <div class="sb-card" style="min-height:380px;">
+          <div class="sb-card-title" style="color:var(--accent-yellow);">3 ตำแหน่งหลักที่เติม Adjective</div>
+          <div class="sb-branch-list" style="gap:28px;">
+            <div class="sb-branch-item">1. <b>หน้าคำนาม</b> : an <span class="sb-blank-line"></span> plan</div>
+            <div class="sb-branch-item">2. <b>หลัง Linking Verb</b> : stays <span class="sb-blank-line"></span></div>
+            <div class="sb-branch-item">3. <b>หลัง -thing / -one / -body</b> : something <span class="sb-blank-line"></span></div>
           </div>
         </div>
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-pink);">Participial Adjective (-ing vs -ed)</div>
+        <div class="sb-card" style="min-height:380px;">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">Adjective Suffixes (จดคำศัพท์ตัวอย่าง)</div>
           <div class="sb-branch-list" style="gap:18px;">
-            <div class="sb-branch-item">• <b>V-ing</b> = น่า... (ผู้กระทำ/ต้นเหตุ) :<br>an <u>interesting</u> book / a <u>tiring</u> day</div>
-            <div class="sb-branch-item">• <b>V-ed</b> = รู้สึก... (ผู้ถูกกระทำ) :<br>I am <u>interested</u> in / feel <u>tired</u></div>
-          </div>
-          <div class="sb-write-space" style="margin-top:14px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:95px;">
-            <span style="color:var(--text-muted); font-size:15px;">✏️ จดเติม: The news was (shocking / shocked). Everyone was (shocking / shocked).</span>
+            <div class="sb-branch-item">• <b>-ful / -less</b> : useful / ....................</div>
+            <div class="sb-branch-item">• <b>-ous / -ive</b> : famous / creative / ...................</div>
+            <div class="sb-branch-item">• <b>-able / -ible</b> : reliable / ....................</div>
+            <div class="sb-branch-item">• <b>-al / -ic / -ent / -ant</b> : national / efficient / ...............</div>
           </div>
         </div>
+      </div>
+      <div class="sb-card" style="min-height:220px;">
+        <div class="sb-card-title" style="color:var(--accent-pink);">ลำดับการเรียง Adjective หลายตัว (OSASCOMP) — เติมคำย่อแต่ละตัว</div>
+        <div style="font-size:24px; font-weight:700; letter-spacing:3px; color:var(--accent-yellow); margin:8px 0 18px 0;">
+          O &nbsp; → &nbsp; S &nbsp; → &nbsp; A &nbsp; → &nbsp; S &nbsp; → &nbsp; C &nbsp; → &nbsp; O &nbsp; → &nbsp; M &nbsp; → &nbsp; P &nbsp; (+ Noun)
+        </div>
+        <div style="height:105px;"></div>
       </div>
     `
   },
   {
     id: 't4-2',
     group: '4. Adjective & Adverb',
-    title: '4.2 Adverb (คำกริยาวิเศษณ์) & กับดักคำยกเว้น',
+    title: '4.2 Participial Adjective (-ing vs -ed) ออกสอบทุกปี!',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">4.2</span> Adverb (คำกริยาวิเศษณ์) & Common Traps</div>
-        <span class="slide-subtitle-badge">จุดที่ข้อสอบชอบหลอก</span>
+        <div class="slide-main-title"><span class="slide-num-circle">4</span> V-ing (น่า...) vs V-ed (รู้สึก...) Adjective</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-cyan);">Adverb ขยายได้ 4 อย่าง (ยกเว้น Noun!)</div>
-          <div class="sb-branch-list" style="gap:15px;">
-            <div class="sb-branch-item">1. ขยาย <b>Verb</b> : He speaks <u>fluently</u>.</div>
-            <div class="sb-branch-item">2. ขยาย <b>Adjective</b> : <u>extremely</u> useful</div>
-            <div class="sb-branch-item">3. ขยาย <b>Adverb</b> : runs <u>very</u> fast</div>
-            <div class="sb-branch-item">4. ขยาย <b>ทั้งประโยค</b> : <u>Fortunately</u>, we arrived on time.</div>
+        <div class="sb-card" style="min-height:210px;">
+          <div class="sb-card-title" style="color:var(--accent-green);">1) V-ing Adjective = "น่า..." (ผู้กระทำ/ต้นเหตุ)</div>
+          <div style="font-size:18px; color:var(--text-muted);">ใช้บอกลักษณะของคน/สิ่งของที่เป็นตัวก่อความรู้สึกนั้น<br>เช่น an <b>interesting</b> report / ......................</div>
+        </div>
+        <div class="sb-card" style="min-height:210px;">
+          <div class="sb-card-title" style="color:var(--accent-pink);">2) V-ed Adjective = "รู้สึก..." (ผู้ได้รับผล)</div>
+          <div style="font-size:18px; color:var(--text-muted);">มักใช้วางหลัง be/feel หรือหน้าคำนามที่ถูกกระทำ<br>เช่น feels <b>interested</b> / a <b>damaged</b> car / ................</div>
+        </div>
+      </div>
+      <div class="sb-card">
+        <div class="sb-card-title" style="color:var(--accent-yellow);">ตารางฝึกแยกคู่ V-ing / V-ed พร้อม Preposition ที่ใช้คู่กัน</div>
+        <table class="sb-table" style="font-size:18px;">
+          <tr><th>กริยาต้นแบบ</th><th>V-ing (น่า...)</th><th>V-ed (รู้สึก...) + Preposition คู่กัน</th><th>ตัวอย่างประโยค (จดเพิ่ม)</th></tr>
+          <tr><td><b>interest</b></td><td>interesting</td><td>interested + ..........</td><td style="height:56px;"></td></tr>
+          <tr><td><b>satisfy</b></td><td>satisfying</td><td>satisfied + ..........</td><td style="height:56px;"></td></tr>
+          <tr><td><b>excite / bore</b></td><td>exciting / boring</td><td>excited + ........ / bored + ........</td><td style="height:56px;"></td></tr>
+          <tr><td><b>confuse / tire</b></td><td>confusing / tiring</td><td>confused / tired (+ .......)</td><td style="height:56px;"></td></tr>
+        </table>
+      </div>
+    `
+  },
+  {
+    id: 't4-3',
+    group: '4. Adjective & Adverb',
+    title: '4.3 Adverb (กริยาวิเศษณ์) & กับดักคำยกเว้นที่ต้องระวัง',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">4</span> Adverb & กับดัก (-ly ไม่ใช่ Adverb / คำความหมายเปลี่ยน)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card" style="min-height:460px;">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">Adverb ขยายได้ 4 อย่าง (ห้ามขยาย Noun!)</div>
+          <div class="sb-branch-list" style="gap:24px;">
+            <div class="sb-branch-item">1. ขยาย <b>Verb</b> : speaks <u>fluently</u> / works ...........</div>
+            <div class="sb-branch-item">2. ขยาย <b>Adjective</b> : <u>extremely</u> busy / .............</div>
+            <div class="sb-branch-item">3. ขยาย <b>Adverb</b> : runs <u>very</u> quickly / .............</div>
+            <div class="sb-branch-item">4. ขยาย <b>ทั้งประโยค</b> : <u>Fortunately</u>, we arrived early.</div>
           </div>
         </div>
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-orange);">⚠️ กับดัก Adverb ไม่เติม -ly / ความหมายเปลี่ยน!</div>
+        <div class="sb-card" style="min-height:460px;">
+          <div class="sb-card-title" style="color:var(--accent-orange);">⚠️ กับดักที่ออกสอบบ่อยที่สุด</div>
           <table class="sb-table" style="margin-top:8px;">
-            <tr><th>คู่คำหลอก</th><th>ความหมายต่างกันอย่างไร (จดบนกระดาน)</th></tr>
-            <tr><td><b>hard</b> vs <b>hardly</b></td><td>hard = ................... / hardly = แทบจะไม่</td></tr>
-            <tr><td><b>late</b> vs <b>lately</b></td><td>late = สาย / lately = ...........................</td></tr>
-            <tr><td><b>good</b> vs <b>well</b></td><td>good = (Adj) / well = (Adv) ...............</td></tr>
-            <tr><td><b>friendly / lovely</b></td><td>ลงท้าย -ly แต่เป็น ......................... !</td></tr>
+            <tr><th>คู่คำหลอก</th><th>ความหมายต่างกันอย่างไร (พานักเรียนเติม)</th></tr>
+            <tr><td><b>hard</b> vs <b>hardly</b></td><td style="height:64px;">hard = ............... / hardly = ...............</td></tr>
+            <tr><td><b>late</b> vs <b>lately</b></td><td style="height:64px;">late = ............... / lately = ...............</td></tr>
+            <tr><td><b>high</b> vs <b>highly</b></td><td style="height:64px;">high = ............... / highly = ...............</td></tr>
+            <tr><td><b>good</b> vs <b>well</b></td><td style="height:64px;">good (ชนิด: .......) / well (ชนิด: .......)</td></tr>
+            <tr><td><b>friendly / lovely / costly</b></td><td style="height:64px;">ลงท้าย -ly แต่เป็น ................... !</td></tr>
           </table>
         </div>
       </div>
     `
   },
+  
   {
-    id: 'q4-1',
-    group: '4. Adjective & Adverb',
-    title: 'แบบฝึกหัด 4.1 : Adjective vs Adverb (ข้อ 1 - 4)',
-    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    id: "q4-1",
+    group: "4. Adjective & Adverb",
+    title: "แบบฝึกหัด 4.1 : Adverb ขยาย Adjective ขั้นกว่า",
+    badge: "แบบฝึกหัดย่อย",
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title">📝 ตัวอย่างข้อสอบ Adjective & Adverb (ข้อ 1 - 4)</div>
-        <span class="slide-subtitle-badge">Part 4 · แยกคำขยายนามและคำขยายกริยา</span>
+        <div class="slide-main-title">📝 แบบฝึกหัด 4.1 : Adverb ขยาย Adjective ขั้นกว่า</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">1. Our new software system is ________ faster than the previous version.</div>
+        <div class="quiz-question-text">1. Our new cloud database system is ________ faster than the previous version.</div>
         <div class="quiz-choices-grid">
-          <div>A. significant</div><div>B. significantly</div><div>C. significance</div><div>D. signify</div>
+          <div>A. significant</div>
+          <div>B. significantly</div>
+          <div>C. significance</div>
+          <div>D. signify</div>
         </div>
       </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">2. All customers were ________ with the quick response from the support team.</div>
-        <div class="quiz-choices-grid">
-          <div>A. please</div><div>B. pleasing</div><div>C. pleased</div><div>D. pleasure</div>
-        </div>
-      </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">3. The technician carefully inspected the ________ equipment before the show began.</div>
-        <div class="quiz-choices-grid">
-          <div>A. damage</div><div>B. damaged</div><div>C. damaging</div><div>D. damages</div>
-        </div>
-      </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">4. The receptionists at this hotel are always ________ and helpful to guests.</div>
-        <div class="quiz-choices-grid">
-          <div>A. friend</div><div>B. friendly</div><div>C. friendship</div><div>D. friendliestly</div>
-        </div>
-      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
     `
   },
   {
-    id: 'q4-2',
-    group: '4. Adjective & Adverb',
-    title: 'แบบฝึกหัด 4.2 : Adverb Traps & Modifiers (ข้อ 5 - 8)',
-    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    id: "q4-2",
+    group: "4. Adjective & Adverb",
+    title: "แบบฝึกหัด 4.2 : Participial Adjective (-ed vs -ing)",
+    badge: "แบบฝึกหัดย่อย",
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title">📝 ตัวอย่างข้อสอบ Adjective & Adverb (ข้อ 5 - 8)</div>
-        <span class="slide-subtitle-badge">Part 4 · แยกคำขยายนามและคำขยายกริยา</span>
+        <div class="slide-main-title">📝 แบบฝึกหัด 4.2 : Participial Adjective (-ed vs -ing)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">5. There was so much noise outside that I could ________ hear what the speaker was saying.</div>
+        <div class="quiz-question-text">2. All passengers were ________ with the prompt assistance provided by the airline staff.</div>
         <div class="quiz-choices-grid">
-          <div>A. hard</div><div>B. hardly</div><div>C. harder</div><div>D. hardness</div>
+          <div>A. please</div>
+          <div>B. pleasing</div>
+          <div>C. pleased</div>
+          <div>D. pleasure</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q4-3",
+    group: "4. Adjective & Adverb",
+    title: "แบบฝึกหัด 4.3 : Adjective หน้า Noun",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 4.3 : Adjective หน้า Noun</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">6. Have you seen any good movies ________? I haven't been to the cinema for months.</div>
+        <div class="quiz-question-text">3. The technician carefully inspected the ________ audio equipment before the concert began.</div>
         <div class="quiz-choices-grid">
-          <div>A. late</div><div>B. later</div><div>C. latest</div><div>D. lately</div>
+          <div>A. damage</div>
+          <div>B. damaged</div>
+          <div>C. damaging</div>
+          <div>D. damages</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q4-4",
+    group: "4. Adjective & Adverb",
+    title: "แบบฝึกหัด 4.4 : คำลงท้าย -ly ที่เป็น Adjective",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 4.4 : คำลงท้าย -ly ที่เป็น Adjective</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">7. Although he has only worked here for two weeks, he performs his duties very ________.</div>
+        <div class="quiz-question-text">4. The front-desk receptionists at this resort are always ________ and helpful to visitors.</div>
         <div class="quiz-choices-grid">
-          <div>A. good</div><div>B. well</div><div>C. better</div><div>D. bestly</div>
+          <div>A. friend</div>
+          <div>B. friendly</div>
+          <div>C. friendship</div>
+          <div>D. friendlily</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q4-5",
+    group: "4. Adjective & Adverb",
+    title: "แบบฝึกหัด 4.5 : กับดัก hard vs hardly",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 4.5 : กับดัก hard vs hardly</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">8. ________, the flight was delayed for three hours due to severe weather conditions.</div>
+        <div class="quiz-question-text">5. There was so much construction noise outside that I could ________ hear the lecturer.</div>
         <div class="quiz-choices-grid">
-          <div>A. Unfortunate</div><div>B. Unfortunately</div><div>C. Fortune</div><div>D. Fortunate</div>
+          <div>A. hard</div>
+          <div>B. hardly</div>
+          <div>C. harder</div>
+          <div>D. hardness</div>
         </div>
       </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q4-6",
+    group: "4. Adjective & Adverb",
+    title: "แบบฝึกหัด 4.6 : กับดัก late vs lately & good vs well",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 4.6 : กับดัก late vs lately & good vs well</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 4 · Adj & Adv</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">6. Although Kevin joined the team last month, he performs every complex task very ________.</div>
+        <div class="quiz-choices-grid">
+          <div>A. good</div>
+          <div>B. well</div>
+          <div>C. lately</div>
+          <div>D. late</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
     `
   },
 
   // =========================================================================
-  // 5. PREPOSITION, CONJUNCTION & INTERJECTION
+  // 5. PREPOSITION (คำบุพบท)
   // =========================================================================
   {
     id: 't5-1',
-    group: '5. Preposition & Conjunction',
-    title: '5.1 Preposition (บุพบท) & การใช้ in / on / at',
+    group: '5. Preposition (คำบุพบท)',
+    title: '5.1 แผนภาพ IN / ON / AT (Time & Place) และกฎทอง Preposition',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">5.1</span> Preposition (คำบุพบท)</div>
-        <span class="slide-subtitle-badge">เรื่องที่ 5 · Preposition + Noun/V.ing</span>
+        <div class="slide-main-title"><span class="slide-num-circle">5</span> Preposition (คำบุพบท) & สามเหลี่ยม IN / ON / AT</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 5 · Preposition</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-yellow);">สามเหลี่ยม in / on / at (เวลา & สถานที่)</div>
-          <table class="sb-table" style="margin-top:8px;">
-            <tr><th>คำ</th><th>Time (เวลา)</th><th>Place (สถานที่)</th></tr>
-            <tr><td><b>IN</b></td><td>ปี เดือน ฤดู ช่วงวัน (in May)</td><td>ประเทศ เมือง พื้นที่ปิด (in Bangkok)</td></tr>
-            <tr><td><b>ON</b></td><td>วัน วันที่ (on Monday, on May 5)</td><td>พื้นผิว ถนน (on Sukhumvit Rd)</td></tr>
-            <tr><td><b>AT</b></td><td>เวลาเป๊ะ (at 8:30 a.m.)</td><td>จุดเฉพาะ (at the entrance)</td></tr>
-          </table>
-        </div>
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-cyan);">กฎเหล็ก Preposition + Noun / Noun Phrase / V.ing</div>
-          <div class="sb-branch-list" style="gap:16px;">
-            <div class="sb-branch-item">• <b>บอกสาเหตุ</b> : because of, due to, owing to + .........................</div>
-            <div class="sb-branch-item">• <b>บอกความขัดแย้ง</b> : despite, in spite of + .........................</div>
-            <div class="sb-branch-item">• <b>บอกช่วงเวลา</b> : during (+ Noun) vs while (+ S + V)</div>
+        <div class="sb-card" style="min-height:470px;">
+          <div class="sb-card-title" style="color:var(--accent-yellow);">สามเหลี่ยมจำแม่น IN / ON / AT (ใหญ่ ➔ กลาง ➔ เล็ก/เป๊ะ)</div>
+          <svg viewBox="0 0 480 280" style="width:100%; height:265px; display:block;">
+            <polygon points="240,20 440,250 40,250" fill="rgba(56,189,248,0.08)" stroke="#38bdf8" stroke-width="2.5"/>
+            <line x1="173" y1="96" x2="307" y2="96" stroke="#facc15" stroke-width="2" stroke-dasharray="5,4"/>
+            <line x1="107" y1="172" x2="373" y2="172" stroke="#facc15" stroke-width="2" stroke-dasharray="5,4"/>
+            <text x="225" y="72" fill="#f87171" font-size="24" font-weight="bold">AT</text>
+            <text x="218" y="145" fill="#facc15" font-size="24" font-weight="bold">ON</text>
+            <text x="223" y="222" fill="#4ade80" font-size="26" font-weight="bold">IN</text>
+            <text x="320" y="72" fill="#94a3b8" font-size="14">เวลาเป๊ะ / จุดเฉพาะ</text>
+            <text x="355" y="145" fill="#94a3b8" font-size="14">วัน / วันที่ / พื้นผิว</text>
+            <text x="415" y="222" fill="#94a3b8" font-size="14">ปี/เดือน/เมือง</text>
+          </svg>
+          <div style="font-size:17px; color:var(--text-muted); margin-top:8px;">
+            ✏️ เติมตัวอย่าง: IN (.......) / ON (.......) / AT (.......)
           </div>
-          <div class="sb-write-space" style="margin-top:14px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:90px;">
-            <span style="color:var(--text-muted); font-size:15px;">✏️ จดเติม: ห้ามใช้ "despite of" เด็ดขาด! (ใช้ despite หรือ in spite of เท่านั้น)</span>
+        </div>
+        <div class="sb-card" style="min-height:470px;">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">กฎเหล็กหลัง Preposition (ห้ามลืมเด็ดขาด!)</div>
+          <div class="sb-branch-list" style="gap:24px;">
+            <div class="sb-branch-item">หลัง Preposition ต้องตามด้วย 3 อย่างเท่านั้น:<br>1) .............. &nbsp; 2) ................ &nbsp; 3) ................ (เช่น after finishing)</div>
+            <div class="sb-branch-item"><b>⚠️ ห้ามตามด้วย ประโยค (S+V) หรือ V.1 เด็ดขาด!</b></div>
+            <div class="sb-branch-item">ข้อยกเว้น "to" : look forward to / used to / object to + ...............</div>
+          </div>
+          <div style="margin-top:20px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:110px;">
+            <span style="color:var(--text-muted); font-size:16px;">✏️ จดเติม: Before (enter / entering) the room, turn off the lights.</span>
           </div>
         </div>
       </div>
@@ -3123,109 +3911,350 @@ const SLIDES = [
   },
   {
     id: 't5-2',
-    group: '5. Preposition & Conjunction',
-    title: '5.2 Conjunction (สันธาน) & Interjection (อุทาน)',
+    group: '5. Preposition (คำบุพบท)',
+    title: '5.2 Preposition บอกเหตุผล ขัดแย้ง & Collocations ยอดฮิต',
     badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title"><span class="slide-num-circle">5.2</span> Conjunction & Interjection</div>
-        <span class="slide-subtitle-badge">แยก Conjunction (+ S+V) vs Preposition (+ N)</span>
+        <div class="slide-main-title"><span class="slide-num-circle">5</span> Preposition ออกสอบบ่อย & Preposition Collocations</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 5 · Preposition</span>
       </div>
       <div class="sb-grid-2">
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-green);">1) Coordinating (FANBOYS) เชื่อมระดับเดียวกัน</div>
-          <div class="sb-branch-list" style="gap:12px;">
-            <div class="sb-branch-item"><b>F</b>or (เพราะ) · <b>A</b>nd (และ) · <b>N</b>or (และไม่) · <b>B</b>ut (แต่) · <b>O</b>r (หรือ) · <b>Y</b>et (แต่ทว่า) · <b>S</b>o (ดังนั้น)</div>
-          </div>
-          <div class="sb-card-title" style="color:var(--accent-pink); margin-top:20px;">2) Subordinating Conjunctions (+ ประโยค S + V)</div>
-          <div class="sb-branch-list" style="gap:12px;">
-            <div class="sb-branch-item">• <b>เหตุผล</b> : because, since, as + S + V</div>
-            <div class="sb-branch-item">• <b>ขัดแย้ง</b> : although, though, even though + S + V</div>
-            <div class="sb-branch-item">• <b>เงื่อนไข/เวลา</b> : if, unless, while, until, before, after</div>
-          </div>
-        </div>
-        <div class="sb-card">
-          <div class="sb-card-title" style="color:var(--accent-orange);">ตารางเทียบจุดหลอก + 3) Interjection (คำอุทาน)</div>
+        <div class="sb-card" style="min-height:470px;">
+          <div class="sb-card-title" style="color:var(--accent-orange);">กลุ่มคำบุพบทเชื่อมความ (ตามด้วย Noun Phrase / V.ing)</div>
           <table class="sb-table" style="margin-top:8px;">
-            <tr><th>โครงสร้าง</th><th>ตามด้วย Clause (S+V)</th><th>ตามด้วย Noun / V.ing</th></tr>
-            <tr><td><b>เหตุผล</b></td><td>because / since</td><td>................................</td></tr>
-            <tr><td><b>ขัดแย้ง</b></td><td>although / even though</td><td>................................</td></tr>
-            <tr><td><b>เวลา</b></td><td>while</td><td>................................</td></tr>
+            <tr><th>ความหมาย</th><th>คำที่ใช้บ่อย (เติมตัวที่เหลือ)</th></tr>
+            <tr><td><b>เพราะว่า</b></td><td style="height:78px;">because of, due to, .........................</td></tr>
+            <tr><td><b>แม้ว่า (ขัดแย้ง)</b></td><td style="height:78px;">despite, ......................... (*ห้าม despite of!)</td></tr>
+            <tr><td><b>ระหว่าง (ช่วงเวลา)</b></td><td style="height:78px;">during (+ Noun) เช่น during ..................</td></tr>
+            <tr><td><b>ยกเว้น / เกี่ยวกับ</b></td><td style="height:78px;">except for, regarding, concerning</td></tr>
           </table>
-          <div style="margin-top:14px; font-size:16px; color:var(--text-muted);">
-            <b>Interjection</b> : Wow!, Oh!, Ouch!, Alas!, Hurray! (ใช้แสดงอารมณ์ ไม่เกี่ยวกับโครงสร้างไวยากรณ์หลัก)
+        </div>
+        <div class="sb-card" style="min-height:470px;">
+          <div class="sb-card-title" style="color:var(--accent-pink);">Preposition คู่กริยา/Adj ยอดฮิต (เติมคำบุพบทที่คู่กัน)</div>
+          <div class="sb-branch-list" style="gap:20px;">
+            <div class="sb-branch-item">• responsible _______ (รับผิดชอบต่อ...)</div>
+            <div class="sb-branch-item">• interested _______ (สนใจใน...)</div>
+            <div class="sb-branch-item">• depend _______ / rely _______ (ขึ้นอยู่กับ...)</div>
+            <div class="sb-branch-item">• comply _______ (ปฏิบัติตาม...)</div>
+            <div class="sb-branch-item">• apologize _______ someone _______ something</div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  
+  {
+    id: "q5-1",
+    group: "5. Preposition (คำบุพบท)",
+    title: "แบบฝึกหัด 5.1 : in / on / at (เวลา & วัน)",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 5.1 : in / on / at (เวลา & วัน)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 5 · Preposition</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">1. The annual scholarship ceremony will take place ________ Friday, November 20, ________ 6:00 p.m.</div>
+        <div class="quiz-choices-grid">
+          <div>A. in / at</div>
+          <div>B. on / at</div>
+          <div>C. at / on</div>
+          <div>D. on / in</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q5-2",
+    group: "5. Preposition (คำบุพบท)",
+    title: "แบบฝึกหัด 5.2 : Preposition + Noun Phrase (ขัดแย้ง)",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 5.2 : Preposition + Noun Phrase (ขัดแย้ง)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 5 · Preposition</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">2. ________ the heavy morning traffic, all delegates arrived at the seminar hall on time.</div>
+        <div class="quiz-choices-grid">
+          <div>A. Although</div>
+          <div>B. Even though</div>
+          <div>C. Despite</div>
+          <div>D. Because</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q5-3",
+    group: "5. Preposition (คำบุพบท)",
+    title: "แบบฝึกหัด 5.3 : Preposition บอกสาเหตุ",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 5.3 : Preposition บอกสาเหตุ</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 5 · Preposition</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">3. The outdoor charity concert was postponed ________ a sudden tropical thunderstorm.</div>
+        <div class="quiz-choices-grid">
+          <div>A. because</div>
+          <div>B. because of</div>
+          <div>C. although</div>
+          <div>D. since</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q5-4",
+    group: "5. Preposition (คำบุพบท)",
+    title: "แบบฝึกหัด 5.4 : Preposition + V.ing (ห้าม + V1)",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 5.4 : Preposition + V.ing (ห้าม + V1)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 5 · Preposition</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">4. Before ________ the laboratory, students must wear safety goggles and lab coats.</div>
+        <div class="quiz-choices-grid">
+          <div>A. enter</div>
+          <div>B. entered</div>
+          <div>C. entering</div>
+          <div>D. to enter</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q5-5",
+    group: "5. Preposition (คำบุพบท)",
+    title: "แบบฝึกหัด 5.5 : Preposition Collocation ยอดฮิต",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 5.5 : Preposition Collocation ยอดฮิต</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 5 · Preposition</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">5. Every employee in the logistics division is responsible ________ checking inventory daily.</div>
+        <div class="quiz-choices-grid">
+          <div>A. to</div>
+          <div>B. with</div>
+          <div>C. for</div>
+          <div>D. at</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+
+  // =========================================================================
+  // 6. CONJUNCTION & INTERJECTION (คำสันธาน & คำอุทาน)
+  // =========================================================================
+  {
+    id: 't6-1',
+    group: '6. Conjunction & Interjection',
+    title: '6.1 Conjunction 3 ชนิดหลัก (Coordinating / Subordinating / Correlative)',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">6</span> Conjunction (คำสันธาน — ตัวเชื่อมประโยค)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 6 · Conjunction</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card" style="min-height:310px;">
+          <div class="sb-card-title" style="color:var(--accent-green);">1) Coordinating Conjunction (FANBOYS)</div>
+          <div style="font-size:18px; color:var(--text-muted); margin-bottom:12px;">เชื่อมคำ วลี หรือประโยคระดับเดียวกัน (หน้า & หลังรูปเดียวกัน)</div>
+          <div class="sb-branch-list" style="gap:12px; font-size:19px;">
+            <div class="sb-branch-item"><b>F</b>or (______) · <b>A</b>nd (______) · <b>N</b>or (______)</div>
+            <div class="sb-branch-item"><b>B</b>ut (______) · <b>O</b>r (______) · <b>Y</b>et (______) · <b>S</b>o (______)</div>
+          </div>
+        </div>
+        <div class="sb-card" style="min-height:310px;">
+          <div class="sb-card-title" style="color:var(--accent-pink);">2) Subordinating Conjunction (+ ประโยค S + V)</div>
+          <div class="sb-branch-list" style="gap:16px; font-size:19px;">
+            <div class="sb-branch-item">• <b>เหตุผล</b> : because, since, as, now that</div>
+            <div class="sb-branch-item">• <b>ขัดแย้ง</b> : although, though, even though</div>
+            <div class="sb-branch-item">• <b>เงื่อนไข/เวลา</b> : if, unless, while, until, once</div>
+          </div>
+        </div>
+      </div>
+      <div class="sb-card" style="min-height:240px;">
+        <div class="sb-card-title" style="color:var(--accent-yellow);">3) Correlative Conjunction (สันธานคู่ — พานักเรียนเติมคู่ + กฎผันกริยา)</div>
+        <div class="sb-grid-2" style="margin-bottom:0;">
+          <div style="font-size:19px; line-height:2.1;">
+            • <b>both</b> A _________ B (ใช้ V..............)<br>
+            • <b>either</b> A _________ B (ผันตามตัว........)
+          </div>
+          <div style="font-size:19px; line-height:2.1;">
+            • <b>neither</b> A _________ B (ผันตามตัว........)<br>
+            • <b>not only</b> A _________ B (ผันตามตัว........)
           </div>
         </div>
       </div>
     `
   },
   {
-    id: 'q5-1',
-    group: '5. Preposition & Conjunction',
-    title: 'แบบฝึกหัด 5.1 : Preposition vs Conjunction (ข้อ 1 - 3)',
-    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    id: 't6-2',
+    group: '6. Conjunction & Interjection',
+    title: '6.2 แยก Conjunction vs Preposition vs Conjunctive Adverb + Interjection',
+    badge: 'เนื้อหา',
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title">📝 ตัวอย่างข้อสอบ Preposition & Conjunction (ข้อ 1 - 3)</div>
-        <span class="slide-subtitle-badge">Part 5 · แยก + Noun กับ + S+V ให้ขาด</span>
+        <div class="slide-main-title"><span class="slide-num-circle">6</span> ตารางตัดสินข้อสอบตัวเชื่อม & Interjection</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 6 · จุดตัดคะแนนในข้อสอบ</span>
       </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">1. ________ the heavy traffic, all participants arrived at the seminar on time.</div>
-        <div class="quiz-choices-grid">
-          <div>A. Although</div><div>B. Even though</div><div>C. Despite</div><div>D. Because</div>
-        </div>
+      <div class="sb-card" style="margin-bottom:24px;">
+        <div class="sb-card-title" style="color:var(--accent-cyan);">ตารางเปรียบเทียบ 3 กลุ่มตัวเชื่อม — ฝึกเติมกลุ่มคำที่ตรงความหมายให้ครบ</div>
+        <table class="sb-table" style="font-size:18px;">
+          <tr><th>ความหมาย</th><th>1. Conjunction<br><span style="font-size:14px;">(+ S + V)</span></th><th>2. Preposition<br><span style="font-size:14px;">(+ Noun / V.ing)</span></th><th>3. Conjunctive Adverb<br><span style="font-size:14px;">(หลัง ; / จุด . และหน้า ,)</span></th></tr>
+          <tr><td><b>เหตุผล (เพราะ/ดังนั้น)</b></td><td>because, since, as</td><td style="height:82px;">because of, .................</td><td>therefore, ....................</td></tr>
+          <tr><td><b>ขัดแย้ง (แม้ว่า/อย่างไรก็ตาม)</b></td><td>although, even though</td><td style="height:82px;">despite, ......................</td><td>however, .....................</td></tr>
+          <tr><td><b>เพิ่มเติม (นอกจากนี้)</b></td><td>and, as well as</td><td style="height:78px;">in addition to, besides</td><td>moreover, ....................</td></tr>
+          <tr><td><b>เวลา (ระหว่างที่)</b></td><td>while, when</td><td style="height:78px;">...............................</td><td>meanwhile</td></tr>
+        </table>
       </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">2. The outdoor concert was postponed ________ a sudden thunderstorm.</div>
-        <div class="quiz-choices-grid">
-          <div>A. because</div><div>B. because of</div><div>C. although</div><div>D. since</div>
-        </div>
-      </div>
-      <div class="quiz-problem-box">
-        <div class="quiz-question-text">3. The annual awards ceremony will be held ________ Friday, November 20, ________ 6:00 p.m.</div>
-        <div class="quiz-choices-grid">
-          <div>A. in / at</div><div>B. on / at</div><div>C. at / on</div><div>D. on / in</div>
-        </div>
+      <div class="sb-card" style="min-height:145px;">
+        <div class="sb-card-title" style="color:var(--accent-orange);">4) Interjection (คำอุทาน) : Wow!, Oh!, Ouch!, Alas!, Congratulations!</div>
+        <div style="font-size:18px; color:var(--text-muted);">หน้าที่: แสดงอารมณ์ความรู้สึก ไม่ผูกติดโครงสร้างประโยคหลัก — จดตัวอย่างเพิ่ม: .......................</div>
       </div>
     `
   },
+  
   {
-    id: 'q5-2',
-    group: '5. Preposition & Conjunction',
-    title: 'แบบฝึกหัด 5.2 : Connectors & Time Words (ข้อ 4 - 6)',
-    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    id: "q6-1",
+    group: "6. Conjunction & Interjection",
+    title: "แบบฝึกหัด 6.1 : Conjunction + Clause (S+V)",
+    badge: "แบบฝึกหัดย่อย",
     html: `
       <div class="slide-header-box">
-        <div class="slide-main-title">📝 ตัวอย่างข้อสอบ Preposition & Conjunction (ข้อ 4 - 6)</div>
-        <span class="slide-subtitle-badge">Part 5 · แยก + Noun กับ + S+V ให้ขาด</span>
+        <div class="slide-main-title">📝 แบบฝึกหัด 6.1 : Conjunction + Clause (S+V)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 6 · Conjunction</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">4. Please keep your seatbelt fastened ________ the airplane is taking off.</div>
+        <div class="quiz-question-text">1. ________ the marketing budget was limited, the team created a viral campaign.</div>
         <div class="quiz-choices-grid">
-          <div>A. during</div><div>B. while</div><div>C. despite</div><div>D. because of</div>
+          <div>A. Despite</div>
+          <div>B. In spite of</div>
+          <div>C. Although</div>
+          <div>D. Due to</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q6-2",
+    group: "6. Conjunction & Interjection",
+    title: "แบบฝึกหัด 6.2 : while (+ S+V) vs during (+ Noun)",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 6.2 : while (+ S+V) vs during (+ Noun)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 6 · Conjunction</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">5. ________ the budget was limited, the marketing team still created an impressive campaign.</div>
+        <div class="quiz-question-text">2. Please keep your seatbelt fastened ________ the aircraft is climbing to cruising altitude.</div>
         <div class="quiz-choices-grid">
-          <div>A. Despite</div><div>B. In spite of</div><div>C. Although</div><div>D. Due to</div>
+          <div>A. during</div>
+          <div>B. while</div>
+          <div>C. despite</div>
+          <div>D. because of</div>
         </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q6-3",
+    group: "6. Conjunction & Interjection",
+    title: "แบบฝึกหัด 6.3 : Coordinating (FANBOYS)",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 6.3 : Coordinating (FANBOYS)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 6 · Conjunction</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">6. You can submit the form online, ________ you can bring it to our office in person.</div>
+        <div class="quiz-question-text">3. You may submit the registration form online, ________ you can bring it to our office in person.</div>
         <div class="quiz-choices-grid">
-          <div>A. or</div><div>B. yet</div><div>C. so</div><div>D. nor</div>
+          <div>A. or</div>
+          <div>B. yet</div>
+          <div>C. so</div>
+          <div>D. nor</div>
         </div>
       </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q6-4",
+    group: "6. Conjunction & Interjection",
+    title: "แบบฝึกหัด 6.4 : Correlative Conjunction + Agreement",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 6.4 : Correlative Conjunction + Agreement</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 6 · Conjunction</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">4. Neither the project manager nor the assistants ________ aware of the schedule change.</div>
+        <div class="quiz-choices-grid">
+          <div>A. is</div>
+          <div>B. was</div>
+          <div>C. were</div>
+          <div>D. has been</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: "q6-5",
+    group: "6. Conjunction & Interjection",
+    title: "แบบฝึกหัด 6.5 : Conjunction vs Conjunctive Adverb",
+    badge: "แบบฝึกหัดย่อย",
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 แบบฝึกหัด 6.5 : Conjunction vs Conjunctive Adverb</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 6 · Conjunction</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">5. Sales dropped slightly in Q1; ________, overall annual revenue still exceeded our target.</div>
+        <div class="quiz-choices-grid">
+          <div>A. although</div>
+          <div>B. because</div>
+          <div>C. however</div>
+          <div>D. despite</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์ตำแหน่งคำ ตัดตัวเลือก และจดโครงสร้าง:</div>
+      <div class="sb-write-space-xl"></div>
     `
   },
 
 
   {
-    id: 'ex-1',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 1 : Noun vs Adj vs Adv (TOEIC Part 5)',
-    badge: 'ข้อสอบท้ายบท #1',
+    id: "ex-1",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 1 : Noun vs Adj vs Adv (TOEIC Part 5)",
+    badge: "ข้อสอบท้ายบท #1",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 1 / 20 (TOEIC / A-Level)</div>
@@ -3245,10 +4274,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-2',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 2 : Adverb Modifying Adjective',
-    badge: 'ข้อสอบท้ายบท #2',
+    id: "ex-2",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 2 : Adverb Modifying Adjective",
+    badge: "ข้อสอบท้ายบท #2",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 2 / 20 (TOEIC / A-Level)</div>
@@ -3268,10 +4297,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-3',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 3 : Reflexive Pronoun',
-    badge: 'ข้อสอบท้ายบท #3',
+    id: "ex-3",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 3 : Reflexive Pronoun",
+    badge: "ข้อสอบท้ายบท #3",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 3 / 20 (TOEIC / A-Level)</div>
@@ -3291,10 +4320,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-4',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 4 : Linking Verb + Adjective',
-    badge: 'ข้อสอบท้ายบท #4',
+    id: "ex-4",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 4 : Linking Verb + Adjective",
+    badge: "ข้อสอบท้ายบท #4",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 4 / 20 (TOEIC / A-Level)</div>
@@ -3314,10 +4343,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-5',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 5 : Preposition vs Conjunction (Contrast)',
-    badge: 'ข้อสอบท้ายบท #5',
+    id: "ex-5",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 5 : Preposition vs Conjunction (Contrast)",
+    badge: "ข้อสอบท้ายบท #5",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 5 / 20 (TOEIC / A-Level)</div>
@@ -3337,17 +4366,17 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-6',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 6 : Verb Formation after Modal',
-    badge: 'ข้อสอบท้ายบท #6',
+    id: "ex-6",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 6 : Verb Formation after Modal",
+    badge: "ข้อสอบท้ายบท #6",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 6 / 20 (TOEIC / A-Level)</div>
         <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
       </div>
       <div class="quiz-problem-box">
-        <div class="quiz-question-text">ข้อ 6. The regional director will ________ the final budget proposal at tomorrow's meeting.</div>
+        <div class="quiz-question-text">ข้อ 6. The regional director will ________ the final budget proposal at tomorrow\'s meeting.</div>
         <div class="quiz-choices-grid">
           <div>A. approval</div>
           <div>B. approve</div>
@@ -3360,10 +4389,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-7',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 7 : Noun Suffix after Article + Adj',
-    badge: 'ข้อสอบท้ายบท #7',
+    id: "ex-7",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 7 : Noun Suffix after Article + Adj",
+    badge: "ข้อสอบท้ายบท #7",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 7 / 20 (TOEIC / A-Level)</div>
@@ -3383,10 +4412,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-8',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 8 : Participial Adjective (-ed vs -ing)',
-    badge: 'ข้อสอบท้ายบท #8',
+    id: "ex-8",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 8 : Participial Adjective (-ed vs -ing)",
+    badge: "ข้อสอบท้ายบท #8",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 8 / 20 (TOEIC / A-Level)</div>
@@ -3406,10 +4435,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-9',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 9 : Indefinite Pronoun Agreement',
-    badge: 'ข้อสอบท้ายบท #9',
+    id: "ex-9",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 9 : Indefinite Pronoun Agreement",
+    badge: "ข้อสอบท้ายบท #9",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 9 / 20 (TOEIC / A-Level)</div>
@@ -3429,10 +4458,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-10',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 10 : Preposition of Cause (+ Noun Phrase)',
-    badge: 'ข้อสอบท้ายบท #10',
+    id: "ex-10",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 10 : Preposition of Cause (+ Noun Phrase)",
+    badge: "ข้อสอบท้ายบท #10",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 10 / 20 (TOEIC / A-Level)</div>
@@ -3452,10 +4481,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-11',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 11 : Adverb Modifying Verb',
-    badge: 'ข้อสอบท้ายบท #11',
+    id: "ex-11",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 11 : Adverb Modifying Verb",
+    badge: "ข้อสอบท้ายบท #11",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 11 / 20 (TOEIC / A-Level)</div>
@@ -3475,10 +4504,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-12',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 12 : Possessive Adjective + Noun',
-    badge: 'ข้อสอบท้ายบท #12',
+    id: "ex-12",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 12 : Possessive Adjective + Noun",
+    badge: "ข้อสอบท้ายบท #12",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 12 / 20 (TOEIC / A-Level)</div>
@@ -3498,10 +4527,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-13',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 13 : Preposition vs Conjunction (Time)',
-    badge: 'ข้อสอบท้ายบท #13',
+    id: "ex-13",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 13 : Preposition vs Conjunction (Time)",
+    badge: "ข้อสอบท้ายบท #13",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 13 / 20 (TOEIC / A-Level)</div>
@@ -3521,10 +4550,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-14',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 14 : Adjective Modifying Noun',
-    badge: 'ข้อสอบท้ายบท #14',
+    id: "ex-14",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 14 : Adjective Modifying Noun",
+    badge: "ข้อสอบท้ายบท #14",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 14 / 20 (TOEIC / A-Level)</div>
@@ -3544,10 +4573,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-15',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 15 : Uncountable Noun Trap',
-    badge: 'ข้อสอบท้ายบท #15',
+    id: "ex-15",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 15 : Uncountable Noun Trap",
+    badge: "ข้อสอบท้ายบท #15",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 15 / 20 (TOEIC / A-Level)</div>
@@ -3567,10 +4596,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-16',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 16 : Correlative / Coordinating Conjunction',
-    badge: 'ข้อสอบท้ายบท #16',
+    id: "ex-16",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 16 : Correlative / Coordinating Conjunction",
+    badge: "ข้อสอบท้ายบท #16",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 16 / 20 (TOEIC / A-Level)</div>
@@ -3590,10 +4619,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-17',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 17 : Relative Pronoun (Possession)',
-    badge: 'ข้อสอบท้ายบท #17',
+    id: "ex-17",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 17 : Relative Pronoun (Possession)",
+    badge: "ข้อสอบท้ายบท #17",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 17 / 20 (TOEIC / A-Level)</div>
@@ -3613,10 +4642,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-18',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 18 : Adverb Trap (hard vs hardly)',
-    badge: 'ข้อสอบท้ายบท #18',
+    id: "ex-18",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 18 : Adverb Trap (hard vs hardly)",
+    badge: "ข้อสอบท้ายบท #18",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 18 / 20 (TOEIC / A-Level)</div>
@@ -3636,10 +4665,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-19',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 19 : Word Family (Verb vs Noun vs Adj after to)',
-    badge: 'ข้อสอบท้ายบท #19',
+    id: "ex-19",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 19 : Word Family (Verb after to)",
+    badge: "ข้อสอบท้ายบท #19",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 19 / 20 (TOEIC / A-Level)</div>
@@ -3659,10 +4688,10 @@ const SLIDES = [
     `
   },
   {
-    id: 'ex-20',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'ข้อที่ 20 : Preposition of Time & Place',
-    badge: 'ข้อสอบท้ายบท #20',
+    id: "ex-20",
+    group: '7. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: "ข้อที่ 20 : Preposition of Time & Place",
+    badge: "ข้อสอบท้ายบท #20",
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 20 / 20 (TOEIC / A-Level)</div>
@@ -3683,10 +4712,62 @@ const SLIDES = [
   },
 
   {
-    id: 'key-1',
-    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
-    title: 'เฉลยสรุปข้อสอบท้ายบท 20 ข้อ (พร้อมคำอธิบาย)',
-    badge: 'เฉลยสรุป',
+    id: 'key-sub',
+    group: '8. เฉลยแบบฝึกหัด & ข้อสอบท้ายบท',
+    title: 'เฉลยแบบฝึกหัดย่อยทุกเรื่อง (34 ข้อ)',
+    badge: 'เฉลยย่อย',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">✓</span> เฉลยแบบฝึกหัดย่อยท้ายเรื่อง 1–6 (ครบทั้ง 34 ข้อ)</div>
+        <span class="slide-subtitle-badge">ตรวจคำตอบพร้อมคำอธิบาย</span>
+      </div>
+      <div class="sb-card">
+        <table class="sb-table" style="font-size:14px;">
+          <tr><th style="width:24%;">หัวข้อ / ข้อ</th><th style="width:65px;">เฉลย</th><th>เหตุผลและตำแหน่งคำ (Parts of Speech)</th></tr>
+          <tr><td><b>1.1</b> (แบบฝึกหัด 1.1)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>'useful' (Adj) ขยาย Noun และ 'advice' (คำแนะนำ) เป็นนามนับไม่ได้ ห้ามเติม -s ส่วน advise เป็น Verb</td></tr>
+<tr><td><b>1.2</b> (แบบฝึกหัด 1.2)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>'traffic' (การจราจร) เป็นนามนับไม่ได้ จึงใช้กับ 'much' (many / a few / several ใช้กับนามนับได้พหูพจน์)</td></tr>
+<tr><td><b>1.3</b> (แบบฝึกหัด 1.3)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>อยู่ระหว่าง Article 'The' และ Preposition 'of' ต้องใช้ Noun = installation</td></tr>
+<tr><td><b>1.4</b> (แบบฝึกหัด 1.4)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>มี 'their resumes' แสดงว่าประธานต้องเป็น 'ผู้สมัคร (คน)' จึงใช้ Noun รูปคน = applicants</td></tr>
+<tr><td><b>1.5</b> (แบบฝึกหัด 1.5)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>'furniture' เป็นนามนับไม่ได้ ห้ามใช้ a/an และห้ามเติม -s ตอบ B</td></tr>
+<tr><td><b>1.6</b> (แบบฝึกหัด 1.6)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>'A number of + N.พหูพจน์' แปลว่า จำนวนมาก ใช้กับ Verb พหูพจน์ = are (ส่วน 'The number of' ใช้ V.เอกพจน์)</td></tr>
+<tr><td><b>2.1</b> (แบบฝึกหัด 2.1)</td><td style='color:var(--accent-green); font-weight:700;'>D</td><td>'by oneself' แปลว่า ด้วยตัวเอง ประธานคือ Ms. Clara (ผู้หญิง) จึงใช้ herself</td></tr>
+<tr><td><b>2.2</b> (แบบฝึกหัด 2.2)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>วางหลังกริยา 'send' ในตำแหน่งกรรมรอง (send someone something) ใช้ Object Pronoun = us</td></tr>
+<tr><td><b>2.3</b> (แบบฝึกหัด 2.3)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>วางหน้า Noun 'privacy policy' เพื่อแสดงความเป็นเจ้าของ ต้องใช้ Possessive Adj = its (ไม่ใช่ it's = it is)</td></tr>
+<tr><td><b>2.4</b> (แบบฝึกหัด 2.4)</td><td style='color:var(--accent-green); font-weight:700;'>A</td><td>สรรพนามขึ้นต้นด้วย every- / some- / any- / no- ถือเป็นเอกพจน์เสมอ ใช้ V.เอกพจน์ = was</td></tr>
+<tr><td><b>2.5</b> (แบบฝึกหัด 2.5)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>ใช้แทน 'your laptop' โดยไม่มี Noun ตามหลัง ต้องใช้ Possessive Pronoun = yours</td></tr>
+<tr><td><b>2.6</b> (แบบฝึกหัด 2.6)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>แสดงความเป็นเจ้าของ (portfolio ของผู้สมัคร) และตามด้วยคำนาม 'portfolio' ใช้ whose</td></tr>
+<tr><td><b>3.1</b> (แบบฝึกหัด 3.1)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>หลัง Modal Verb 'must' ต้องตามด้วยกริยาช่อง 1 ไม่ผัน (Verb Infinitive) = finalize</td></tr>
+<tr><td><b>3.2</b> (แบบฝึกหัด 3.2)</td><td style='color:var(--accent-green); font-weight:700;'>A</td><td>'remained' เป็น Linking Verb จึงต้องตามด้วย Adjective = calm (ห้ามใช้ Adverb -ly)</td></tr>
+<tr><td><b>3.3</b> (แบบฝึกหัด 3.3)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>หลังกริยาช่วย 'will' ต้องเติม Verb แท้ช่อง 1 = clarify (ทำให้ชัดเจน)</td></tr>
+<tr><td><b>3.4</b> (แบบฝึกหัด 3.4)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>ราคาเพิ่มสูงขึ้นเอง (ไม่มีกรรมตามหลัง) ใช้ Vi. = rise-rose-risen; หลัง 'have' ต้องเป็น V.3 = risen</td></tr>
+<tr><td><b>3.5</b> (แบบฝึกหัด 3.5)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>มีกรรม 'your hand' ตามหลัง ต้องใช้ Vt. (กริยาต้องการกรรม) = raise</td></tr>
+<tr><td><b>3.6</b> (แบบฝึกหัด 3.6)</td><td style='color:var(--accent-green); font-weight:700;'>D</td><td>หลัง Modal 'can' (+ Adverb 'significantly') ยังคงต้องการ Verb ช่อง 1 = strengthen</td></tr>
+<tr><td><b>4.1</b> (แบบฝึกหัด 4.1)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>วางหน้า Adjective ขั้นกว่า 'faster' เพื่อขยายระดับความเร็ว ต้องใช้ Adverb = significantly</td></tr>
+<tr><td><b>4.2</b> (แบบฝึกหัด 4.2)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>ผู้โดยสาร 'รู้สึกพอใจ' (be pleased with) ใช้ V-ed Adjective = pleased</td></tr>
+<tr><td><b>4.3</b> (แบบฝึกหัด 4.3)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>อุปกรณ์ที่ 'ถูกทำให้เสียหาย' แล้ว ต้องใช้ Adj รูป V-ed = damaged</td></tr>
+<tr><td><b>4.4</b> (แบบฝึกหัด 4.4)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>หลัง V.to be 'are' ต้องใช้ Adjective และ 'friendly' เป็น Adj (ลงท้าย -ly แต่เป็น Adj เช่นเดียวกับ lovely)</td></tr>
+<tr><td><b>4.5</b> (แบบฝึกหัด 4.5)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>บริบทแปลว่า 'แทบจะไม่ได้ยินเลย' ใช้ Adverb ความหมายปฏิเสธ = hardly</td></tr>
+<tr><td><b>4.6</b> (แบบฝึกหัด 4.6)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>ขยายกริยาแท้ 'performs' ว่าทำได้ 'ดี' ต้องใช้ Adverb ของ good = well</td></tr>
+<tr><td><b>5.1</b> (แบบฝึกหัด 5.1)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>วันและวันที่ (Friday, November 20) ใช้ 'on' ส่วนเวลาแบบระบุชั่วโมง-นาที (6:00 p.m.) ใช้ 'at'</td></tr>
+<tr><td><b>5.2</b> (แบบฝึกหัด 5.2)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>ด้านหลังเป็นคำนามวลี 'the heavy morning traffic' (ไม่มีกริยา) จึงต้องใช้ Preposition = Despite</td></tr>
+<tr><td><b>5.3</b> (แบบฝึกหัด 5.3)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>ตามด้วย Noun Phrase 'a sudden tropical thunderstorm' จึงใช้ Preposition 'because of' (ห้ามใช้ because/since)</td></tr>
+<tr><td><b>5.4</b> (แบบฝึกหัด 5.4)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>หลัง Preposition 'Before' (เมื่อไม่มีประธาน) ต้องตามด้วย Gerund (V.ing) = entering</td></tr>
+<tr><td><b>5.5</b> (แบบฝึกหัด 5.5)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>สำนวนออกสอบประจำ: 'be responsible for + Noun / V.ing' (รับผิดชอบต่อ...) ตอบ C</td></tr>
+<tr><td><b>6.1</b> (แบบฝึกหัด 6.1)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>ตามหลังด้วยประโยคสมบูรณ์ (the marketing budget was limited) ต้องใช้ Conjunction = Although</td></tr>
+<tr><td><b>6.2</b> (แบบฝึกหัด 6.2)</td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>มีประโยค 'the aircraft is climbing...' ตามหลัง ต้องใช้ Subordinating Conjunction = while</td></tr>
+<tr><td><b>6.3</b> (แบบฝึกหัด 6.3)</td><td style='color:var(--accent-green); font-weight:700;'>A</td><td>เชื่อมทางเลือก 2 อย่าง (ส่งออนไลน์ หรือ มายื่นด้วยตัวเอง) ใช้ 'or'</td></tr>
+<tr><td><b>6.4</b> (แบบฝึกหัด 6.4)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>โครงสร้าง 'Neither A nor B' กริยาผันตามประธานตัวหลังสุด ('the assistants' พหูพจน์) จึงใช้ were</td></tr>
+<tr><td><b>6.5</b> (แบบฝึกหัด 6.5)</td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>มีเครื่องหมายอัฒภาค (;) และจุลภาค (,) คั่นประโยคสมบูรณ์ทั้งหน้าและหลัง ต้องใช้ Conjunctive Adverb = however</td></tr>
+
+        </table>
+      </div>
+    `
+  },
+  {
+    id: 'key-exam',
+    group: '8. เฉลยแบบฝึกหัด & ข้อสอบท้ายบท',
+    title: 'เฉลยข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    badge: 'เฉลยท้ายบท',
     html: `
       <div class="slide-header-box">
         <div class="slide-main-title"><span class="slide-num-circle">✓</span> เฉลยข้อสอบแข่งขันท้ายบท 20 ข้อ (Answer Key)</div>
@@ -3694,7 +4775,7 @@ const SLIDES = [
       </div>
       <div class="sb-card">
         <table class="sb-table" style="font-size:15px;">
-          <tr><th style="width:75px;">ข้อ</th><th style="width:70px;">เฉลย</th><th>หลักวิเคราะห์ (Parts of Speech)</th></tr>
+          <tr><th style="width:75px;">ข้อ</th><th style="width:65px;">เฉลย</th><th>หลักวิเคราะห์ (Parts of Speech)</th></tr>
           <tr><td><b>ข้อ 1</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>หลังคำนาม 'Customer' ที่ทำหน้าที่ขยายนาม (Compound Noun) และหน้ากริยา 'is' ต้องใช้ Noun = satisfaction</td></tr>
 <tr><td><b>ข้อ 2</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>วางหน้า Adjective 'clear' เพื่อขยายความระดับความชัดเจน ต้องใช้ Adverb = remarkably</td></tr>
 <tr><td><b>ข้อ 3</b></td><td style='color:var(--accent-green); font-weight:700;'>D</td><td>เน้นย้ำว่าประธานทำสิ่งนั้นด้วยตัวเอง (review ... herself) ใช้ Reflexive Pronoun = herself</td></tr>
@@ -3770,7 +4851,7 @@ function buildSidebarTOC(filterText = '') {
     // Separate theory slides vs exercise/exam slides when not searching
     const theoryItems = g.items.filter(x => !isQuizSlide(x.slide));
     const quizItems = g.items.filter(x => isQuizSlide(x.slide));
-    const isExamGroup = g.name.startsWith('6.');
+    const isExamGroup = g.name.startsWith('7.');
 
     // If this is Group 10 (Real Exam Bank) and no search filter is active, render as ONE single prominent bar!
     if (isExamGroup && !q && quizItems.length > 0) {
@@ -3782,7 +4863,7 @@ function buildSidebarTOC(filterText = '') {
       singleExamBar.className = 'toc-deck-item' + (isCurrentInExam ? ' active' : '');
       singleExamBar.innerHTML = `
         <div style="display:flex; flex-direction:column; gap:2px; overflow:hidden;">
-          <span style="font-size:13.5px; font-weight:700;">🏆 6. ข้อสอบแข่งขันท้ายบท (20 ข้อ)</span>
+          <span style="font-size:13.5px; font-weight:700;">🏆 7. ข้อสอบแข่งขันท้ายบท (20 ข้อ)</span>
           <span style="font-size:11px; opacity:0.85;">เลือกทำทีละข้อ (${ isCurrentInExam ? 'กำลังอยู่ที่ข้อ ' + activePos + '/' + quizItems.length : 'รวมทั้งหมด ' + quizItems.length + ' ข้อ' })</span>
         </div>
         <span class="badge-page" style="background:rgba(0,0,0,0.25); color:inherit;">${quizItems.length} ข้อ ▶</span>
@@ -3953,10 +5034,11 @@ function goToSlide(idx) {
   // Show/hide small feature buttons on topbar
   const btn3d = document.getElementById('btn-open-3d');
   const btnAnim = document.getElementById('btn-open-anim');
-  // No 3D lab modals needed in English Chapter 2
+  // Clean topbar without Chemistry 3D modal buttons
 
   // Update Single Question Navigation Bar
   updateQuestionNavBar(idx);
+  if (typeof schedulePinFloatingUI === 'function') schedulePinFloatingUI();
 
   // Rebuild TOC so active deck counters & highlights stay in sync
   const searchVal = document.getElementById('toc-search-input') ? document.getElementById('toc-search-input').value : '';
@@ -4038,6 +5120,7 @@ window.addEventListener('keydown', (e) => {
   else if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevSlide();
   else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undoStroke(); }
   else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redoStroke(); }
+  else if (e.key.toLowerCase() === 'm') { toggleSidebar(); }
 });
 
 
