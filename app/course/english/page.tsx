@@ -255,7 +255,7 @@ export default function EnglishCoursePage() {
               ENGLISH <span className="text-white/30 font-light">COURSE</span>
             </h1>
             <p className="text-lg sm:text-xl font-light text-white/70 max-w-2xl mx-auto leading-relaxed">
-              สำรวจหลักสูตรภาษาอังกฤษครบวงจร 12 บทเรียน เริ่มต้นจากการวัดพื้นฐานด้วย Pre-Test 100 ข้อ สู่การเจาะลึกโครงสร้างประโยค 12 Tenses คำศัพท์ การอ่านจับใจความ บทสนทนา และการพิชิตข้อสอบ A-Level
+              สำรวจหลักสูตรภาษาอังกฤษครบวงจร 12 บทเรียน เริ่มต้นจากการวัดพื้นฐานด้วย Pre-Test 100 ข้อ สู่การเจาะลึกไวยากรณ์ คำศัพท์ การอ่านจับใจความ และตะลุยข้อสอบแข่งขันพร้อมกระดานดำอัจฉริยะ
             </p>
           </div>
 
@@ -322,6 +322,12 @@ export default function EnglishCoursePage() {
                       <span className="px-3 py-1 rounded-full bg-indigo-400 text-black text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_15px_rgba(129,140,248,0.4)]">
                         <CheckCircle2 className="w-3 h-3" />
                         <span>พร้อมทำข้อสอบแล้ว (100 ข้อ)</span>
+                      </span>
+                    )}
+                    {!chapter.isPretest && chapter.isAvailable && (
+                      <span className="px-3 py-1 rounded-full bg-indigo-400 text-black text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_15px_rgba(129,140,248,0.4)]">
+                        <CheckCircle2 className="w-3 h-3" />
+                        <span>พร้อมเรียนแล้ว (กระดานดำ & ข้อสอบ)</span>
                       </span>
                     )}
                   </div>
@@ -402,6 +408,23 @@ export default function EnglishCoursePage() {
                             : 'เข้าทำข้อสอบ Pre-Test (100 ข้อ)'}
                         </span>
                         <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </>
+                  ) : chapter.isAvailable && chapter.href ? (
+                    <>
+                      <Link
+                        href={chapter.href}
+                        className="w-full sm:w-auto px-8 py-4 rounded-full bg-indigo-400 hover:bg-indigo-300 text-black font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 hover:scale-[1.02] shadow-[0_0_25px_rgba(129,140,248,0.4)]"
+                      >
+                        <span>เข้าสู่กระดานดำ & สไลด์บทเรียน</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        href="/course/english/pretest"
+                        className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.12] text-white/85 font-semibold text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2"
+                      >
+                        <Layers className="w-3.5 h-3.5" />
+                        <span>ทำ Pre-Test 100 ข้อ</span>
                       </Link>
                     </>
                   ) : (

@@ -1,0 +1,4071 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+<title>NJ Tutor · English Chapter 2 : Parts of Speech (Smartboard)</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-board: #14171c;
+  --grid-line: rgba(255, 255, 255, 0.055);
+  --grid-major: rgba(255, 255, 255, 0.10);
+  --panel-bg: #1b1f27;
+  --panel-border: #2d3545;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --accent-orange: #fb923c;
+  --accent-yellow: #facc15;
+  --accent-green: #4ade80;
+  --accent-cyan: #38bdf8;
+  --accent-pink: #f472b6;
+  --accent-purple: #c084fc;
+  --accent-red: #f87171;
+  --table-border: #cbd5e1;
+  --card-bg: rgba(30, 41, 59, 0.55);
+}
+
+body.light-board {
+  --bg-board: #f8fafc;
+  --grid-line: rgba(15, 23, 42, 0.06);
+  --grid-major: rgba(15, 23, 42, 0.12);
+  --panel-bg: #ffffff;
+  --panel-border: #cbd5e1;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --accent-orange: #ea580c;
+  --accent-yellow: #ca8a04;
+  --accent-green: #16a34a;
+  --accent-cyan: #0284c7;
+  --accent-pink: #db2777;
+  --accent-purple: #7e22ce;
+  --accent-red: #dc2626;
+  --table-border: #334155;
+  --card-bg: rgba(241, 245, 249, 0.75);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-board);
+  color: var(--text-main);
+  font-family: 'Prompt', 'Sarabun', sans-serif;
+}
+
+/* Main App Container */
+#app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* Left Sidebar: Table of Contents (Fixed overlay so opening/closing never reflows slide text or shifts strokes) */
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 310px;
+  min-width: 310px;
+  height: 100vh;
+  background: var(--panel-bg);
+  border-right: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 150;
+  transform: translateX(0);
+  transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 8px 0 28px rgba(0,0,0,0.55);
+}
+
+#sidebar.collapsed {
+  transform: translateX(-105%);
+}
+
+.sidebar-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(251,146,60,0.15), rgba(56,189,248,0.1));
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #f97316, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(249,115,22,0.4);
+}
+
+.sidebar-brand-text h1 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.sidebar-brand-text span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.sidebar-search {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.sidebar-search input {
+  width: 100%;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  background: rgba(0,0,0,0.2);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+body.light-board .sidebar-search input {
+  background: #f1f5f9;
+}
+
+.sidebar-search input:focus {
+  border-color: var(--accent-cyan);
+}
+
+#toc-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 8px 24px 8px;
+}
+
+#toc-list::-webkit-scrollbar {
+  width: 6px;
+}
+#toc-list::-webkit-scrollbar-thumb {
+  background: rgba(148,163,184,0.3);
+  border-radius: 3px;
+}
+
+.toc-group {
+  margin-bottom: 8px;
+  border-radius: 9px;
+  overflow: hidden;
+  border: 1px solid rgba(148,163,184,0.12);
+  background: rgba(255,255,255,0.015);
+}
+
+.toc-group-header {
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.03);
+  transition: background 0.15s;
+}
+
+.toc-group-header:hover {
+  background: rgba(56,189,248,0.12);
+}
+
+.toc-group-items {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+}
+
+.toc-group.closed .toc-group-items {
+  display: none;
+}
+
+.toc-item {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.toc-item:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-main);
+}
+
+.toc-item.active {
+  background: rgba(56,189,248,0.18);
+  color: var(--accent-cyan);
+  font-weight: 600;
+  border-left: 3px solid var(--accent-cyan);
+}
+
+.toc-item-badges {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.badge-page {
+  font-size: 10.5px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(148,163,184,0.15);
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.toc-item.active .badge-page {
+  background: var(--accent-cyan);
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.badge-3d {
+  font-size: 9.5px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(244,114,182,0.2);
+  color: #f472b6;
+  border: 1px solid rgba(244,114,182,0.4);
+}
+
+.badge-anim {
+  font-size: 9.5px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(74,222,128,0.2);
+  color: #4ade80;
+  border: 1px solid rgba(74,222,128,0.4);
+}
+
+.badge-quiz {
+  font-size: 9.5px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(250,204,21,0.2);
+  color: #facc15;
+}
+
+/* Main Workspace Area */
+#main-area {
+  flex: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top Bar */
+#topbar {
+  height: 52px;
+  min-height: 52px;
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  z-index: 40;
+}
+
+.topbar-left, .topbar-center, .topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  height: 34px;
+  padding: 0 11px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.icon-btn:hover {
+  background: rgba(56,189,248,0.15);
+  border-color: var(--accent-cyan);
+}
+
+.icon-btn.primary {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  border-color: #38bdf8;
+  color: #fff;
+}
+
+.slide-nav-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.25);
+  padding: 3px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border);
+}
+
+body.light-board .slide-nav-pill {
+  background: #f1f5f9;
+}
+
+#page-indicator {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 90px;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Interactive Feature Launch Buttons (Small buttons on top bar / slide corner) */
+#feature-buttons-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.feature-trigger-btn {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 18px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.15s, box-shadow 0.15s;
+  animation: pulseSubtle 2.5s infinite;
+}
+
+.feature-trigger-btn.show {
+  display: inline-flex;
+}
+
+.feature-trigger-btn.btn-3d {
+  background: linear-gradient(135deg, #db2777, #9333ea);
+  color: #fff;
+  border: 1px solid #f472b6;
+  box-shadow: 0 0 14px rgba(244, 114, 182, 0.45);
+}
+
+.feature-trigger-btn.btn-anim {
+  background: linear-gradient(135deg, #059669, #0284c7);
+  color: #fff;
+  border: 1px solid #4ade80;
+  box-shadow: 0 0 14px rgba(74, 222, 128, 0.4);
+}
+
+.feature-trigger-btn:hover {
+  transform: scale(1.04);
+}
+
+@keyframes pulseSubtle {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.18); }
+}
+
+/* Smartboard Viewport */
+#board-viewport {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  background-color: var(--bg-board);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to right, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-major) 1px, transparent 1px);
+  background-size: 28px 28px, 28px 28px, 140px 140px, 140px 140px;
+}
+
+#board-stage {
+  position: relative;
+  width: 1180px;
+  margin: 0 auto;
+  min-height: 1180px;
+  padding: 28px 44px 120px 44px;
+}
+
+/* Content Layer (Teacher's Slide Structure: Headings + Illustrations + Empty Frameworks) */
+#slide-content-layer {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  pointer-events: none; /* Let pen strokes pass through unless interactive element */
+}
+
+#slide-content-layer .interactive-el {
+  pointer-events: auto;
+}
+
+/* Drawing Canvas Layer */
+#drawing-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: crosshair;
+}
+
+#drawing-canvas.pan-mode {
+  pointer-events: none;
+  touch-action: pan-y;
+}
+
+/* Active Stroke Overlay Canvas (Zero-latency incremental rendering for Apple Pencil) */
+#active-stroke-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 22;
+  pointer-events: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Prevent resting palm from clicking floating toolbar while actively drawing a stroke */
+body.is-drawing #pen-toolbar {
+  pointer-events: none;
+}
+
+/* Laser Pointer Trail Canvas */
+#laser-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 25;
+  pointer-events: none;
+}
+
+/* Handwritten-style / Smartboard Slide Typography & Components */
+.slide-header-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  padding-bottom: 12px;
+  border-bottom: 2px dashed rgba(251, 146, 60, 0.45);
+}
+
+.slide-main-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent-orange);
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-shadow: 0 2px 12px rgba(251, 146, 60, 0.2);
+}
+
+.slide-num-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2.5px solid var(--accent-pink);
+  color: var(--accent-pink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.slide-subtitle-badge {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1.5px solid var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+/* Smartboard Tables (matching overview.pdf yellow/white clean lines with large blank writing cells) */
+.sb-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0 24px 0;
+  border: 2px solid var(--accent-yellow);
+}
+
+.sb-table th, .sb-table td {
+  border: 1.5px solid rgba(250, 204, 21, 0.65);
+  padding: 14px 18px;
+  vertical-align: top;
+}
+
+body.light-board .sb-table,
+body.light-board .sb-table th,
+body.light-board .sb-table td {
+  border-color: #475569;
+}
+
+.sb-table th {
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--accent-yellow);
+  background: rgba(250, 204, 21, 0.06);
+  text-align: center;
+}
+
+.sb-table td.row-label {
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  width: 200px;
+  text-align: center;
+  vertical-align: middle;
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.sb-write-space {
+  min-height: 150px;
+  position: relative;
+}
+
+.sb-write-space-lg {
+  min-height: 280px;
+  position: relative;
+}
+
+.sb-write-space-xl {
+  min-height: 520px;
+  position: relative;
+}
+
+/* Smartboard Layout Grids */
+.sb-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-bottom: 24px;
+}
+
+.sb-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 22px;
+  margin-bottom: 24px;
+}
+
+.sb-card {
+  border: 2px solid rgba(148, 163, 184, 0.35);
+  border-radius: 14px;
+  padding: 18px 22px;
+  background: rgba(15, 23, 42, 0.28);
+  position: relative;
+}
+
+body.light-board .sb-card {
+  background: rgba(255, 255, 255, 0.55);
+  border-color: #94a3b8;
+}
+
+.sb-card-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent-green);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sb-branch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  padding-left: 18px;
+  border-left: 3px solid var(--accent-yellow);
+  margin: 14px 0 22px 12px;
+}
+
+.sb-branch-item {
+  position: relative;
+  padding-left: 24px;
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.sb-branch-item::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 15px;
+  width: 30px;
+  height: 2.5px;
+  background: var(--accent-yellow);
+}
+
+.sb-blank-line {
+  display: inline-block;
+  border-bottom: 2px dotted rgba(148, 163, 184, 0.55);
+  min-width: 220px;
+  height: 30px;
+  vertical-align: bottom;
+  margin: 0 6px;
+}
+
+/* Exercise & Real Exam Boxes */
+.quiz-problem-box {
+  border: 2px solid var(--accent-cyan);
+  border-radius: 14px;
+  padding: 20px 26px;
+  background: rgba(15, 23, 42, 0.5);
+  margin-bottom: 22px;
+}
+
+body.light-board .quiz-problem-box {
+  background: rgba(241, 245, 249, 0.85);
+}
+
+.quiz-question-text {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--text-main);
+  margin-bottom: 14px;
+}
+
+.quiz-choices-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 28px;
+  margin-top: 12px;
+  font-size: 20px;
+  color: var(--accent-yellow);
+}
+
+.quiz-work-header {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--accent-green);
+  text-decoration: underline;
+  margin-bottom: 10px;
+}
+
+/* Floating Bottom Pen & Annotation Toolbar */
+#pen-toolbar {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(27, 31, 39, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 60;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+}
+
+body.light-board #pen-toolbar {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.tool-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 17px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.tool-btn:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.tool-btn.active {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  transform: translateY(-2px);
+}
+
+.tool-divider {
+  width: 1px;
+  height: 26px;
+  background: var(--panel-border);
+  margin: 0 2px;
+}
+
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.color-swatch.active {
+  transform: scale(1.25);
+  border-color: #fff;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.size-slider {
+  width: 72px;
+  accent-color: var(--accent-cyan);
+  cursor: pointer;
+}
+
+/* Fullscreen Modal Overlay for 3D Labs & Animation Graphics */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 16, 0.96);
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-header {
+  height: 58px;
+  padding: 0 24px;
+  background: #161922;
+  border-bottom: 1px solid #2d3545;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-body {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.lab-stage {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+}
+
+.lab-controls {
+  width: 360px;
+  background: #161922;
+  border-left: 1px solid #2d3545;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: #f1f5f9;
+}
+
+.lab-control-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.lab-control-card h4 {
+  font-size: 14px;
+  color: #38bdf8;
+  margin-bottom: 10px;
+}
+
+.lab-btn {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: all 0.15s;
+}
+
+.lab-btn:hover {
+  background: rgba(56,189,248,0.25);
+  border-color: #38bdf8;
+}
+
+.lab-btn.active {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  border-color: #38bdf8;
+}
+
+/* Single Question Navigation Bar (for Exercises & Real Exam Deck) */
+#question-nav-bar {
+  display: none;
+  min-height: 48px;
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.96));
+  border-bottom: 2px solid var(--accent-yellow);
+  padding: 6px 18px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 38;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+body.light-board #question-nav-bar {
+  background: linear-gradient(90deg, #fefce8, #f0f9ff);
+  border-bottom: 2px solid #ca8a04;
+}
+
+#question-nav-bar.show {
+  display: flex;
+}
+
+.qnav-left, .qnav-center, .qnav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qnav-deck-badge {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  background: linear-gradient(135deg, #facc15, #fb923c);
+  padding: 4px 12px;
+  border-radius: 16px;
+  white-space: nowrap;
+}
+
+.qnav-counter {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+.qnav-btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.14);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.qnav-btn:hover:not(:disabled) {
+  background: var(--accent-cyan);
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.qnav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: var(--panel-border);
+}
+
+.qnav-btn.next-highlight {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #fff;
+  border-color: #38bdf8;
+}
+
+.qnav-select {
+  height: 34px;
+  max-width: 460px;
+  min-width: 260px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--panel-border);
+  background: #0f172a;
+  color: #f8fafc;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+}
+
+body.light-board .qnav-select {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.qnav-select:focus {
+  border-color: var(--accent-yellow);
+}
+
+/* Consolidated Sidebar Deck Button */
+.toc-deck-item {
+  margin: 4px 2px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.12), rgba(251, 146, 60, 0.08));
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  color: var(--accent-yellow);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.toc-deck-item:hover {
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.22), rgba(251, 146, 60, 0.18));
+  transform: translateX(2px);
+}
+
+.toc-deck-item.active {
+  background: linear-gradient(135deg, #facc15, #f97316);
+  color: #0f172a;
+  border-color: #fff;
+  box-shadow: 0 2px 10px rgba(250, 204, 21, 0.35);
+}
+
+/* Modal Main Column + Detailed Bottom Explanation Panel */
+.lab-main-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.modal-explanation-bar {
+  height: 195px;
+  min-height: 195px;
+  background: #111622;
+  border-top: 2px solid #2d3545;
+  padding: 12px 20px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr 1fr;
+  gap: 14px;
+  color: #e2e8f0;
+}
+
+.exp-card {
+  background: rgba(30, 41, 59, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.exp-card h5 {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Print / Export PDF Styling */
+@media print {
+  #sidebar, #topbar, #question-nav-bar, #pen-toolbar, .modal-overlay {
+    display: none !important;
+  }
+  #board-viewport {
+    overflow: visible !important;
+    height: auto !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+/* English Chapter 2 Indigo Accent Tweaks & Pinned Toolbar Enhancements */
+.zoom-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(129, 140, 248, 0.38);
+  border-radius: 8px;
+  padding: 2px 5px;
+  height: 34px;
+}
+.zoom-pill button {
+  background: transparent;
+  border: none;
+  color: #e2e8f0;
+  cursor: pointer;
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.zoom-pill button:hover {
+  background: rgba(129, 140, 248, 0.25);
+}
+#board-zoom-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #a5b4fc;
+  min-width: 44px;
+  text-align: center;
+  cursor: pointer;
+}
+#btn-manual-cloud-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #818cf8;
+  background: rgba(79, 70, 229, 0.35);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+#btn-manual-cloud-sync:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+/* Ensure floating toolbar and topbar pin cleanly on visualViewport zoom */
+#pen-toolbar, #topbar {
+  will-change: transform;
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Left Sidebar: Table of Contents -->
+  <aside id="sidebar" class="collapsed">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">Aa</div>
+        <div class="sidebar-brand-text">
+          <h1>อังกฤษ : Parts of Speech</h1>
+          <span>Smartboard & Competitive Quiz</span>
+        </div>
+      </div>
+      <button class="icon-btn" onclick="toggleSidebar()" title="ซ่อนแถบสารบัญ">◀</button>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="toc-search-input" placeholder="ค้นหาหัวข้อ หรือ หมายเลขหน้า..." oninput="filterTOC(this.value)">
+    </div>
+    <div id="toc-list"></div>
+  </aside>
+
+  <!-- Main Smartboard Area -->
+  <main id="main-area">
+    <!-- Top Navigation & Action Bar -->
+    <header id="topbar">
+      <div class="topbar-left">
+        <a href="/course/english" class="icon-btn" style="text-decoration:none;" title="กลับหน้าบทเรียนภาษาอังกฤษ">← วิชาอังกฤษ</a>
+        <button class="icon-btn" onclick="toggleSidebar()" title="เปิด/ปิดสารบัญ (M)">☰ สารบัญ</button>
+        <div class="slide-nav-pill">
+          <button class="icon-btn" onclick="prevSlide()" title="หน้าก่อนหน้า (←)">◀ ก่อนหน้า</button>
+          <span id="page-indicator" onclick="promptJumpPage()" title="คลิกเพื่อระบุเลขหน้า">หน้า 1 / 1</span>
+          <button class="icon-btn" onclick="nextSlide()" title="หน้าถัดไป (→)">ถัดไป ▶</button>
+        </div>
+        <span id="current-section-badge" style="font-size:13px; color:var(--text-muted); margin-left:6px;"></span>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Board Zoom Controls (keeps #pen-toolbar fixed!) -->
+        <div class="zoom-pill" title="ซูมกระดาน (แถบเครื่องมือปากกาจะถูกตรึงไว้เสมอ)">
+          <button onclick="changeBoardZoom(-0.15)" title="ซูมออก">🔍-</button>
+          <span id="board-zoom-label" onclick="resetBoardZoom()" title="คลิกรีเซ็ต 100%">100%</span>
+          <button onclick="changeBoardZoom(0.15)" title="ซูมเข้า">🔍+</button>
+        </div>
+
+        <!-- Account Sync Widget + Manual Cloud Sync Button -->
+        <div id="account-sync-widget" style="display:inline-flex; align-items:center; gap:6px; padding:0 10px; height:34px; border-radius:8px; border:1px solid rgba(129,140,248,0.4); background:rgba(15,23,42,0.75); font-size:12px; transition:all 0.2s; white-space:nowrap;">
+          <span id="account-user-badge" style="font-weight:600; color:#a5b4fc;">⏳ ตรวจสอบบัญชี...</span>
+          <span id="account-sync-status" style="font-size:11px; color:#94a3b8;"></span>
+        </div>
+        <button id="btn-manual-cloud-sync" style="display:none;" title="กดเพื่อซิงก์ลายมือขึ้นคลาวด์">☁️ ซิงก์ขึ้นคลาวด์</button>
+
+        <button class="icon-btn" onclick="toggleTheme()" id="btn-theme" title="สลับสีกระดาน มืด/สว่าง">🌙 กระดานดำ</button>
+        <button class="icon-btn" onclick="saveNotesJSON()" title="บันทึกไฟล์ลายมือ (.json)">💾 เซฟโน้ต</button>
+        <button class="icon-btn" onclick="document.getElementById('load-json-input').click()" title="โหลดไฟล์ลายมือ (.json)">📂 โหลดโน้ต</button>
+        <input type="file" id="load-json-input" accept=".json" style="display:none" onchange="loadNotesJSON(event)">
+        <button class="icon-btn" onclick="exportSlidePNG()" title="พิมพ์ / บันทึกเป็น PDF">📄 PDF</button>
+        <button class="icon-btn primary" onclick="toggleFullScreen()" id="btn-fullscreen" title="ขยายเต็มจอ (F11)">⛶ เต็มจอ</button>
+      </div>
+    </header>
+
+    <!-- Single Question Navigation Bar -->
+    <div id="question-nav-bar">
+      <div class="qnav-left">
+        <span id="qnav-deck-badge" class="qnav-deck-badge">🏆 ข้อสอบแข่งขันท้ายบท (20 ข้อ)</span>
+        <span id="qnav-counter" class="qnav-counter">ข้อที่ 1 / 20</span>
+      </div>
+      <div class="qnav-center">
+        <button id="qnav-prev-btn" class="qnav-btn" onclick="prevQuestionInDeck()">◀ ข้อก่อนหน้า</button>
+        <select id="qnav-select" class="qnav-select" onchange="SoundFX.click(); goToSlide(Number(this.value))"></select>
+        <button id="qnav-next-btn" class="qnav-btn next-highlight" onclick="nextQuestionInDeck()">ข้อถัดไป ▶</button>
+      </div>
+      <div class="qnav-right">
+        <button class="qnav-btn" onclick="firstQuestionInDeck()" title="ไปข้อแรกของชุดนี้">⏮ ข้อแรก</button>
+        <button class="qnav-btn" onclick="randomQuestionInDeck()" title="สุ่มทำโจทย์ในชุดนี้">🎲 สุ่มข้อ</button>
+      </div>
+    </div>
+
+    <!-- Scrollable Smartboard Stage -->
+    <div id="board-viewport">
+      <div id="board-stage">
+        <div id="slide-content-layer"></div>
+        <canvas id="drawing-canvas"></canvas>
+        <canvas id="active-stroke-canvas"></canvas>
+        <canvas id="laser-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- Floating Smartboard Pen Toolbar (Pinned during zoom!) -->
+    <div id="pen-toolbar">
+      <button class="tool-btn active" data-tool="pen" onclick="setDrawTool('pen')" title="ปากกาเขียนกระดาน (P)">✏️</button>
+      <button class="tool-btn" data-tool="highlighter" onclick="setDrawTool('highlighter')" title="ปากกาไฮไลต์ (H)">🖍️</button>
+      <button class="tool-btn" data-tool="line" onclick="setDrawTool('line')" title="ลากเส้นตรง (L)">📏</button>
+      <button class="tool-btn" data-tool="rect" onclick="setDrawTool('rect')" title="วาดกรอบสี่เหลี่ยม (R)">⬜</button>
+      <button class="tool-btn" data-tool="eraser" onclick="setDrawTool('eraser')" title="ยางลบ (E)">🧽</button>
+      <button class="tool-btn" data-tool="laser" onclick="setDrawTool('laser')" title="เลเซอร์พอยเตอร์ชี้กระดาน (Q)">🔴</button>
+      <button class="tool-btn" data-tool="pan" onclick="setDrawTool('pan')" title="โหมดเลื่อนหน้าจอ / มือจับ (Space)">✋</button>
+
+      <div class="tool-divider"></div>
+
+      <button id="btn-palm-reject" class="tool-btn active" onclick="togglePalmRejection()" title="โหมดกันอุ้งมือ (เขียนเฉพาะ Apple Pencil / เมาส์)" style="width:auto; padding:0 10px; font-size:12px; font-weight:600; gap:5px;">
+        <span id="palm-reject-icon">🧤</span><span id="palm-reject-label">กันอุ้งมือ</span>
+      </button>
+
+      <div class="tool-divider"></div>
+
+      <!-- Color Swatches -->
+      <div class="color-swatch active" style="background:#ffffff; color:#ffffff;" onclick="setPenColor('#ffffff', this)" title="สีขาว"></div>
+      <div class="color-swatch" style="background:#facc15; color:#facc15;" onclick="setPenColor('#facc15', this)" title="สีเหลือง"></div>
+      <div class="color-swatch" style="background:#818cf8; color:#818cf8;" onclick="setPenColor('#818cf8', this)" title="สีน้ำเงินคราม"></div>
+      <div class="color-swatch" style="background:#38bdf8; color:#38bdf8;" onclick="setPenColor('#38bdf8', this)" title="สีฟ้า"></div>
+      <div class="color-swatch" style="background:#4ade80; color:#4ade80;" onclick="setPenColor('#4ade80', this)" title="สีเขียว"></div>
+      <div class="color-swatch" style="background:#fb923c; color:#fb923c;" onclick="setPenColor('#fb923c', this)" title="สีส้ม"></div>
+      <div class="color-swatch" style="background:#f87171; color:#f87171;" onclick="setPenColor('#f87171', this)" title="สีแดง"></div>
+
+      <div class="tool-divider"></div>
+
+      <!-- Brush Size -->
+      <input type="range" id="pen-size-slider" class="size-slider" min="1" max="18" value="3" oninput="setPenSize(this.value)" title="ขนาดหัวปากกา">
+      <span id="pen-size-label" style="font-size:11px; color:var(--text-muted); min-width:24px;">3px</span>
+
+      <div class="tool-divider"></div>
+
+      <button class="tool-btn" onclick="undoStroke()" title="ย้อนกลับ (Ctrl+Z)">↩️</button>
+      <button class="tool-btn" onclick="redoStroke()" title="ทำซ้ำ (Ctrl+Y)">↪️</button>
+      <button class="tool-btn" onclick="clearCurrentSlideDrawing()" title="ล้างลายมือในหน้านี้">🗑️</button>
+    </div>
+  </main>
+</div>
+
+<script>
+// In-board Zoom state & VisualViewport Toolbar Pinning
+let boardZoom = 1.0;
+
+function changeBoardZoom(delta) {
+  if (typeof SoundFX !== 'undefined' && SoundFX.click) SoundFX.click();
+  boardZoom = Math.min(2.4, Math.max(0.6, Math.round((boardZoom + delta) * 100) / 100));
+  const lbl = document.getElementById('board-zoom-label');
+  if (lbl) lbl.textContent = Math.round(boardZoom * 100) + '%';
+  resizeBoardCanvases(false);
+}
+
+function resetBoardZoom() {
+  if (typeof SoundFX !== 'undefined' && SoundFX.click) SoundFX.click();
+  boardZoom = 1.0;
+  const lbl = document.getElementById('board-zoom-label');
+  if (lbl) lbl.textContent = '100%';
+  resizeBoardCanvases(false);
+}
+
+// Pin #pen-toolbar and #topbar inside the visible screen even during native pinch-zoom / browser zoom
+function pinFloatingUIOnZoom() {
+  const vv = window.visualViewport;
+  const toolbar = document.getElementById('pen-toolbar');
+  const topbar = document.getElementById('topbar');
+  if (!vv || !toolbar) return;
+
+  const invScale = 1 / (vv.scale || 1);
+  // Keep toolbar anchored at the bottom-center of the visible visualViewport
+  const centerX = vv.offsetLeft + vv.width / 2;
+  const bottomY = vv.offsetTop + vv.height - 16 * invScale;
+
+  toolbar.style.position = 'fixed';
+  toolbar.style.left = centerX + 'px';
+  toolbar.style.top = bottomY + 'px';
+  toolbar.style.bottom = 'auto';
+  toolbar.style.transformOrigin = 'bottom center';
+  toolbar.style.transform = `translate(-50%, -100%) scale(${invScale})`;
+
+  if (topbar && vv.scale && vv.scale > 1.02) {
+    topbar.style.transformOrigin = 'top left';
+    topbar.style.transform = `translate(${vv.offsetLeft}px, ${vv.offsetTop}px) scale(${invScale})`;
+    topbar.style.width = (vv.width * vv.scale) + 'px';
+  } else if (topbar) {
+    topbar.style.transform = '';
+    topbar.style.width = '';
+  }
+}
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', pinFloatingUIOnZoom);
+  window.visualViewport.addEventListener('scroll', pinFloatingUIOnZoom);
+}
+
+let lastPenTimestamp = 0;
+
+// Cached Canvas Metrics & Dirty-Rect State (Zero-Reflow & O(1) Incremental Rendering)
+const CANONICAL_STAGE_WIDTH = 1180;
+let cachedCanvasRect = null;
+let cachedStageW = CANONICAL_STAGE_WIDTH;
+let lastCanvasW = 0;
+let lastCanvasH = 0;
+let lastCanvasDpr = 0;
+let activeDirtyBox = null;
+
+// Per-slide vector stroke storage: { [slideId]: [ strokeObj, ... ] }
+let slideAnnotations = {};
+let redoStacks = {};
+
+const drawCanvas = document.getElementById('drawing-canvas');
+const drawCtx = drawCanvas.getContext('2d');
+const activeCanvas = document.getElementById('active-stroke-canvas');
+const activeCtx = activeCanvas.getContext('2d');
+const laserCanvas = document.getElementById('laser-canvas');
+const laserCtx = laserCanvas.getContext('2d');
+let laserPoints = [];
+let laserDirtyBox = null;
+
+function getSlideLogicalWidth(idx = currentSlideIndex) {
+  const key = getSlideKey(idx);
+  const strokes = slideAnnotations[key];
+  if (Array.isArray(strokes) && strokes.length > 0) {
+    for (let i = 0; i < strokes.length; i++) {
+      const s = strokes[i];
+      if (s && s.stageW && s.stageW >= 560 && s.stageW <= 2600) {
+        return Math.round(s.stageW);
+      }
+      if (s && Array.isArray(s.points)) {
+        for (let j = 0; j < s.points.length; j++) {
+          const pt = s.points[j];
+          if (pt && typeof pt.x === 'number' && typeof pt.nx === 'number' && pt.nx > 0.08 && pt.x > 60) {
+            const inferred = Math.round(pt.x / pt.nx);
+            if (inferred >= 560 && inferred <= 2600) {
+              return inferred;
+            }
+          }
+        }
+      }
+    }
+  }
+  return CANONICAL_STAGE_WIDTH;
+}
+
+function updateCanvasMetrics() {
+  cachedCanvasRect = drawCanvas.getBoundingClientRect();
+  cachedStageW = lastCanvasW || drawCanvas.clientWidth || CANONICAL_STAGE_WIDTH;
+}
+
+const boardViewportEl = document.getElementById('board-viewport');
+if (boardViewportEl) {
+  boardViewportEl.addEventListener('scroll', updateCanvasMetrics, { passive: true });
+}
+
+function expandActiveDirtyBox(x, y, pad) {
+  const minX = x - pad;
+  const minY = y - pad;
+  const maxX = x + pad;
+  const maxY = y + pad;
+  if (!activeDirtyBox) {
+    activeDirtyBox = { minX, minY, maxX, maxY };
+  } else {
+    if (minX < activeDirtyBox.minX) activeDirtyBox.minX = minX;
+    if (minY < activeDirtyBox.minY) activeDirtyBox.minY = minY;
+    if (maxX > activeDirtyBox.maxX) activeDirtyBox.maxX = maxX;
+    if (maxY > activeDirtyBox.maxY) activeDirtyBox.maxY = maxY;
+  }
+}
+
+function clearActiveDirtyBox() {
+  if (!activeDirtyBox) return;
+  const x = Math.max(0, Math.floor(activeDirtyBox.minX - 6));
+  const y = Math.max(0, Math.floor(activeDirtyBox.minY - 6));
+  const w = Math.ceil(activeDirtyBox.maxX - x + 12);
+  const h = Math.ceil(activeDirtyBox.maxY - y + 12);
+  activeCtx.clearRect(x, y, w, h);
+  activeDirtyBox = null;
+}
+
+function getStrokePadding(s) {
+  if (!s) return 16;
+  if (s.tool === 'eraser') return s.size * 5.5 + 8;
+  if (s.tool === 'highlighter') return s.size * 4.2 + 8;
+  return s.size + 8;
+}
+
+function resizeBoardCanvases(forceRedraw = false) {
+  const viewport = document.getElementById('board-viewport');
+  const stage = document.getElementById('board-stage');
+  const contentLayer = document.getElementById('slide-content-layer');
+
+  const logicalW = getSlideLogicalWidth(currentSlideIndex);
+  stage.style.width = logicalW + 'px';
+  // Legacy wide-screen strokes were drawn when content was capped at 1520px and centered
+  const legacyWide = logicalW > 1564;
+  contentLayer.style.maxWidth = legacyWide ? '1520px' : 'none';
+  contentLayer.style.margin = legacyWide ? '0 auto' : '0';
+
+  const targetHeight = Math.max(1180, contentLayer.scrollHeight + 180, window.innerHeight - 52);
+  stage.style.minHeight = targetHeight + 'px';
+
+  const viewportW = (viewport && viewport.clientWidth) ? viewport.clientWidth : window.innerWidth;
+  const baseScale = (viewportW > 0 && viewportW < logicalW) ? (viewportW / logicalW) : 1;
+  const totalScale = baseScale * (typeof boardZoom === 'number' ? boardZoom : 1);
+  if (Math.abs(totalScale - 1) > 0.002) {
+    stage.style.transformOrigin = 'top left';
+    stage.style.transform = `scale(${totalScale})`;
+    stage.style.marginLeft = (totalScale < 1 && viewportW > logicalW * totalScale) ? 'auto' : '0px';
+    stage.style.marginRight = `${Math.max(0, Math.round(logicalW * (totalScale - 1)))}px`;
+    stage.style.marginBottom = `${Math.round(targetHeight * (totalScale - 1))}px`;
+  } else {
+    stage.style.transform = 'none';
+    stage.style.marginLeft = 'auto';
+    stage.style.marginRight = 'auto';
+    stage.style.marginBottom = '0px';
+  }
+
+  const dpr = window.devicePixelRatio || 1;
+  const newW = Math.round(logicalW);
+  const newH = Math.round(targetHeight);
+
+  const dimsChanged = (
+    Math.abs(newW - lastCanvasW) > 1 ||
+    Math.abs(newH - lastCanvasH) > 2 ||
+    dpr !== lastCanvasDpr
+  );
+
+  if (dimsChanged) {
+    lastCanvasW = newW;
+    lastCanvasH = newH;
+    lastCanvasDpr = dpr;
+
+    drawCanvas.width = newW * dpr;
+    drawCanvas.height = newH * dpr;
+    drawCanvas.style.width = newW + 'px';
+    drawCanvas.style.height = newH + 'px';
+    drawCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    activeCanvas.width = newW * dpr;
+    activeCanvas.height = newH * dpr;
+    activeCanvas.style.width = newW + 'px';
+    activeCanvas.style.height = newH + 'px';
+    activeCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    activeDirtyBox = null;
+
+    laserCanvas.width = newW * dpr;
+    laserCanvas.height = newH * dpr;
+    laserCanvas.style.width = newW + 'px';
+    laserCanvas.style.height = newH + 'px';
+    laserCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    updateCanvasMetrics();
+    renderCurrentSlideStrokes();
+  } else {
+    updateCanvasMetrics();
+    if (forceRedraw && !isDrawing) {
+      renderCurrentSlideStrokes();
+    }
+  }
+}
+
+window.addEventListener('resize', () => resizeBoardCanvases(false));
+if (typeof ResizeObserver !== 'undefined') {
+  const slideContentEl = document.getElementById('slide-content-layer');
+  if (slideContentEl) {
+    const ro = new ResizeObserver(() => {
+      if (!isDrawing) resizeBoardCanvases(false);
+    });
+    ro.observe(slideContentEl);
+  }
+}
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => {
+    if (!isDrawing) resizeBoardCanvases(true);
+  });
+}
+
+function getSlideKey(idx = currentSlideIndex) {
+  const s = SLIDES[idx];
+  return s ? s.id : ('slide_' + idx);
+}
+
+function renderStroke(ctx, s, stageW) {
+  if (!s || !s.points || s.points.length === 0) return;
+  const pts = s.points;
+  const len = pts.length;
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  let lw = s.size;
+  if (s.tool === 'eraser') {
+    ctx.globalCompositeOperation = 'destination-out';
+    lw = s.size * 5.5;
+    ctx.lineWidth = lw;
+    ctx.fillStyle = '#000000';
+  } else if (s.tool === 'highlighter') {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = s.color;
+    ctx.fillStyle = s.color;
+    ctx.globalAlpha = 0.34;
+    lw = s.size * 4.2;
+    ctx.lineWidth = lw;
+  } else {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = s.color;
+    ctx.fillStyle = s.color;
+    ctx.globalAlpha = 1.0;
+    lw = s.size;
+    ctx.lineWidth = lw;
+  }
+
+  const x0 = pts[0].nx ? pts[0].nx * stageW : pts[0].x;
+  const y0 = pts[0].y;
+
+  if (s.tool === 'line') {
+    const last = pts[len - 1];
+    const x1 = last.nx ? last.nx * stageW : last.x;
+    const y1 = last.y;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+  } else if (s.tool === 'rect') {
+    const last = pts[len - 1];
+    const x1 = last.nx ? last.nx * stageW : last.x;
+    const y1 = last.y;
+    ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+  } else if (len === 1) {
+    ctx.beginPath();
+    ctx.arc(x0, y0, lw / 2, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    let prevX = x0;
+    let prevY = y0;
+    for (let i = 1; i < len; i++) {
+      const cx = pts[i].nx ? pts[i].nx * stageW : pts[i].x;
+      const cy = pts[i].y;
+      const midX = (prevX + cx) * 0.5;
+      const midY = (prevY + cy) * 0.5;
+      ctx.quadraticCurveTo(prevX, prevY, midX, midY);
+      prevX = cx;
+      prevY = cy;
+    }
+    ctx.lineTo(prevX, prevY);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function renderEraserTailSegment(ctx, s, stageW) {
+  const pts = s.points;
+  const len = pts.length;
+  if (len === 0) return;
+  const lw = s.size * 5.5;
+  ctx.save();
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = lw;
+  ctx.fillStyle = '#000000';
+
+  if (len === 1) {
+    const x0 = pts[0].nx ? pts[0].nx * stageW : pts[0].x;
+    ctx.beginPath();
+    ctx.arc(x0, pts[0].y, lw / 2, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    const pPrev = pts[len - 2];
+    const pCurr = pts[len - 1];
+    const x1 = pPrev.nx ? pPrev.nx * stageW : pPrev.x;
+    const y1 = pPrev.y;
+    const x2 = pCurr.nx ? pCurr.nx * stageW : pCurr.x;
+    const y2 = pCurr.y;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawActiveStrokePreview() {
+  if (!currentStroke || currentStroke.points.length === 0) return;
+  const stageW = cachedStageW || drawCanvas.clientWidth || 1400;
+  const pad = getStrokePadding(currentStroke);
+
+  clearActiveDirtyBox();
+
+  if (currentStroke.tool === 'eraser') {
+    const last = currentStroke.points[currentStroke.points.length - 1];
+    const rx = last.nx ? last.nx * stageW : last.x;
+    const ry = last.y;
+    const radius = (currentStroke.size * 5.5) * 0.5;
+    expandActiveDirtyBox(rx, ry, radius + 6);
+    activeCtx.save();
+    activeCtx.beginPath();
+    activeCtx.arc(rx, ry, radius, 0, Math.PI * 2);
+    activeCtx.strokeStyle = 'rgba(248, 113, 113, 0.85)';
+    activeCtx.lineWidth = 2;
+    activeCtx.stroke();
+    activeCtx.restore();
+    return;
+  }
+
+  const pts = currentStroke.points;
+  for (let i = 0; i < pts.length; i++) {
+    const px = pts[i].nx ? pts[i].nx * stageW : pts[i].x;
+    expandActiveDirtyBox(px, pts[i].y, pad);
+  }
+  renderStroke(activeCtx, currentStroke, stageW);
+}
+
+function renderCurrentSlideStrokes() {
+  const stageW = cachedStageW || drawCanvas.clientWidth || 1400;
+  drawCtx.clearRect(0, 0, lastCanvasW || drawCanvas.width, lastCanvasH || drawCanvas.height);
+  clearActiveDirtyBox();
+  const key = getSlideKey();
+  const strokes = slideAnnotations[key] || [];
+  for (let i = 0; i < strokes.length; i++) {
+    renderStroke(drawCtx, strokes[i], stageW);
+  }
+  if (currentStroke) {
+    drawActiveStrokePreview();
+  }
+}
+
+function getStageCoords(e) {
+  if (!cachedCanvasRect) updateCanvasMetrics();
+  const rectW = (cachedCanvasRect && cachedCanvasRect.width > 0) ? cachedCanvasRect.width : cachedStageW;
+  const scale = cachedStageW / rectW;
+  const rawX = (e.clientX - cachedCanvasRect.left) * scale;
+  const rawY = (e.clientY - cachedCanvasRect.top) * scale;
+  const x = Math.round(rawX * 10) / 10;
+  const y = Math.round(rawY * 10) / 10;
+  const nx = Math.round((rawX / cachedStageW) * 100000) / 100000;
+  return { x, y, nx };
+}
+
+function shouldRejectTouchAsPalm(e) {
+  if (e.pointerType !== 'touch') return false;
+  // 1) If Palm Rejection mode is ON, reject all finger/palm touches on drawing canvas
+  if (palmRejectionEnabled) return true;
+  // 2) Even if finger drawing is enabled, reject touch if Apple Pencil is currently drawing or just lifted (<650ms)
+  if (isDrawing && activePointerType === 'pen') return true;
+  if (performance.now() - lastPenTimestamp < 650) return true;
+  // 3) Reject large contact patch (palm resting on screen)
+  if ((e.width && e.width > 28) || (e.height && e.height > 28)) return true;
+  return false;
+}
+
+function commitCurrentStrokeImmediate() {
+  if (!currentStroke) return;
+  const stageW = cachedStageW || drawCanvas.clientWidth || 1400;
+  clearActiveDirtyBox();
+  renderStroke(drawCtx, currentStroke, stageW);
+  const key = getSlideKey();
+  if (!slideAnnotations[key]) slideAnnotations[key] = [];
+  slideAnnotations[key].push(currentStroke);
+  redoStacks[key] = [];
+  currentStroke = null;
+  schedulePersistAnnotations();
+}
+
+// Suppress iPadOS Scribble (UIScribbleInteraction), double-tap zoom delay, and touch callouts on canvas
+drawCanvas.addEventListener('touchstart', (e) => {
+  if (currentDrawTool === 'pan') return;
+  if (e.cancelable) e.preventDefault();
+}, { passive: false });
+
+drawCanvas.addEventListener('touchmove', (e) => {
+  if (currentDrawTool === 'pan') return;
+  if (e.cancelable) e.preventDefault();
+}, { passive: false });
+
+drawCanvas.addEventListener('touchend', (e) => {
+  if (currentDrawTool === 'pan') return;
+  if (e.cancelable) e.preventDefault();
+}, { passive: false });
+
+drawCanvas.addEventListener('contextmenu', (e) => e.preventDefault());
+drawCanvas.addEventListener('dblclick', (e) => e.preventDefault());
+drawCanvas.addEventListener('selectstart', (e) => e.preventDefault());
+
+drawCanvas.addEventListener('pointerdown', (e) => {
+  if (currentDrawTool === 'pan') return;
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+  // Palm & Secondary Touch Rejection
+  if (shouldRejectTouchAsPalm(e)) {
+    if (e.cancelable) e.preventDefault();
+    return;
+  }
+
+  if (e.cancelable) e.preventDefault();
+
+  if (e.pointerType === 'pen') {
+    lastPenTimestamp = performance.now();
+    // If an accidental finger/palm stroke was in progress, abort and discard it immediately
+    if (isDrawing && activePointerType === 'touch') {
+      clearActiveDirtyBox();
+      currentStroke = null;
+      isDrawing = false;
+      activePointerId = null;
+    }
+  }
+
+  // If a secondary finger touch arrives while already drawing with another finger, ignore it
+  if (isDrawing && e.pointerType === 'touch' && activePointerId !== null && e.pointerId !== activePointerId) {
+    return;
+  }
+
+  // If a rapid new pen stroke arrives before the previous pen stroke closed, commit the previous stroke cleanly
+  if (isDrawing && currentStroke) {
+    commitCurrentStrokeImmediate();
+  }
+
+  updateCanvasMetrics();
+  isDrawing = true;
+  activePointerId = e.pointerId;
+  activePointerType = e.pointerType;
+  document.body.classList.add('is-drawing');
+
+  const pt = getStageCoords(e);
+
+  if (currentDrawTool === 'laser') {
+    laserPoints.push({ x: pt.x, y: pt.y, t: performance.now() });
+    requestAnimationFrame(updateLaserTrail);
+    return;
+  }
+
+  currentStroke = {
+    tool: currentDrawTool,
+    color: currentPenColor,
+    size: Number(currentPenSize),
+    stageW: cachedStageW,
+    points: [pt]
+  };
+
+  if (currentDrawTool === 'eraser') {
+    renderEraserTailSegment(drawCtx, currentStroke, cachedStageW);
+  }
+  drawActiveStrokePreview();
+});
+
+function handlePointerMove(e) {
+  if (!isDrawing || e.pointerId !== activePointerId) return;
+  if (e.cancelable) e.preventDefault();
+
+  if (e.pointerType === 'pen') {
+    lastPenTimestamp = performance.now();
+  }
+
+  if (currentDrawTool === 'laser') {
+    const pt = getStageCoords(e);
+    laserPoints.push({ x: pt.x, y: pt.y, t: performance.now() });
+    requestAnimationFrame(updateLaserTrail);
+    return;
+  }
+
+  if (!currentStroke) return;
+
+  if (currentDrawTool === 'line' || currentDrawTool === 'rect') {
+    currentStroke.points[1] = getStageCoords(e);
+    drawActiveStrokePreview();
+    return;
+  }
+
+  // Use coalesced events on iPad Pro (240Hz Apple Pencil sampling) for ultra-smooth rapid strokes
+  const coalesced = (e.getCoalescedEvents && typeof e.getCoalescedEvents === 'function')
+    ? e.getCoalescedEvents()
+    : null;
+  const events = (coalesced && coalesced.length > 0) ? coalesced : [e];
+  const pts = currentStroke.points;
+  let added = false;
+
+  for (let i = 0; i < events.length; i++) {
+    const pt = getStageCoords(events[i]);
+    const last = pts[pts.length - 1];
+    const dx = pt.x - last.x;
+    const dy = pt.y - last.y;
+    // Skip sub-pixel noise (< 0.6px) to keep curve control points clean and fast
+    if (dx * dx + dy * dy >= 0.36) {
+      pts.push(pt);
+      added = true;
+      if (currentDrawTool === 'eraser') {
+        renderEraserTailSegment(drawCtx, currentStroke, cachedStageW);
+      }
+    }
+  }
+
+  if (added) {
+    drawActiveStrokePreview();
+  }
+}
+
+function finishStroke(e) {
+  if (!isDrawing) return;
+  // Critical: Ignore pointerup/pointercancel from palm or non-active pointers!
+  if (e && e.pointerId !== undefined && activePointerId !== null && e.pointerId !== activePointerId) {
+    return;
+  }
+  if (e && e.pointerType === 'pen') {
+    lastPenTimestamp = performance.now();
+  }
+
+  isDrawing = false;
+  activePointerId = null;
+  activePointerType = null;
+  document.body.classList.remove('is-drawing');
+
+  if (currentDrawTool === 'laser') return;
+  if (currentStroke) {
+    commitCurrentStrokeImmediate();
+  }
+}
+
+window.addEventListener('pointermove', handlePointerMove, { passive: false });
+window.addEventListener('pointerup', finishStroke, { passive: false });
+window.addEventListener('pointercancel', finishStroke, { passive: false });
+
+function togglePalmRejection() {
+  SoundFX.click();
+  palmRejectionEnabled = !palmRejectionEnabled;
+  const btn = document.getElementById('btn-palm-reject');
+  const icon = document.getElementById('palm-reject-icon');
+  const label = document.getElementById('palm-reject-label');
+  if (btn) btn.classList.toggle('active', palmRejectionEnabled);
+  if (icon) icon.textContent = palmRejectionEnabled ? '🧤' : '👆';
+  if (label) label.textContent = palmRejectionEnabled ? 'กันอุ้งมือ' : 'เขียนด้วยนิ้ว';
+}
+
+function updateLaserTrail() {
+  const now = performance.now();
+  laserPoints = laserPoints.filter(p => now - p.t < 420);
+
+  if (laserDirtyBox) {
+    laserCtx.clearRect(
+      Math.max(0, Math.floor(laserDirtyBox.minX - 24)),
+      Math.max(0, Math.floor(laserDirtyBox.minY - 24)),
+      Math.ceil(laserDirtyBox.maxX - laserDirtyBox.minX + 48),
+      Math.ceil(laserDirtyBox.maxY - laserDirtyBox.minY + 48)
+    );
+    laserDirtyBox = null;
+  } else {
+    laserCtx.clearRect(0, 0, lastCanvasW || laserCanvas.width, lastCanvasH || laserCanvas.height);
+  }
+
+  if (laserPoints.length > 0) {
+    let minX = laserPoints[0].x, maxX = laserPoints[0].x;
+    let minY = laserPoints[0].y, maxY = laserPoints[0].y;
+    for (let i = 0; i < laserPoints.length; i++) {
+      const p = laserPoints[i];
+      if (p.x < minX) minX = p.x;
+      if (p.x > maxX) maxX = p.x;
+      if (p.y < minY) minY = p.y;
+      if (p.y > maxY) maxY = p.y;
+    }
+    laserDirtyBox = { minX, minY, maxX, maxY };
+  }
+
+  if (laserPoints.length > 1) {
+    for (let i = 1; i < laserPoints.length; i++) {
+      const age = (now - laserPoints[i].t) / 420;
+      const alpha = Math.max(0, 1 - age);
+      laserCtx.save();
+      laserCtx.beginPath();
+      laserCtx.moveTo(laserPoints[i - 1].x, laserPoints[i - 1].y);
+      laserCtx.lineTo(laserPoints[i].x, laserPoints[i].y);
+      laserCtx.strokeStyle = `rgba(248, 113, 113, ${alpha})`;
+      laserCtx.lineWidth = 5 * alpha + 2;
+      laserCtx.shadowColor = '#ef4444';
+      laserCtx.shadowBlur = 12;
+      laserCtx.lineCap = 'round';
+      laserCtx.stroke();
+      laserCtx.restore();
+    }
+    const last = laserPoints[laserPoints.length - 1];
+    laserCtx.save();
+    laserCtx.beginPath();
+    laserCtx.arc(last.x, last.y, 6, 0, Math.PI * 2);
+    laserCtx.fillStyle = '#ffffff';
+    laserCtx.shadowColor = '#ef4444';
+    laserCtx.shadowBlur = 16;
+    laserCtx.fill();
+    laserCtx.restore();
+  }
+
+  if (isDrawing || laserPoints.length > 0) {
+    requestAnimationFrame(updateLaserTrail);
+  }
+}
+
+function setDrawTool(tool) {
+  SoundFX.click();
+  currentDrawTool = tool;
+  document.querySelectorAll('#pen-toolbar .tool-btn[data-tool]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tool === tool);
+  });
+  drawCanvas.classList.toggle('pan-mode', tool === 'pan');
+}
+
+function setPenColor(color, el) {
+  SoundFX.click();
+  currentPenColor = color;
+  if (currentDrawTool === 'eraser' || currentDrawTool === 'pan' || currentDrawTool === 'laser') {
+    setDrawTool('pen');
+  }
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function setPenSize(val) {
+  currentPenSize = Number(val);
+  document.getElementById('pen-size-label').textContent = val + 'px';
+}
+
+function undoStroke() {
+  SoundFX.click();
+  const key = getSlideKey();
+  if (slideAnnotations[key] && slideAnnotations[key].length > 0) {
+    if (!redoStacks[key]) redoStacks[key] = [];
+    redoStacks[key].push(slideAnnotations[key].pop());
+    renderCurrentSlideStrokes();
+    persistAnnotationsToStorage();
+  }
+}
+
+function redoStroke() {
+  SoundFX.click();
+  const key = getSlideKey();
+  if (redoStacks[key] && redoStacks[key].length > 0) {
+    if (!slideAnnotations[key]) slideAnnotations[key] = [];
+    slideAnnotations[key].push(redoStacks[key].pop());
+    renderCurrentSlideStrokes();
+    persistAnnotationsToStorage();
+  }
+}
+
+function clearCurrentSlideDrawing() {
+  const key = getSlideKey();
+  if (!slideAnnotations[key] || slideAnnotations[key].length === 0) return;
+  if (confirm('ต้องการล้างลายมือที่เขียนในหน้านี้ทั้งหมดใช่หรือไม่?')) {
+    slideAnnotations[key] = [];
+    redoStacks[key] = [];
+    renderCurrentSlideStrokes();
+    persistAnnotationsToStorage();
+  }
+}
+
+// LocalStorage / IndexedDB & Per-Account Cloud API Integration (Debounced & Auto-Migrated)
+const LESSON_ID = 'english-parts-of-speech';
+const STORAGE_KEY = 'english_pos_smartboard_notes_v1';
+let currentStorageKey = STORAGE_KEY;
+let currentAccountUser = null;
+let persistTimer = null;
+let cloudSyncTimer = null;
+let hasUnsavedAnnotations = false;
+let hasPendingCloudSync = false;
+let lastSyncedUpdatedAt = null;
+let isPullingCloudNotes = false;
+
+function getStrokeFingerprint(s) {
+  if (!s || !Array.isArray(s.points) || s.points.length === 0) return '';
+  const p0 = s.points[0];
+  const pN = s.points[s.points.length - 1];
+  return `${s.tool || 'pen'}|${s.color || ''}|${s.size || 3}|${s.points.length}|${Math.round((p0.x || 0) * 2)}|${Math.round((p0.y || 0) * 2)}|${Math.round((pN.x || 0) * 2)}|${Math.round((pN.y || 0) * 2)}`;
+}
+
+function mergeSlideStrokes(serverArr, localArr) {
+  if (!Array.isArray(serverArr) || serverArr.length === 0) return Array.isArray(localArr) ? localArr : [];
+  if (!Array.isArray(localArr) || localArr.length === 0) return serverArr;
+  const result = [...serverArr];
+  const seen = new Set(serverArr.map(getStrokeFingerprint));
+  for (let i = 0; i < localArr.length; i++) {
+    const s = localArr[i];
+    const fp = getStrokeFingerprint(s);
+    if (fp && !seen.has(fp)) {
+      seen.add(fp);
+      result.push(s);
+    }
+  }
+  return result;
+}
+
+function mergeAnnotationsMaps(serverMap, localMap) {
+  const sMap = (serverMap && typeof serverMap === 'object') ? serverMap : {};
+  const lMap = (localMap && typeof localMap === 'object') ? localMap : {};
+  const allKeys = new Set([...Object.keys(sMap), ...Object.keys(lMap)]);
+  const merged = {};
+  let addedFromLocal = false;
+  for (const k of allKeys) {
+    const sArr = Array.isArray(sMap[k]) ? sMap[k] : [];
+    const lArr = Array.isArray(lMap[k]) ? lMap[k] : [];
+    const combined = mergeSlideStrokes(sArr, lArr);
+    if (combined.length > sArr.length) {
+      addedFromLocal = true;
+    }
+    if (combined.length > 0) {
+      merged[k] = combined;
+    }
+  }
+  return { merged, addedFromLocal };
+}
+
+function persistAnnotationsToStorage() {
+  if (persistTimer) {
+    clearTimeout(persistTimer);
+    persistTimer = null;
+  }
+  hasUnsavedAnnotations = false;
+  try {
+    localStorage.setItem(currentStorageKey, JSON.stringify(slideAnnotations));
+    if (currentStorageKey !== STORAGE_KEY) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(slideAnnotations));
+    }
+  } catch(e) {}
+
+  // Local-first: do NOT auto-sync on every stroke (prevents writing lag).
+  // Instead, update pending indicator so user can press the Cloud Sync button when ready!
+  if (currentAccountUser) {
+    const dirtyCount = Object.keys(collectDirtySlides()).length;
+    hasPendingCloudSync = dirtyCount > 0;
+    if (hasPendingCloudSync) {
+      updateAccountSyncUI('pending');
+    }
+  }
+
+  // Trigger custom hook for backend user account integration
+  if (typeof window.onSmartboardNotesChanged === 'function') {
+    window.onSmartboardNotesChanged(slideAnnotations);
+  }
+}
+
+function schedulePersistAnnotations() {
+  hasUnsavedAnnotations = true;
+  if (persistTimer) clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    if (isDrawing) {
+      schedulePersistAnnotations();
+      return;
+    }
+    persistAnnotationsToStorage();
+  }, 650);
+}
+
+function updateAccountSyncUI(state, detailText) {
+  const widget = document.getElementById('account-sync-widget');
+  const badgeEl = document.getElementById('account-user-badge');
+  const statusEl = document.getElementById('account-sync-status');
+  const syncBtn = document.getElementById('btn-manual-cloud-sync');
+  if (!widget || !badgeEl || !statusEl) return;
+
+  if (!currentAccountUser) {
+    widget.style.borderColor = 'rgba(251, 146, 60, 0.45)';
+    widget.style.background = 'rgba(15, 23, 42, 0.75)';
+    widget.style.cursor = 'pointer';
+    widget.title = 'คุณกำลังใช้งานในโหมดผู้เยี่ยมชม (คลิกเพื่อเข้าสู่ระบบและซิงก์ข้ามเครื่อง iPad ⇄ คอม)';
+    widget.onclick = () => {
+      window.location.href = '/login?callbackUrl=' + encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
+    };
+    badgeEl.style.color = '#fb923c';
+    badgeEl.innerHTML = '👤 ผู้เยี่ยมชม';
+    statusEl.innerHTML = '<span style="color:#facc15; font-weight:700; padding:2px 7px; border-radius:5px; background:rgba(250,204,21,0.15); border:1px solid rgba(250,204,21,0.4);">🔐 เข้าสู่ระบบเพื่อซิงก์</span>';
+    if (syncBtn) syncBtn.style.display = 'none';
+    return;
+  }
+
+  widget.style.cursor = 'default';
+  widget.onclick = null;
+  badgeEl.style.color = '#a5b4fc';
+  badgeEl.textContent = `👤 ${currentAccountUser.name}`;
+
+  if (syncBtn) {
+    syncBtn.style.display = 'inline-flex';
+    syncBtn.onclick = () => syncNotesToAccountNow(true);
+  }
+
+  if (state === 'saving') {
+    widget.style.borderColor = 'rgba(250, 204, 21, 0.65)';
+    widget.style.background = 'rgba(15, 23, 42, 0.8)';
+    statusEl.style.color = '#facc15';
+    statusEl.textContent = '• ⏳ กำลังซิงก์...';
+    if (syncBtn) {
+      syncBtn.disabled = true;
+      syncBtn.style.background = 'rgba(250, 204, 21, 0.2)';
+      syncBtn.style.borderColor = '#facc15';
+      syncBtn.style.color = '#fef08a';
+      syncBtn.textContent = '⏳ กำลังซิงก์...';
+    }
+  } else if (state === 'pending') {
+    widget.style.borderColor = 'rgba(251, 191, 36, 0.6)';
+    widget.style.background = 'rgba(15, 23, 42, 0.8)';
+    statusEl.style.color = '#fbbf24';
+    statusEl.textContent = '• เซฟในเครื่องแล้ว (รอซิงก์)';
+    if (syncBtn) {
+      syncBtn.disabled = false;
+      syncBtn.style.background = 'rgba(79, 70, 229, 0.35)';
+      syncBtn.style.borderColor = '#818cf8';
+      syncBtn.style.color = '#ffffff';
+      syncBtn.textContent = '☁️ ซิงก์ขึ้นคลาวด์';
+    }
+  } else if (state === 'saved') {
+    widget.style.borderColor = 'rgba(34, 197, 94, 0.75)';
+    widget.style.background = 'rgba(20, 83, 45, 0.35)';
+    statusEl.style.color = '#4ade80';
+    statusEl.textContent = detailText ? `• ✓ ${detailText}` : '• ✓ ซิงก์แล้ว';
+    if (syncBtn) {
+      syncBtn.disabled = false;
+      syncBtn.style.background = 'rgba(22, 163, 74, 0.32)';
+      syncBtn.style.borderColor = '#22c55e';
+      syncBtn.style.color = '#4ade80';
+      syncBtn.textContent = '✅ ซิงก์ขึ้นคลาวด์แล้ว';
+    }
+  } else if (state === 'error' || state === 'offline') {
+    widget.style.borderColor = 'rgba(248, 113, 113, 0.55)';
+    widget.style.background = 'rgba(15, 23, 42, 0.8)';
+    statusEl.style.color = '#f87171';
+    statusEl.textContent = '• ⚠️ ซิงก์ไม่สำเร็จ (เซฟในเครื่องแล้ว)';
+    if (syncBtn) {
+      syncBtn.disabled = false;
+      syncBtn.style.background = 'rgba(220, 38, 38, 0.25)';
+      syncBtn.style.borderColor = '#f87171';
+      syncBtn.style.color = '#fecaca';
+      syncBtn.textContent = '↻ ลองซิงก์ใหม่';
+    }
+  }
+}
+
+function scheduleCloudAccountSync() {
+  if (!currentAccountUser) return;
+  hasPendingCloudSync = true;
+  updateAccountSyncUI('saving');
+  if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(() => {
+    syncNotesToAccountNow(false);
+  }, 750);
+}
+
+function getSlideSignature(arr) {
+  if (!Array.isArray(arr) || arr.length === 0) return '0';
+  return arr.length + '|' + getStrokeFingerprint(arr[arr.length - 1]) + '|' + getStrokeFingerprint(arr[0]);
+}
+
+// Signatures of what the cloud is known to hold, per slide key
+let syncedSigs = {};
+
+function markAllSyncedFrom(map) {
+  syncedSigs = {};
+  if (map && typeof map === 'object') {
+    for (const k of Object.keys(map)) syncedSigs[k] = getSlideSignature(map[k]);
+  }
+}
+
+function collectDirtySlides() {
+  const dirty = {};
+  const keys = new Set([...Object.keys(slideAnnotations || {}), ...Object.keys(syncedSigs)]);
+  for (const k of keys) {
+    const arr = Array.isArray(slideAnnotations[k]) ? slideAnnotations[k] : [];
+    if (getSlideSignature(arr) !== (syncedSigs[k] || '0')) dirty[k] = arr;
+  }
+  return dirty;
+}
+
+// Split dirty slides into request-sized batches (<~700KB each) to stay far below server limits
+function chunkSlidesForUpload(dirty) {
+  const batches = [];
+  let cur = {};
+  let curSize = 0;
+  for (const k of Object.keys(dirty)) {
+    const size = JSON.stringify(dirty[k]).length;
+    if (Object.keys(cur).length > 0 && curSize + size > 700000) {
+      batches.push(cur);
+      cur = {};
+      curSize = 0;
+    }
+    cur[k] = dirty[k];
+    curSize += size;
+  }
+  if (Object.keys(cur).length > 0) batches.push(cur);
+  return batches;
+}
+
+let syncInFlight = false;
+let syncAgain = false;
+
+async function syncNotesToAccountNow(manualClick = false) {
+  if (!currentAccountUser) return;
+  if (cloudSyncTimer) {
+    clearTimeout(cloudSyncTimer);
+    cloudSyncTimer = null;
+  }
+  if (syncInFlight) {
+    syncAgain = true;
+    return;
+  }
+  syncInFlight = true;
+  updateAccountSyncUI('saving');
+  let failReason = '';
+  try {
+    const dirty = collectDirtySlides();
+    const batches = chunkSlidesForUpload(dirty);
+    for (const batch of batches) {
+      const res = await fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lessonId: LESSON_ID, slides: batch })
+      });
+      const resData = await res.json().catch(() => null);
+      if (res.status === 401) {
+        failReason = 'เซสชันหมดอายุ — กรุณาเข้าสู่ระบบใหม่';
+        break;
+      }
+      if (!(res.ok && resData && resData.ok)) {
+        failReason = 'เซิร์ฟเวอร์ตอบกลับ ' + res.status + ((resData && resData.error) ? ' : ' + resData.error : '');
+        break;
+      }
+      for (const k of Object.keys(batch)) syncedSigs[k] = getSlideSignature(batch[k]);
+      if (resData.updatedAt) lastSyncedUpdatedAt = resData.updatedAt;
+    }
+    if (!failReason) {
+      hasPendingCloudSync = false;
+      const nowTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+      updateAccountSyncUI('saved', `ซิงก์แล้ว ${nowTime}`);
+      if (manualClick && typeof SoundFX !== 'undefined' && SoundFX.chime) {
+        SoundFX.chime();
+      }
+    }
+  } catch (err) {
+    failReason = 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ (' + (err && err.message ? err.message : 'network') + ')';
+  }
+  syncInFlight = false;
+  if (failReason) {
+    console.warn('Cloud sync failed:', failReason);
+    updateAccountSyncUI('error', failReason);
+    // Keep pending and retry automatically in 8s (iPad Safari may suspend network briefly)
+    hasPendingCloudSync = true;
+    if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+    cloudSyncTimer = setTimeout(() => syncNotesToAccountNow(false), 8000);
+  } else if (syncAgain) {
+    syncAgain = false;
+    syncNotesToAccountNow(false);
+  }
+}
+
+function flushCloudSyncKeepalive() {
+  if (!currentAccountUser) return;
+  try {
+    const dirty = collectDirtySlides();
+    const batches = chunkSlidesForUpload(dirty);
+    batches.forEach((batch) => {
+      const bodyStr = JSON.stringify({ lessonId: LESSON_ID, slides: batch });
+      // WebKit/Chrome reject keepalive:true requests if payload exceeds 64KB
+      fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: bodyStr,
+        keepalive: bodyStr.length < 60000
+      }).catch(() => {});
+    });
+  } catch (e) {}
+}
+
+async function pullLatestCloudNotesIfNewer() {
+  if (!currentAccountUser || isDrawing || hasUnsavedAnnotations || hasPendingCloudSync || isPullingCloudNotes) return;
+  isPullingCloudNotes = true;
+  try {
+    const res = await fetch(`/api/notes?lessonId=${encodeURIComponent(LESSON_ID)}`, {
+      method: 'GET',
+      cache: 'no-store'
+    });
+    const data = await res.json();
+    if (data && data.authenticated && data.annotations && typeof data.annotations === 'object') {
+      if (data.updatedAt && data.updatedAt !== lastSyncedUpdatedAt) {
+        lastSyncedUpdatedAt = data.updatedAt;
+        markAllSyncedFrom(data.annotations);
+        const { merged } = mergeAnnotationsMaps(data.annotations, slideAnnotations);
+        slideAnnotations = merged;
+        try {
+          localStorage.setItem(currentStorageKey, JSON.stringify(slideAnnotations));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(slideAnnotations));
+        } catch (e) {}
+        resizeBoardCanvases(true);
+        if (Object.keys(collectDirtySlides()).length > 0) {
+          hasPendingCloudSync = true;
+          updateAccountSyncUI('pending');
+        } else {
+          const nowTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+          updateAccountSyncUI('saved', `ซิงก์ล่าสุด ${nowTime}`);
+        }
+      }
+    }
+  } catch (e) {
+  } finally {
+    isPullingCloudNotes = false;
+  }
+}
+
+window.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    if (hasUnsavedAnnotations) persistAnnotationsToStorage();
+    if (currentAccountUser && hasPendingCloudSync) flushCloudSyncKeepalive();
+  } else if (document.visibilityState === 'visible') {
+    pullLatestCloudNotesIfNewer();
+  }
+});
+window.addEventListener('focus', () => {
+  pullLatestCloudNotesIfNewer();
+});
+window.addEventListener('pagehide', () => {
+  if (hasUnsavedAnnotations) persistAnnotationsToStorage();
+  if (currentAccountUser && hasPendingCloudSync) flushCloudSyncKeepalive();
+});
+window.addEventListener('beforeunload', () => {
+  if (hasUnsavedAnnotations) persistAnnotationsToStorage();
+  if (currentAccountUser && hasPendingCloudSync) flushCloudSyncKeepalive();
+});
+
+function loadAnnotationsFromStorage() {
+  try {
+    const raw = localStorage.getItem(currentStorageKey) || localStorage.getItem(STORAGE_KEY);
+    slideAnnotations = raw ? JSON.parse(raw) : {};
+  } catch(e) {
+    slideAnnotations = {};
+  }
+}
+
+async function initAccountAndSmartboardNotes() {
+  // 1. Gather all existing local notes from localStorage across legacy & user keys
+  let localNotes = {};
+  try {
+    const rawLegacy = localStorage.getItem(STORAGE_KEY);
+    if (rawLegacy) {
+      const parsed = JSON.parse(rawLegacy);
+      if (parsed && typeof parsed === 'object') {
+        localNotes = parsed;
+      }
+    }
+  } catch(e) {}
+
+  try {
+    const res = await fetch(`/api/notes?lessonId=${encodeURIComponent(LESSON_ID)}`, {
+      method: 'GET',
+      cache: 'no-store'
+    });
+    const data = await res.json();
+
+    if (data && data.authenticated && data.user) {
+      currentAccountUser = data.user;
+      if (data.updatedAt) lastSyncedUpdatedAt = data.updatedAt;
+      const cleanId = String(data.user.id || data.user.name || 'user').trim().toLowerCase();
+      currentStorageKey = `english_pos_smartboard_notes_v1_user_${cleanId}`;
+
+      // Check if user has notes under their own key on this browser
+      try {
+        const rawUser = localStorage.getItem(currentStorageKey);
+        if (rawUser) {
+          const parsedUser = JSON.parse(rawUser);
+          if (parsedUser && typeof parsedUser === 'object') {
+            const { merged } = mergeAnnotationsMaps(localNotes, parsedUser);
+            localNotes = merged;
+          }
+        }
+      } catch(e) {}
+
+      const serverNotes = data.annotations;
+      const hasServerNotes = serverNotes && typeof serverNotes === 'object' && Object.keys(serverNotes).length > 0;
+      const hasLocalNotes = localNotes && typeof localNotes === 'object' && Object.keys(localNotes).length > 0;
+
+      if (hasLocalNotes && !hasServerNotes) {
+        syncedSigs = {};
+        slideAnnotations = localNotes;
+        hasPendingCloudSync = true;
+        updateAccountSyncUI('pending');
+      } else if (hasLocalNotes && hasServerNotes) {
+        // [SMART PER-STROKE MERGE] Both exist: combine every unique stroke across all slides so nothing is ever lost!
+        markAllSyncedFrom(serverNotes);
+        const { merged } = mergeAnnotationsMaps(serverNotes, localNotes);
+        slideAnnotations = merged;
+        if (Object.keys(collectDirtySlides()).length > 0) {
+          hasPendingCloudSync = true;
+          updateAccountSyncUI('pending');
+        } else {
+          updateAccountSyncUI('saved', 'ซิงก์คลาวด์แล้ว');
+        }
+      } else if (hasServerNotes) {
+        // [CLOUD LOAD] Fresh device/PC: load user's strokes from Cloud DB!
+        markAllSyncedFrom(serverNotes);
+        slideAnnotations = serverNotes;
+        updateAccountSyncUI('saved', 'ซิงก์คลาวด์แล้ว');
+      } else {
+        syncedSigs = {};
+        slideAnnotations = {};
+        updateAccountSyncUI('saved', 'ซิงก์คลาวด์แล้ว');
+      }
+
+      // Save merged/latest notes to local storage
+      try {
+        localStorage.setItem(currentStorageKey, JSON.stringify(slideAnnotations));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(slideAnnotations));
+      } catch(e) {}
+
+      resizeBoardCanvases(true);
+    } else {
+      // Guest mode
+      currentAccountUser = null;
+      currentStorageKey = STORAGE_KEY;
+      loadAnnotationsFromStorage();
+      resizeBoardCanvases(true);
+      updateAccountSyncUI('guest');
+    }
+  } catch (err) {
+    console.warn('Init account notes network warning:', err);
+    currentAccountUser = null;
+    currentStorageKey = STORAGE_KEY;
+    loadAnnotationsFromStorage();
+    resizeBoardCanvases(true);
+    updateAccountSyncUI('offline');
+  }
+}
+
+
+function saveNotesJSON() {
+  SoundFX.click();
+  const payload = {
+    course: 'English Chapter 02 : Parts of Speech',
+    savedAt: new Date().toISOString(),
+    annotations: slideAnnotations
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `โน้ต_PartsOfSpeech_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+function loadNotesJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data && data.annotations) {
+        slideAnnotations = data.annotations;
+        persistAnnotationsToStorage();
+        resizeBoardCanvases(true);
+        SoundFX.chime();
+        alert('โหลดข้อมูลลายมือเข้าสู่กระดานเรียบร้อยแล้ว!');
+      }
+    } catch(err) {
+      alert('ไฟล์โน้ตไม่ถูกต้อง');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function exportSlidePNG() {
+  SoundFX.click();
+  window.print();
+}
+
+// Public API for embedding into User's Teaching Platform Account System
+window.AcidBaseSmartboardAPI = {
+  getNotesData: () => slideAnnotations,
+  loadNotesData: (data) => {
+    slideAnnotations = data || {};
+    persistAnnotationsToStorage();
+    renderCurrentSlideStrokes();
+  },
+  goToSlide: (idx) => goToSlide(idx)
+};
+
+
+
+
+const SLIDES = [
+  // =========================================================================
+  // 0. OVERVIEW
+  // =========================================================================
+  {
+    id: 'ov-1',
+    group: '0. ภาพรวมบทเรียน (Overview)',
+    title: 'ผังโครงสร้าง Parts of Speech ทั้ง 8 ชนิด',
+    badge: 'Overview',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">★</span> หน้าที่ของคำ 8 ชนิด (8 Parts of Speech)</div>
+        <span class="slide-subtitle-badge">Chapter 02 · Core Grammar</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-yellow);">กลุ่มคำหลัก (Content Words) — มีความหมายในตัวเอง</div>
+          <div class="sb-branch-list">
+            <div class="sb-branch-item"><b>1. Noun (คำนาม)</b> : คน สัตว์ สิ่งของ สถานที่ ความคิด → ....................................</div>
+            <div class="sb-branch-item"><b>2. Verb (คำกริยา)</b> : การกระทำ หรือ สภาวะ → ....................................</div>
+            <div class="sb-branch-item"><b>3. Adjective (คำคุณศัพท์)</b> : ขยาย Noun / Pronoun → ....................................</div>
+            <div class="sb-branch-item"><b>4. Adverb (คำกริยาวิเศษณ์)</b> : ขยาย V / Adj / Adv / ทั้งประโยค → ....................................</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">กลุ่มคำเชื่อมและแทนคำ (Function Words) — เชื่อมโครงสร้าง</div>
+          <div class="sb-branch-list">
+            <div class="sb-branch-item"><b>5. Pronoun (คำสรรพนาม)</b> : ใช้แทนคำนามไม่ให้ซ้ำ → ....................................</div>
+            <div class="sb-branch-item"><b>6. Preposition (คำบุพบท)</b> : บอกเวลา สถานที่ ทิศทาง (+ Noun) → ....................................</div>
+            <div class="sb-branch-item"><b>7. Conjunction (คำสันธาน)</b> : เชื่อมคำ วลี หรือประโยค → ....................................</div>
+            <div class="sb-branch-item"><b>8. Interjection (คำอุทาน)</b> : แสดงอารมณ์ ความรู้สึก → ....................................</div>
+          </div>
+        </div>
+      </div>
+      <div class="sb-write-space" style="border:1.5px dashed rgba(129,140,248,0.4); border-radius:12px; padding:16px; min-height:170px;">
+        <span style="color:var(--accent-cyan); font-size:16px; font-weight:700;">✏️ สรุปหลักการจำ 1 ประโยค (เขียนจุดสังเกตที่ต้องระวังในการทำข้อสอบ):</span>
+      </div>
+    `
+  },
+
+  // =========================================================================
+  // 1. NOUN (คำนาม) & DETERMINERS
+  // =========================================================================
+  {
+    id: 't1-1',
+    group: '1. Noun (คำนาม)',
+    title: '1.1 ประเภทของคำนาม & นามนับได้-นับไม่ได้',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">1.1</span> Noun (คำนาม) & Countable vs Uncountable</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 1 · Noun</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-yellow);">1) แบ่งตามลักษณะการนับ (Countability)</div>
+          <table class="sb-table" style="margin-top:8px;">
+            <tr><th>ประเภท</th><th>ลักษณะสำคัญ</th><th>ตัวอย่างคำออกสอบบ่อย (จดเพิ่ม)</th></tr>
+            <tr><td><b>Countable Noun</b><br>(นามนับได้)</td><td>มีรูปเอกพจน์ (a/an) และพหูพจน์ (-s/-es)</td><td style="height:64px;">book, ..............................</td></tr>
+            <tr><td><b>Uncountable Noun</b><br>(นามนับไม่ได้)</td><td>ห้ามเติม a/an และ <b>ห้ามเติม -s</b> ใช้กับ V.เอกพจน์เสมอ</td><td style="height:82px;">information, advice, furniture, luggage, equipment, ....................</td></tr>
+          </table>
+        </div>
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-pink);">2) คำนำหน้านาม (Determiners) ที่ต้องเช็กคู่กัน</div>
+          <div class="sb-branch-list" style="gap:18px;">
+            <div class="sb-branch-item">• ใช้กับ <b>นับได้พหูพจน์</b> : many, a few, few, several, a number of → ..........................</div>
+            <div class="sb-branch-item">• ใช้กับ <b>นับไม่ได้</b> : much, a little, little, an amount of → ..........................</div>
+            <div class="sb-branch-item">• ใช้ได้ <b>ทั้งสองแบบ</b> : some, any, a lot of, plenty of → ..........................</div>
+          </div>
+          <div class="sb-write-space" style="margin-top:14px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:110px;">
+            <span style="color:var(--text-muted); font-size:15px;">✏️ จดสูตรจำ: a number of + N.พหูพจน์ + V........ / the number of + N.พหูพจน์ + V........</span>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 't1-2',
+    group: '1. Noun (คำนาม)',
+    title: '1.2 ตำแหน่งของ Noun และ Noun Suffixes',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">1.2</span> ตำแหน่งของ Noun ในประโยค & การดู Suffixes</div>
+        <span class="slide-subtitle-badge">ออกสอบ TOEIC / A-Level บ่อยมาก</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-green);">5 ตำแหน่งหลักที่ต้องเติม "Noun"</div>
+          <div class="sb-branch-list" style="gap:16px;">
+            <div class="sb-branch-item">1. <b>หน้ากริยา (Subject)</b> : _________ is very important.</div>
+            <div class="sb-branch-item">2. <b>หลังกริยา (Object)</b> : We need _________ immediately.</div>
+            <div class="sb-branch-item">3. <b>หลัง a / an / the / this / my</b> : The _________ of the project...</div>
+            <div class="sb-branch-item">4. <b>หลัง Adjective</b> : a significant _________</div>
+            <div class="sb-branch-item">5. <b>หลัง Preposition (in, on, of, for, with)</b> : without _________</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">หางคำ (Noun Suffixes) — เห็นปุ๊บรู้ทันทีว่าเป็นคำนาม</div>
+          <table class="sb-table" style="margin-top:8px;">
+            <tr><th>Suffix</th><th>ความหมาย/ประเภท</th><th>ตัวอย่าง (เติมเพิ่มบนกระดาน)</th></tr>
+            <tr><td><b>-tion / -sion</b></td><td>การ... / ความ...</td><td>decision, ............................</td></tr>
+            <tr><td><b>-ment / -ness</b></td><td>การ... / สภาพ</td><td>management, ......................</td></tr>
+            <tr><td><b>-ity / -ty</b></td><td>ความเป็น...</td><td>productivity, .......................</td></tr>
+            <tr><td><b>-ance / -ence</b></td><td>การ... / ความ...</td><td>performance, ......................</td></tr>
+            <tr><td><b>-er / -or / -ist</b></td><td>ผู้กระทำ (คน)</td><td>applicant, ..........................</td></tr>
+          </table>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'q1-1',
+    group: '1. Noun (คำนาม)',
+    title: 'แบบฝึกหัด 1.1 : Noun & Determiners (ข้อ 1 - 3)',
+    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Noun (ข้อ 1 - 3)</div>
+        <span class="slide-subtitle-badge">Part 1 · ฝึกวิเคราะห์ตำแหน่งและชนิดคำนาม</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">1. The manager gave us very useful ________ about how to improve our presentation.</div>
+        <div class="quiz-choices-grid">
+          <div>A. advise</div><div>B. advices</div><div>C. advice</div><div>D. advising</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">2. Because of the heavy rain, there was ________ traffic on the main highway this morning.</div>
+        <div class="quiz-choices-grid">
+          <div>A. many</div><div>B. a few</div><div>C. much</div><div>D. several</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">3. The ________ of the new software will take place next Monday at 9:00 a.m.</div>
+        <div class="quiz-choices-grid">
+          <div>A. install</div><div>B. installation</div><div>C. installed</div><div>D. installing</div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'q1-2',
+    group: '1. Noun (คำนาม)',
+    title: 'แบบฝึกหัด 1.2 : Noun Suffixes & Usage (ข้อ 4 - 6)',
+    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Noun (ข้อ 4 - 6)</div>
+        <span class="slide-subtitle-badge">Part 1 · ฝึกวิเคราะห์ตำแหน่งและชนิดคำนาม</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">4. All ________ for the marketing position must submit their resumes before Friday.</div>
+        <div class="quiz-choices-grid">
+          <div>A. apply</div><div>B. applications</div><div>C. applicants</div><div>D. applicable</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">5. We need to buy some new office ________ before the branch opens next month.</div>
+        <div class="quiz-choices-grid">
+          <div>A. furnitures</div><div>B. furniture</div><div>C. a furniture</div><div>D. many furniture</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">6. Employee ________ has increased significantly since the company introduced flexible hours.</div>
+        <div class="quiz-choices-grid">
+          <div>A. satisfy</div><div>B. satisfied</div><div>C. satisfactory</div><div>D. satisfaction</div>
+        </div>
+      </div>
+    `
+  },
+
+  // =========================================================================
+  // 2. PRONOUN (คำสรรพนาม)
+  // =========================================================================
+  {
+    id: 't2-1',
+    group: '2. Pronoun (คำสรรพนาม)',
+    title: '2.1 ตารางคำสรรพนามทั้ง 5 รูป (ฝึกเติมบนกระดาน)',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">2.1</span> Pronoun (คำสรรพนาม 5 รูป)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 2 · Pronoun</span>
+      </div>
+      <div class="sb-card">
+        <div class="sb-card-title" style="color:var(--accent-yellow);">ตารางสรุปสรรพนาม — เติมช่องว่างให้ครบเพื่อใช้แยกตำแหน่ง Subject / Object / Possessive</div>
+        <table class="sb-table" style="margin-top:10px; font-size:18px;">
+          <tr>
+            <th>Subject (ประธาน)</th>
+            <th>Object (กรรม)</th>
+            <th>Possessive Adj (+ Noun)</th>
+            <th>Possessive Pronoun (ไม่ต้องมี Noun)</th>
+            <th>Reflexive (ด้วยตัวเอง)</th>
+          </tr>
+          <tr><td>I</td><td>me</td><td>my</td><td>mine</td><td>....................</td></tr>
+          <tr><td>You</td><td>....................</td><td>your</td><td>....................</td><td>yourself / yourselves</td></tr>
+          <tr><td>We</td><td>us</td><td>....................</td><td>ours</td><td>....................</td></tr>
+          <tr><td>They</td><td>....................</td><td>their</td><td>....................</td><td>themselves</td></tr>
+          <tr><td>He</td><td>him</td><td>....................</td><td>his</td><td>....................</td></tr>
+          <tr><td>She</td><td>....................</td><td>her</td><td>....................</td><td>herself</td></tr>
+          <tr><td>It</td><td>it</td><td>....................</td><td>(ไม่มี)</td><td>....................</td></tr>
+        </table>
+      </div>
+      <div class="sb-write-space" style="border:1.5px dashed rgba(129,140,248,0.4); border-radius:12px; padding:14px; min-height:110px;">
+        <span style="color:var(--accent-cyan); font-size:15px;">✏️ ข้อควรระวัง: <b>it's</b> = it is / it has | ส่วน <b>its</b> (ไม่มี ' ) = ของมัน (Possessive Adj)</span>
+      </div>
+    `
+  },
+  {
+    id: 't2-2',
+    group: '2. Pronoun (คำสรรพนาม)',
+    title: '2.2 Indefinite Pronouns & Relative Pronouns',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">2.2</span> Indefinite & Relative Pronouns</div>
+        <span class="slide-subtitle-badge">ออกสอบบ่อยเรื่องเอกพจน์-พหูพจน์</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-orange);">1) Indefinite Pronouns (สรรพนามไม่ชี้เฉพาะ)</div>
+          <div class="sb-branch-list" style="gap:16px;">
+            <div class="sb-branch-item">• กลุ่ม <b>เอกพจน์เสมอ (+ V.เอกพจน์)</b> :<br>every-, some-, any-, no- (+ body / one / thing)<br>เช่น Everyone _______ (be) ready.</div>
+            <div class="sb-branch-item">• <b>each / every / either / neither + of + N.พหูพจน์</b> → ใช้ V..............</div>
+            <div class="sb-branch-item">• กลุ่ม <b>พหูพจน์เสมอ (+ V.พหูพจน์)</b> :<br>both, few, many, several → .............................</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">2) Relative Pronouns (สรรพนามเชื่อมประโยค)</div>
+          <div class="sb-branch-list" style="gap:16px;">
+            <div class="sb-branch-item">• <b>who</b> (คน/ประธาน) vs <b>whom</b> (คน/กรรม): ........................</div>
+            <div class="sb-branch-item">• <b>whose + Noun</b> (แสดงความเป็นเจ้าของ): ........................</div>
+            <div class="sb-branch-item">• <b>which</b> (สิ่งของ/สัตว์) vs <b>that</b> (คน/สิ่งของ): ........................</div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'q2-1',
+    group: '2. Pronoun (คำสรรพนาม)',
+    title: 'แบบฝึกหัด 2.1 : Pronoun Forms (ข้อ 1 - 3)',
+    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Pronoun (ข้อ 1 - 3)</div>
+        <span class="slide-subtitle-badge">Part 2 · เลือกรูปสรรพนามให้ถูกตำแหน่ง</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">1. Ms. Clara completed the entire annual financial report by ________.</div>
+        <div class="quiz-choices-grid">
+          <div>A. she</div><div>B. her</div><div>C. hers</div><div>D. herself</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">2. Please send ________ a confirmation email once the package arrives.</div>
+        <div class="quiz-choices-grid">
+          <div>A. we</div><div>B. us</div><div>C. our</div><div>D. ours</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">3. The company updated ________ privacy policy to protect customer data.</div>
+        <div class="quiz-choices-grid">
+          <div>A. it</div><div>B. its</div><div>C. it's</div><div>D. itself</div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'q2-2',
+    group: '2. Pronoun (คำสรรพนาม)',
+    title: 'แบบฝึกหัด 2.2 : Indefinite & Relative Pronouns (ข้อ 4 - 6)',
+    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Pronoun (ข้อ 4 - 6)</div>
+        <span class="slide-subtitle-badge">Part 2 · เลือกรูปสรรพนามให้ถูกตำแหน่ง</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">4. Everyone in the conference room ________ asked to turn off mobile phones.</div>
+        <div class="quiz-choices-grid">
+          <div>A. was</div><div>B. were</div><div>C. are</div><div>D. have</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">5. My laptop is broken, so may I borrow ________ for an hour?</div>
+        <div class="quiz-choices-grid">
+          <div>A. you</div><div>B. your</div><div>C. yours</div><div>D. yourself</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">6. The candidate ________ resume impressed the director was invited for a second interview.</div>
+        <div class="quiz-choices-grid">
+          <div>A. who</div><div>B. whom</div><div>C. whose</div><div>D. which</div>
+        </div>
+      </div>
+    `
+  },
+
+  // =========================================================================
+  // 3. VERB (คำกริยา)
+  // =========================================================================
+  {
+    id: 't3-1',
+    group: '3. Verb (คำกริยา)',
+    title: '3.1 Action Verb, Linking Verb & Helping Verb',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">3.1</span> ประเภทของคำกริยา (Verb Categories)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 3 · Verb</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-green);">1) Action Verb (กริยาแสดงอาการ)</div>
+          <div class="sb-branch-list" style="gap:16px;">
+            <div class="sb-branch-item">• <b>Transitive Verb (Vt. - ต้องการกรรม)</b> :<br>ต้องมี Object มารับ เช่น make, discuss, attend → .........................</div>
+            <div class="sb-branch-item">• <b>Intransitive Verb (Vi. - ไม่ต้องมีกรรม)</b> :<br>จบในตัว เช่น arrive, happen, sleep → .........................</div>
+          </div>
+          <div class="sb-card-title" style="color:var(--accent-yellow); margin-top:22px;">2) Helping / Modal Verbs (กริยาช่วย)</div>
+          <div class="sb-branch-list">
+            <div class="sb-branch-item">• will, would, can, could, may, might, must, should<br><b>กฎเหล็ก:</b> Modal Verb + ............................ เสมอ!</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-pink);">3) Linking Verb (กริยาเชื่อม) — ออกสอบบ่อยมาก!</div>
+          <p style="font-size:17px; color:var(--text-muted); margin-bottom:12px;">ตามด้วย <b>Adjective</b> (ห้ามตามด้วย Adverb -ly!)</p>
+          <div class="sb-branch-list" style="gap:14px;">
+            <div class="sb-branch-item">• <b>V. to be</b> (is, am, are, was, were)</div>
+            <div class="sb-branch-item">• <b>กลุ่มประสาทสัมผัส</b> : look, sound, smell, taste, feel</div>
+            <div class="sb-branch-item">• <b>กลุ่มเปลี่ยนสภาพ/คงสภาพ</b> : become, seem, appear, remain, stay, grow, turn</div>
+          </div>
+          <div class="sb-write-space" style="margin-top:14px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:90px;">
+            <span style="color:var(--text-muted); font-size:15px;">✏️ ตัวอย่าง: The soup smells (good / well). / She looks (happy / happily).</span>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 't3-2',
+    group: '3. Verb (คำกริยา)',
+    title: '3.2 Verb Suffixes & กริยา 3 ช่องที่ชอบสับสน',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">3.2</span> Verb Suffixes & Confusing Verbs</div>
+        <span class="slide-subtitle-badge">จับคู่คำกริยาให้แม่น</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">หางคำที่ชี้ว่าเป็น "Verb" (Verb Suffixes)</div>
+          <table class="sb-table" style="margin-top:10px;">
+            <tr><th>Suffix</th><th>ตัวอย่างคำ</th><th>ความหมาย / ตัวอย่างเพิ่ม</th></tr>
+            <tr><td><b>-ize / -ise</b></td><td>organize, realize</td><td>จัดระเบียบ / ...........................</td></tr>
+            <tr><td><b>-ify</b></td><td>clarify, simplify</td><td>ทำให้ชัดเจน / ........................</td></tr>
+            <tr><td><b>-ate</b></td><td>create, motivate</td><td>สร้างสรรค์ / .........................</td></tr>
+            <tr><td><b>-en</b></td><td>strengthen, shorten</td><td>ทำให้แข็งแรง / .....................</td></tr>
+          </table>
+        </div>
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-orange);">กริยาคู่สับสน (เติม V2 - V3 และความหมาย)</div>
+          <table class="sb-table" style="margin-top:10px;">
+            <tr><th>V1</th><th>V2 / V3</th><th>ต้องการกรรม?</th></tr>
+            <tr><td><b>rise</b> (ขึ้นเอง)</td><td>............ / ............</td><td>Vi. (ไม่มีกรรม)</td></tr>
+            <tr><td><b>raise</b> (ยกขึ้น)</td><td>............ / ............</td><td>Vt. (มีกรรม)</td></tr>
+            <tr><td><b>lie</b> (นอน/วางตัว)</td><td>............ / ............</td><td>Vi. (ไม่มีกรรม)</td></tr>
+            <tr><td><b>lay</b> (วางสิ่งของ)</td><td>............ / ............</td><td>Vt. (มีกรรม)</td></tr>
+          </table>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'q3-1',
+    group: '3. Verb (คำกริยา)',
+    title: 'แบบฝึกหัด 3.1 : Verb Recognition & Modals (ข้อ 1 - 3)',
+    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Verb (ข้อ 1 - 3)</div>
+        <span class="slide-subtitle-badge">Part 3 · แยกกริยาแท้ กริยาช่วย และ Linking Verb</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">1. We must ________ the budget proposal before the board meeting starts.</div>
+        <div class="quiz-choices-grid">
+          <div>A. final</div><div>B. finally</div><div>C. finalize</div><div>D. finalization</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">2. Despite the strict deadline, the new team remained ________ under pressure.</div>
+        <div class="quiz-choices-grid">
+          <div>A. calm</div><div>B. calmly</div><div>C. calmness</div><div>D. calmed</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">3. The CEO will ________ the new sustainability plan during tomorrow's press conference.</div>
+        <div class="quiz-choices-grid">
+          <div>A. clarity</div><div>B. clear</div><div>C. clarify</div><div>D. clearly</div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'q3-2',
+    group: '3. Verb (คำกริยา)',
+    title: 'แบบฝึกหัด 3.2 : Transitive & Confusing Verbs (ข้อ 4 - 6)',
+    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 ตัวอย่างข้อสอบเรื่อง Verb (ข้อ 4 - 6)</div>
+        <span class="slide-subtitle-badge">Part 3 · แยกกริยาแท้ กริยาช่วย และ Linking Verb</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">4. Electricity prices have ________ by nearly 10 percent over the past year.</div>
+        <div class="quiz-choices-grid">
+          <div>A. raised</div><div>B. risen</div><div>C. rose</div><div>D. raising</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">5. Please ________ your hand if you have any questions about the assignment.</div>
+        <div class="quiz-choices-grid">
+          <div>A. rise</div><div>B. raise</div><div>C. arisen</div><div>D. risen</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">6. Regular practice can significantly ________ your confidence when speaking in public.</div>
+        <div class="quiz-choices-grid">
+          <div>A. strong</div><div>B. strength</div><div>C. strongly</div><div>D. strengthen</div>
+        </div>
+      </div>
+    `
+  },
+
+  // =========================================================================
+  // 4. ADJECTIVE & ADVERB (คำคุณศัพท์ & คำกริยาวิเศษณ์)
+  // =========================================================================
+  {
+    id: 't4-1',
+    group: '4. Adjective & Adverb',
+    title: '4.1 Adjective (คำคุณศัพท์) & -ing vs -ed',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">4.1</span> Adjective (คำคุณศัพท์)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 4 · Modifiers</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-yellow);">ตำแหน่งวาง Adjective & Suffixes</div>
+          <div class="sb-branch-list" style="gap:16px;">
+            <div class="sb-branch-item">1. <b>หน้า Noun</b> : an <u>innovative</u> solution</div>
+            <div class="sb-branch-item">2. <b>หลัง Linking Verb</b> : The task seems <u>difficult</u>.</div>
+            <div class="sb-branch-item">3. <b>หลัง -thing / -one / -body</b> : something <u>special</u></div>
+            <div class="sb-branch-item">• <b>Adj Suffixes</b> : -ful, -less, -ous, -ive, -able/-ible, -al, -ic → ตัวอย่าง: ............................</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-pink);">Participial Adjective (-ing vs -ed)</div>
+          <div class="sb-branch-list" style="gap:18px;">
+            <div class="sb-branch-item">• <b>V-ing</b> = น่า... (ผู้กระทำ/ต้นเหตุ) :<br>an <u>interesting</u> book / a <u>tiring</u> day</div>
+            <div class="sb-branch-item">• <b>V-ed</b> = รู้สึก... (ผู้ถูกกระทำ) :<br>I am <u>interested</u> in / feel <u>tired</u></div>
+          </div>
+          <div class="sb-write-space" style="margin-top:14px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:95px;">
+            <span style="color:var(--text-muted); font-size:15px;">✏️ จดเติม: The news was (shocking / shocked). Everyone was (shocking / shocked).</span>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 't4-2',
+    group: '4. Adjective & Adverb',
+    title: '4.2 Adverb (คำกริยาวิเศษณ์) & กับดักคำยกเว้น',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">4.2</span> Adverb (คำกริยาวิเศษณ์) & Common Traps</div>
+        <span class="slide-subtitle-badge">จุดที่ข้อสอบชอบหลอก</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">Adverb ขยายได้ 4 อย่าง (ยกเว้น Noun!)</div>
+          <div class="sb-branch-list" style="gap:15px;">
+            <div class="sb-branch-item">1. ขยาย <b>Verb</b> : He speaks <u>fluently</u>.</div>
+            <div class="sb-branch-item">2. ขยาย <b>Adjective</b> : <u>extremely</u> useful</div>
+            <div class="sb-branch-item">3. ขยาย <b>Adverb</b> : runs <u>very</u> fast</div>
+            <div class="sb-branch-item">4. ขยาย <b>ทั้งประโยค</b> : <u>Fortunately</u>, we arrived on time.</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-orange);">⚠️ กับดัก Adverb ไม่เติม -ly / ความหมายเปลี่ยน!</div>
+          <table class="sb-table" style="margin-top:8px;">
+            <tr><th>คู่คำหลอก</th><th>ความหมายต่างกันอย่างไร (จดบนกระดาน)</th></tr>
+            <tr><td><b>hard</b> vs <b>hardly</b></td><td>hard = ................... / hardly = แทบจะไม่</td></tr>
+            <tr><td><b>late</b> vs <b>lately</b></td><td>late = สาย / lately = ...........................</td></tr>
+            <tr><td><b>good</b> vs <b>well</b></td><td>good = (Adj) / well = (Adv) ...............</td></tr>
+            <tr><td><b>friendly / lovely</b></td><td>ลงท้าย -ly แต่เป็น ......................... !</td></tr>
+          </table>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'q4-1',
+    group: '4. Adjective & Adverb',
+    title: 'แบบฝึกหัด 4.1 : Adjective vs Adverb (ข้อ 1 - 4)',
+    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 ตัวอย่างข้อสอบ Adjective & Adverb (ข้อ 1 - 4)</div>
+        <span class="slide-subtitle-badge">Part 4 · แยกคำขยายนามและคำขยายกริยา</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">1. Our new software system is ________ faster than the previous version.</div>
+        <div class="quiz-choices-grid">
+          <div>A. significant</div><div>B. significantly</div><div>C. significance</div><div>D. signify</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">2. All customers were ________ with the quick response from the support team.</div>
+        <div class="quiz-choices-grid">
+          <div>A. please</div><div>B. pleasing</div><div>C. pleased</div><div>D. pleasure</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">3. The technician carefully inspected the ________ equipment before the show began.</div>
+        <div class="quiz-choices-grid">
+          <div>A. damage</div><div>B. damaged</div><div>C. damaging</div><div>D. damages</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">4. The receptionists at this hotel are always ________ and helpful to guests.</div>
+        <div class="quiz-choices-grid">
+          <div>A. friend</div><div>B. friendly</div><div>C. friendship</div><div>D. friendliestly</div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'q4-2',
+    group: '4. Adjective & Adverb',
+    title: 'แบบฝึกหัด 4.2 : Adverb Traps & Modifiers (ข้อ 5 - 8)',
+    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 ตัวอย่างข้อสอบ Adjective & Adverb (ข้อ 5 - 8)</div>
+        <span class="slide-subtitle-badge">Part 4 · แยกคำขยายนามและคำขยายกริยา</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">5. There was so much noise outside that I could ________ hear what the speaker was saying.</div>
+        <div class="quiz-choices-grid">
+          <div>A. hard</div><div>B. hardly</div><div>C. harder</div><div>D. hardness</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">6. Have you seen any good movies ________? I haven't been to the cinema for months.</div>
+        <div class="quiz-choices-grid">
+          <div>A. late</div><div>B. later</div><div>C. latest</div><div>D. lately</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">7. Although he has only worked here for two weeks, he performs his duties very ________.</div>
+        <div class="quiz-choices-grid">
+          <div>A. good</div><div>B. well</div><div>C. better</div><div>D. bestly</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">8. ________, the flight was delayed for three hours due to severe weather conditions.</div>
+        <div class="quiz-choices-grid">
+          <div>A. Unfortunate</div><div>B. Unfortunately</div><div>C. Fortune</div><div>D. Fortunate</div>
+        </div>
+      </div>
+    `
+  },
+
+  // =========================================================================
+  // 5. PREPOSITION, CONJUNCTION & INTERJECTION
+  // =========================================================================
+  {
+    id: 't5-1',
+    group: '5. Preposition & Conjunction',
+    title: '5.1 Preposition (บุพบท) & การใช้ in / on / at',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">5.1</span> Preposition (คำบุพบท)</div>
+        <span class="slide-subtitle-badge">เรื่องที่ 5 · Preposition + Noun/V.ing</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-yellow);">สามเหลี่ยม in / on / at (เวลา & สถานที่)</div>
+          <table class="sb-table" style="margin-top:8px;">
+            <tr><th>คำ</th><th>Time (เวลา)</th><th>Place (สถานที่)</th></tr>
+            <tr><td><b>IN</b></td><td>ปี เดือน ฤดู ช่วงวัน (in May)</td><td>ประเทศ เมือง พื้นที่ปิด (in Bangkok)</td></tr>
+            <tr><td><b>ON</b></td><td>วัน วันที่ (on Monday, on May 5)</td><td>พื้นผิว ถนน (on Sukhumvit Rd)</td></tr>
+            <tr><td><b>AT</b></td><td>เวลาเป๊ะ (at 8:30 a.m.)</td><td>จุดเฉพาะ (at the entrance)</td></tr>
+          </table>
+        </div>
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-cyan);">กฎเหล็ก Preposition + Noun / Noun Phrase / V.ing</div>
+          <div class="sb-branch-list" style="gap:16px;">
+            <div class="sb-branch-item">• <b>บอกสาเหตุ</b> : because of, due to, owing to + .........................</div>
+            <div class="sb-branch-item">• <b>บอกความขัดแย้ง</b> : despite, in spite of + .........................</div>
+            <div class="sb-branch-item">• <b>บอกช่วงเวลา</b> : during (+ Noun) vs while (+ S + V)</div>
+          </div>
+          <div class="sb-write-space" style="margin-top:14px; border:1px dashed rgba(148,163,184,0.35); border-radius:10px; padding:12px; min-height:90px;">
+            <span style="color:var(--text-muted); font-size:15px;">✏️ จดเติม: ห้ามใช้ "despite of" เด็ดขาด! (ใช้ despite หรือ in spite of เท่านั้น)</span>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 't5-2',
+    group: '5. Preposition & Conjunction',
+    title: '5.2 Conjunction (สันธาน) & Interjection (อุทาน)',
+    badge: 'เนื้อหา',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">5.2</span> Conjunction & Interjection</div>
+        <span class="slide-subtitle-badge">แยก Conjunction (+ S+V) vs Preposition (+ N)</span>
+      </div>
+      <div class="sb-grid-2">
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-green);">1) Coordinating (FANBOYS) เชื่อมระดับเดียวกัน</div>
+          <div class="sb-branch-list" style="gap:12px;">
+            <div class="sb-branch-item"><b>F</b>or (เพราะ) · <b>A</b>nd (และ) · <b>N</b>or (และไม่) · <b>B</b>ut (แต่) · <b>O</b>r (หรือ) · <b>Y</b>et (แต่ทว่า) · <b>S</b>o (ดังนั้น)</div>
+          </div>
+          <div class="sb-card-title" style="color:var(--accent-pink); margin-top:20px;">2) Subordinating Conjunctions (+ ประโยค S + V)</div>
+          <div class="sb-branch-list" style="gap:12px;">
+            <div class="sb-branch-item">• <b>เหตุผล</b> : because, since, as + S + V</div>
+            <div class="sb-branch-item">• <b>ขัดแย้ง</b> : although, though, even though + S + V</div>
+            <div class="sb-branch-item">• <b>เงื่อนไข/เวลา</b> : if, unless, while, until, before, after</div>
+          </div>
+        </div>
+        <div class="sb-card">
+          <div class="sb-card-title" style="color:var(--accent-orange);">ตารางเทียบจุดหลอก + 3) Interjection (คำอุทาน)</div>
+          <table class="sb-table" style="margin-top:8px;">
+            <tr><th>โครงสร้าง</th><th>ตามด้วย Clause (S+V)</th><th>ตามด้วย Noun / V.ing</th></tr>
+            <tr><td><b>เหตุผล</b></td><td>because / since</td><td>................................</td></tr>
+            <tr><td><b>ขัดแย้ง</b></td><td>although / even though</td><td>................................</td></tr>
+            <tr><td><b>เวลา</b></td><td>while</td><td>................................</td></tr>
+          </table>
+          <div style="margin-top:14px; font-size:16px; color:var(--text-muted);">
+            <b>Interjection</b> : Wow!, Oh!, Ouch!, Alas!, Hurray! (ใช้แสดงอารมณ์ ไม่เกี่ยวกับโครงสร้างไวยากรณ์หลัก)
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'q5-1',
+    group: '5. Preposition & Conjunction',
+    title: 'แบบฝึกหัด 5.1 : Preposition vs Conjunction (ข้อ 1 - 3)',
+    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 ตัวอย่างข้อสอบ Preposition & Conjunction (ข้อ 1 - 3)</div>
+        <span class="slide-subtitle-badge">Part 5 · แยก + Noun กับ + S+V ให้ขาด</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">1. ________ the heavy traffic, all participants arrived at the seminar on time.</div>
+        <div class="quiz-choices-grid">
+          <div>A. Although</div><div>B. Even though</div><div>C. Despite</div><div>D. Because</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">2. The outdoor concert was postponed ________ a sudden thunderstorm.</div>
+        <div class="quiz-choices-grid">
+          <div>A. because</div><div>B. because of</div><div>C. although</div><div>D. since</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">3. The annual awards ceremony will be held ________ Friday, November 20, ________ 6:00 p.m.</div>
+        <div class="quiz-choices-grid">
+          <div>A. in / at</div><div>B. on / at</div><div>C. at / on</div><div>D. on / in</div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'q5-2',
+    group: '5. Preposition & Conjunction',
+    title: 'แบบฝึกหัด 5.2 : Connectors & Time Words (ข้อ 4 - 6)',
+    badge: 'แบบฝึกหัดท้ายเรื่อง',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">📝 ตัวอย่างข้อสอบ Preposition & Conjunction (ข้อ 4 - 6)</div>
+        <span class="slide-subtitle-badge">Part 5 · แยก + Noun กับ + S+V ให้ขาด</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">4. Please keep your seatbelt fastened ________ the airplane is taking off.</div>
+        <div class="quiz-choices-grid">
+          <div>A. during</div><div>B. while</div><div>C. despite</div><div>D. because of</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">5. ________ the budget was limited, the marketing team still created an impressive campaign.</div>
+        <div class="quiz-choices-grid">
+          <div>A. Despite</div><div>B. In spite of</div><div>C. Although</div><div>D. Due to</div>
+        </div>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">6. You can submit the form online, ________ you can bring it to our office in person.</div>
+        <div class="quiz-choices-grid">
+          <div>A. or</div><div>B. yet</div><div>C. so</div><div>D. nor</div>
+        </div>
+      </div>
+    `
+  },
+
+
+  {
+    id: 'ex-1',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 1 : Noun vs Adj vs Adv (TOEIC Part 5)',
+    badge: 'ข้อสอบท้ายบท #1',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 1 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 1. Customer ________ is the top priority for every department in our organization.</div>
+        <div class="quiz-choices-grid">
+          <div>A. satisfy</div>
+          <div>B. satisfied</div>
+          <div>C. satisfaction</div>
+          <div>D. satisfactory</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-2',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 2 : Adverb Modifying Adjective',
+    badge: 'ข้อสอบท้ายบท #2',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 2 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 2. The instructions in the user manual are ________ clear, so anyone can assemble the desk.</div>
+        <div class="quiz-choices-grid">
+          <div>A. remark</div>
+          <div>B. remarkable</div>
+          <div>C. remarkably</div>
+          <div>D. remarked</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-3',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 3 : Reflexive Pronoun',
+    badge: 'ข้อสอบท้ายบท #3',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 3 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 3. Ms. Tanaka prefers to review all legal contracts ________ before signing them.</div>
+        <div class="quiz-choices-grid">
+          <div>A. she</div>
+          <div>B. her</div>
+          <div>C. hers</div>
+          <div>D. herself</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-4',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 4 : Linking Verb + Adjective',
+    badge: 'ข้อสอบท้ายบท #4',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 4 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 4. After implementing the new workflow, the accounting team became much more ________.</div>
+        <div class="quiz-choices-grid">
+          <div>A. efficiency</div>
+          <div>B. efficient</div>
+          <div>C. efficiently</div>
+          <div>D. efficiencies</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-5',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 5 : Preposition vs Conjunction (Contrast)',
+    badge: 'ข้อสอบท้ายบท #5',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 5 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 5. ________ the high initial cost, solar panels save businesses a significant amount of money over time.</div>
+        <div class="quiz-choices-grid">
+          <div>A. Although</div>
+          <div>B. Even though</div>
+          <div>C. Despite</div>
+          <div>D. Because</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-6',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 6 : Verb Formation after Modal',
+    badge: 'ข้อสอบท้ายบท #6',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 6 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 6. The regional director will ________ the final budget proposal at tomorrow's meeting.</div>
+        <div class="quiz-choices-grid">
+          <div>A. approval</div>
+          <div>B. approve</div>
+          <div>C. approved</div>
+          <div>D. approving</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-7',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 7 : Noun Suffix after Article + Adj',
+    badge: 'ข้อสอบท้ายบท #7',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 7 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 7. The HR department announced the immediate ________ of a new remote-work policy.</div>
+        <div class="quiz-choices-grid">
+          <div>A. adopt</div>
+          <div>B. adopted</div>
+          <div>C. adoption</div>
+          <div>D. adoptive</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-8',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 8 : Participial Adjective (-ed vs -ing)',
+    badge: 'ข้อสอบท้ายบท #8',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 8 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 8. Many commuters were ________ by the sudden closure of the central subway station.</div>
+        <div class="quiz-choices-grid">
+          <div>A. inconvenience</div>
+          <div>B. inconveniencing</div>
+          <div>C. inconvenienced</div>
+          <div>D. inconveniently</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-9',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 9 : Indefinite Pronoun Agreement',
+    badge: 'ข้อสอบท้ายบท #9',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 9 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 9. Neither of the proposed marketing strategies ________ realistic for our current budget.</div>
+        <div class="quiz-choices-grid">
+          <div>A. seem</div>
+          <div>B. seems</div>
+          <div>C. seeming</div>
+          <div>D. are seeming</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-10',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 10 : Preposition of Cause (+ Noun Phrase)',
+    badge: 'ข้อสอบท้ายบท #10',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 10 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 10. Several domestic flights were canceled ________ severe fog around the airport.</div>
+        <div class="quiz-choices-grid">
+          <div>A. because</div>
+          <div>B. since</div>
+          <div>C. due to</div>
+          <div>D. although</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-11',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 11 : Adverb Modifying Verb',
+    badge: 'ข้อสอบท้ายบท #11',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 11 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 11. Mr. Somchai ________ checks his business emails every morning before 8:00 a.m.</div>
+        <div class="quiz-choices-grid">
+          <div>A. routine</div>
+          <div>B. routines</div>
+          <div>C. routinely</div>
+          <div>D. routineness</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-12',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 12 : Possessive Adjective + Noun',
+    badge: 'ข้อสอบท้ายบท #12',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 12 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 12. All employees must display ________ identification badges while inside the building.</div>
+        <div class="quiz-choices-grid">
+          <div>A. they</div>
+          <div>B. them</div>
+          <div>C. their</div>
+          <div>D. theirs</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-13',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 13 : Preposition vs Conjunction (Time)',
+    badge: 'ข้อสอบท้ายบท #13',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 13 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 13. No one is allowed to enter the laboratory ________ the safety inspection is in progress.</div>
+        <div class="quiz-choices-grid">
+          <div>A. during</div>
+          <div>B. while</div>
+          <div>C. despite</div>
+          <div>D. because of</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-14',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 14 : Adjective Modifying Noun',
+    badge: 'ข้อสอบท้ายบท #14',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 14 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 14. We are looking for a ________ candidate who has at least five years of experience.</div>
+        <div class="quiz-choices-grid">
+          <div>A. qualify</div>
+          <div>B. qualification</div>
+          <div>C. qualified</div>
+          <div>D. qualifyingly</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-15',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 15 : Uncountable Noun Trap',
+    badge: 'ข้อสอบท้ายบท #15',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 15 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 15. The travel agency provided detailed ________ about visa requirements for international tourists.</div>
+        <div class="quiz-choices-grid">
+          <div>A. inform</div>
+          <div>B. informs</div>
+          <div>C. information</div>
+          <div>D. informations</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-16',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 16 : Correlative / Coordinating Conjunction',
+    badge: 'ข้อสอบท้ายบท #16',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 16 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 16. The new printer is not only faster ________ also much quieter than the old model.</div>
+        <div class="quiz-choices-grid">
+          <div>A. and</div>
+          <div>B. or</div>
+          <div>C. but</div>
+          <div>D. yet</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-17',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 17 : Relative Pronoun (Possession)',
+    badge: 'ข้อสอบท้ายบท #17',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 17 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 17. The architect ________ design won the international award will visit Bangkok next week.</div>
+        <div class="quiz-choices-grid">
+          <div>A. who</div>
+          <div>B. whom</div>
+          <div>C. whose</div>
+          <div>D. which</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-18',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 18 : Adverb Trap (hard vs hardly)',
+    badge: 'ข้อสอบท้ายบท #18',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 18 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 18. Because the ink on the receipt had faded, the accountant could ________ read the total amount.</div>
+        <div class="quiz-choices-grid">
+          <div>A. hard</div>
+          <div>B. hardly</div>
+          <div>C. harder</div>
+          <div>D. hardness</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-19',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 19 : Word Family (Verb vs Noun vs Adj after to)',
+    badge: 'ข้อสอบท้ายบท #19',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 19 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 19. The new automated system enables staff members to ________ client requests within minutes.</div>
+        <div class="quiz-choices-grid">
+          <div>A. process</div>
+          <div>B. processed</div>
+          <div>C. processing</div>
+          <div>D. processor</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+  {
+    id: 'ex-20',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'ข้อที่ 20 : Preposition of Time & Place',
+    badge: 'ข้อสอบท้ายบท #20',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title">🏆 ข้อสอบแข่งขันท้ายบท ข้อที่ 20 / 20 (TOEIC / A-Level)</div>
+        <span class="slide-subtitle-badge">Parts of Speech Mastery</span>
+      </div>
+      <div class="quiz-problem-box">
+        <div class="quiz-question-text">ข้อ 20. The annual technology expo opens ________ March 15 ________ the Queen Sirikit National Convention Center.</div>
+        <div class="quiz-choices-grid">
+          <div>A. in / on</div>
+          <div>B. on / at</div>
+          <div>C. at / in</div>
+          <div>D. on / in</div>
+        </div>
+      </div>
+      <div class="quiz-work-header">วิเคราะห์โครงสร้าง ตัดตัวเลือก และจดคำศัพท์:</div>
+      <div class="sb-write-space-xl"></div>
+    `
+  },
+
+  {
+    id: 'key-1',
+    group: '6. ข้อสอบแข่งขันท้ายบท 20 ข้อ (TOEIC / A-Level)',
+    title: 'เฉลยสรุปข้อสอบท้ายบท 20 ข้อ (พร้อมคำอธิบาย)',
+    badge: 'เฉลยสรุป',
+    html: `
+      <div class="slide-header-box">
+        <div class="slide-main-title"><span class="slide-num-circle">✓</span> เฉลยข้อสอบแข่งขันท้ายบท 20 ข้อ (Answer Key)</div>
+        <span class="slide-subtitle-badge">ตรวจคำตอบหลังทำครบ 20 ข้อ</span>
+      </div>
+      <div class="sb-card">
+        <table class="sb-table" style="font-size:15px;">
+          <tr><th style="width:75px;">ข้อ</th><th style="width:70px;">เฉลย</th><th>หลักวิเคราะห์ (Parts of Speech)</th></tr>
+          <tr><td><b>ข้อ 1</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>หลังคำนาม 'Customer' ที่ทำหน้าที่ขยายนาม (Compound Noun) และหน้ากริยา 'is' ต้องใช้ Noun = satisfaction</td></tr>
+<tr><td><b>ข้อ 2</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>วางหน้า Adjective 'clear' เพื่อขยายความระดับความชัดเจน ต้องใช้ Adverb = remarkably</td></tr>
+<tr><td><b>ข้อ 3</b></td><td style='color:var(--accent-green); font-weight:700;'>D</td><td>เน้นย้ำว่าประธานทำสิ่งนั้นด้วยตัวเอง (review ... herself) ใช้ Reflexive Pronoun = herself</td></tr>
+<tr><td><b>ข้อ 4</b></td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>'became' เป็น Linking Verb จึงต้องตามด้วย Adjective = efficient (ห้ามใช้ Adverb)</td></tr>
+<tr><td><b>ข้อ 5</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>ด้านหลังเป็นคำนามวลี 'the high initial cost' (ไม่มีกริยา) จึงต้องใช้ Preposition = Despite</td></tr>
+<tr><td><b>ข้อ 6</b></td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>หลัง Modal Verb 'will' ต้องตามด้วยกริยาช่อง 1 ไม่ผัน (Base Form) = approve</td></tr>
+<tr><td><b>ข้อ 7</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>อยู่หลัง Article + Adjective ('the immediate ____') และหน้า 'of' ต้องใช้ Noun = adoption</td></tr>
+<tr><td><b>ข้อ 8</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>ผู้โดยสาร (commuters) 'รู้สึก' ไม่สะดวก เป็นผู้ถูกกระทำ จึงใช้ V.ed = inconvenienced</td></tr>
+<tr><td><b>ข้อ 9</b></td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>'Neither of + N.พหูพจน์' ถือเป็นประธานเอกพจน์ กริยาต้องเติม -s = seems</td></tr>
+<tr><td><b>ข้อ 10</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>หลังช่องว่างเป็น Noun Phrase 'severe fog' จึงต้องใช้ Preposition = due to (ห้ามใช้ because/since)</td></tr>
+<tr><td><b>ข้อ 11</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>วางหน้ากริยาแท้ 'checks' เพื่อบอกความถี่/ลักษณะการกระทำ ต้องใช้ Adverb = routinely</td></tr>
+<tr><td><b>ข้อ 12</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>อยู่หน้าคำนาม 'identification badges' เพื่อแสดงความเป็นเจ้าของ ต้องใช้ Possessive Adjective = their</td></tr>
+<tr><td><b>ข้อ 13</b></td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>ด้านหลังเป็นประโยคสมบูรณ์ 'the safety inspection is...' (มี S+V) จึงต้องใช้ Conjunction = while</td></tr>
+<tr><td><b>ข้อ 14</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>วางหน้าคำนาม 'candidate' เพื่อบอกลักษณะผู้สมัครที่มีคุณสมบัติครบ ต้องใช้ Adjective = qualified</td></tr>
+<tr><td><b>ข้อ 15</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>'information' เป็นคำนามนับไม่ได้ ห้ามเติม -s เด็ดขาด ตอบ C</td></tr>
+<tr><td><b>ข้อ 16</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>โครงสร้างคู่ขนาน 'not only ... but also ...' ต้องใช้คู่กับ but</td></tr>
+<tr><td><b>ข้อ 17</b></td><td style='color:var(--accent-green); font-weight:700;'>C</td><td>แสดงความเป็นเจ้าของ ('design' ของสถาปนิก) ใช้ Relative Pronoun = whose</td></tr>
+<tr><td><b>ข้อ 18</b></td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>ความหมายเชิงปฏิเสธ 'แทบจะอ่านไม่ออก' ต้องใช้ Adverb = hardly (ส่วน hard แปลว่า หนัก/ยาก)</td></tr>
+<tr><td><b>ข้อ 19</b></td><td style='color:var(--accent-green); font-weight:700;'>A</td><td>โครงสร้าง 'enable + somebody + to + V.infinitive' ต้องใช้กริยาช่อง 1 ไม่ผัน = process</td></tr>
+<tr><td><b>ข้อ 20</b></td><td style='color:var(--accent-green); font-weight:700;'>B</td><td>วันที่ (March 15) ใช้ 'on' ส่วนสถานที่เฉพาะเจาะจง (ศูนย์ประชุมฯ) ใช้ 'at'</td></tr>
+
+        </table>
+      </div>
+    `
+  }
+];
+
+
+// ====================================================
+// 3. SLIDE NAVIGATION, CONSOLIDATED SIDEBAR & QUESTION BAR
+// ====================================================
+function isQuizSlide(s) {
+  return s && (s.id.startsWith('q') || s.id.startsWith('ex'));
+}
+
+function isRealExamSlide(s) {
+  return s && s.id.startsWith('ex');
+}
+
+function getDeckForSlideIndex(idx) {
+  const cur = SLIDES[idx];
+  if (!cur || !isQuizSlide(cur)) return [];
+  if (isRealExamSlide(cur)) {
+    return SLIDES.map((s, i) => ({ slide: s, idx: i })).filter(x => isRealExamSlide(x.slide));
+  }
+  // Exercise deck for the same topic group
+  return SLIDES.map((s, i) => ({ slide: s, idx: i })).filter(x => x.slide.group === cur.group && x.slide.id.startsWith('q'));
+}
+
+function buildSidebarTOC(filterText = '') {
+  const tocContainer = document.getElementById('toc-list');
+  tocContainer.innerHTML = '';
+  const q = filterText.trim().toLowerCase();
+
+  // Group slides by s.group
+  const groups = [];
+  const groupMap = {};
+  SLIDES.forEach((s, idx) => {
+    if (q && !s.title.toLowerCase().includes(q) && !s.group.toLowerCase().includes(q) && !String(idx + 1).includes(q)) {
+      return;
+    }
+    if (!groupMap[s.group]) {
+      groupMap[s.group] = { name: s.group, items: [] };
+      groups.push(groupMap[s.group]);
+    }
+    groupMap[s.group].items.push({ slide: s, idx });
+  });
+
+  groups.forEach(g => {
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'toc-group';
+
+    // Separate theory slides vs exercise/exam slides when not searching
+    const theoryItems = g.items.filter(x => !isQuizSlide(x.slide));
+    const quizItems = g.items.filter(x => isQuizSlide(x.slide));
+    const isExamGroup = g.name.startsWith('6.');
+
+    // If this is Group 10 (Real Exam Bank) and no search filter is active, render as ONE single prominent bar!
+    if (isExamGroup && !q && quizItems.length > 0) {
+      const isCurrentInExam = quizItems.some(x => x.idx === currentSlideIndex);
+      const targetIdx = isCurrentInExam ? currentSlideIndex : quizItems[0].idx;
+      const activePos = isCurrentInExam ? (quizItems.findIndex(x => x.idx === currentSlideIndex) + 1) : 1;
+
+      const singleExamBar = document.createElement('div');
+      singleExamBar.className = 'toc-deck-item' + (isCurrentInExam ? ' active' : '');
+      singleExamBar.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:2px; overflow:hidden;">
+          <span style="font-size:13.5px; font-weight:700;">🏆 6. ข้อสอบแข่งขันท้ายบท (20 ข้อ)</span>
+          <span style="font-size:11px; opacity:0.85;">เลือกทำทีละข้อ (${ isCurrentInExam ? 'กำลังอยู่ที่ข้อ ' + activePos + '/' + quizItems.length : 'รวมทั้งหมด ' + quizItems.length + ' ข้อ' })</span>
+        </div>
+        <span class="badge-page" style="background:rgba(0,0,0,0.25); color:inherit;">${quizItems.length} ข้อ ▶</span>
+      `;
+      singleExamBar.onclick = () => {
+        SoundFX.click();
+        goToSlide(targetIdx);
+      };
+      tocContainer.appendChild(singleExamBar);
+      return;
+    }
+
+    const header = document.createElement('div');
+    header.className = 'toc-group-header';
+    const summaryLabel = quizItems.length > 0 && !q
+      ? `${theoryItems.length} เนื้อหา + ${quizItems.length} โจทย์ ▾`
+      : `${g.items.length} หน้า ▾`;
+    header.innerHTML = `<span>${g.name}</span><span style="font-size:11px; color:var(--text-muted);">${summaryLabel}</span>`;
+    header.onclick = () => groupDiv.classList.toggle('closed');
+    groupDiv.appendChild(header);
+
+    const itemsBox = document.createElement('div');
+    itemsBox.className = 'toc-group-items';
+
+    // If searching, show matching items directly
+    const itemsToRender = q ? g.items : theoryItems;
+
+    itemsToRender.forEach(({ slide, idx }) => {
+      const item = document.createElement('div');
+      item.className = 'toc-item' + (idx === currentSlideIndex ? ' active' : '');
+      item.id = 'toc-item-' + idx;
+
+      let badgesHtml = '';
+      if (slide.lab3d) badgesHtml += `<span class="badge-3d" title="มีห้องแล็บ 3D">3D</span>`;
+      if (slide.anim) badgesHtml += `<span class="badge-anim" title="มี Animation Graphic">Anim</span>`;
+      if (isQuizSlide(slide)) badgesHtml += `<span class="badge-quiz">โจทย์</span>`;
+      badgesHtml += `<span class="badge-page">น.${idx + 1}</span>`;
+
+      item.innerHTML = `
+        <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${slide.title}</span>
+        <div class="toc-item-badges">${badgesHtml}</div>
+      `;
+      item.onclick = () => {
+        SoundFX.click();
+        goToSlide(idx);
+      };
+      itemsBox.appendChild(item);
+    });
+
+    // Collapse topic's exercises into a single clean bar at the bottom of that topic group
+    if (!q && quizItems.length > 0) {
+      const isCurrentInTopicQuiz = quizItems.some(x => x.idx === currentSlideIndex);
+      const targetQuizIdx = isCurrentInTopicQuiz ? currentSlideIndex : quizItems[0].idx;
+      const curQuizNum = isCurrentInTopicQuiz ? (quizItems.findIndex(x => x.idx === currentSlideIndex) + 1) : 1;
+
+      const quizDeckBtn = document.createElement('div');
+      quizDeckBtn.className = 'toc-deck-item' + (isCurrentInTopicQuiz ? ' active' : '');
+      quizDeckBtn.innerHTML = `
+        <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+          📝 แบบฝึกหัดท้ายหัวข้อ (${isCurrentInTopicQuiz ? 'ข้อที่ ' + curQuizNum + '/' + quizItems.length : 'รวม ' + quizItems.length + ' ข้อ'})
+        </span>
+        <span class="badge-page" style="background:rgba(0,0,0,0.2); color:inherit;">ทีละข้อ ▶</span>
+      `;
+      quizDeckBtn.onclick = () => {
+        SoundFX.click();
+        goToSlide(targetQuizIdx);
+      };
+      itemsBox.appendChild(quizDeckBtn);
+    }
+
+    groupDiv.appendChild(itemsBox);
+    tocContainer.appendChild(groupDiv);
+  });
+}
+
+function filterTOC(val) {
+  buildSidebarTOC(val);
+}
+
+function updateQuestionNavBar(idx) {
+  const bar = document.getElementById('question-nav-bar');
+  const slide = SLIDES[idx];
+  if (!bar || !slide || !isQuizSlide(slide)) {
+    if (bar) bar.classList.remove('show');
+    return;
+  }
+
+  bar.classList.add('show');
+  const deck = getDeckForSlideIndex(idx);
+  const pos = deck.findIndex(x => x.idx === idx);
+
+  const badgeEl = document.getElementById('qnav-deck-badge');
+  const counterEl = document.getElementById('qnav-counter');
+  const selectEl = document.getElementById('qnav-select');
+  const prevBtn = document.getElementById('qnav-prev-btn');
+  const nextBtn = document.getElementById('qnav-next-btn');
+
+  if (isRealExamSlide(slide)) {
+    badgeEl.textContent = '🏆 ข้อสอบแข่งขันท้ายบท (TOEIC / A-Level / TGAT)';
+  } else {
+    badgeEl.textContent = `📝 แบบฝึกหัด : ${slide.group}`;
+  }
+
+  counterEl.textContent = `ข้อที่ ${pos + 1} / ${deck.length}`;
+
+  selectEl.innerHTML = '';
+  deck.forEach((item, i) => {
+    const opt = document.createElement('option');
+    opt.value = item.idx;
+    opt.textContent = `[ข้อที่ ${i + 1}/${deck.length}] ${item.slide.title}`;
+    if (item.idx === idx) opt.selected = true;
+    selectEl.appendChild(opt);
+  });
+
+  prevBtn.disabled = pos <= 0;
+  nextBtn.disabled = pos >= deck.length - 1;
+}
+
+function prevQuestionInDeck() {
+  const deck = getDeckForSlideIndex(currentSlideIndex);
+  const pos = deck.findIndex(x => x.idx === currentSlideIndex);
+  if (pos > 0) {
+    SoundFX.click();
+    goToSlide(deck[pos - 1].idx);
+  }
+}
+
+function nextQuestionInDeck() {
+  const deck = getDeckForSlideIndex(currentSlideIndex);
+  const pos = deck.findIndex(x => x.idx === currentSlideIndex);
+  if (pos >= 0 && pos < deck.length - 1) {
+    SoundFX.click();
+    goToSlide(deck[pos + 1].idx);
+  }
+}
+
+function firstQuestionInDeck() {
+  const deck = getDeckForSlideIndex(currentSlideIndex);
+  if (deck.length > 0) {
+    SoundFX.click();
+    goToSlide(deck[0].idx);
+  }
+}
+
+function randomQuestionInDeck() {
+  const deck = getDeckForSlideIndex(currentSlideIndex);
+  if (deck.length > 1) {
+    SoundFX.chime();
+    let r = Math.floor(Math.random() * deck.length);
+    if (deck[r].idx === currentSlideIndex) r = (r + 1) % deck.length;
+    goToSlide(deck[r].idx);
+  }
+}
+
+function goToSlide(idx) {
+  if (idx < 0 || idx >= SLIDES.length) return;
+  if (isDrawing && currentStroke) {
+    finishStroke();
+  }
+  currentSlideIndex = idx;
+  const slide = SLIDES[idx];
+
+  document.getElementById('slide-content-layer').innerHTML = slide.html;
+  document.getElementById('page-indicator').textContent = `หน้า ${idx + 1} / ${SLIDES.length}`;
+  document.getElementById('current-section-badge').textContent = `${slide.group} • ${slide.badge || ''}`;
+  try { history.replaceState(null, '', '#page=' + (idx + 1)); } catch(e) {}
+
+  // Show/hide small feature buttons on topbar
+  const btn3d = document.getElementById('btn-open-3d');
+  const btnAnim = document.getElementById('btn-open-anim');
+  // No 3D lab modals needed in English Chapter 2
+
+  // Update Single Question Navigation Bar
+  updateQuestionNavBar(idx);
+
+  // Rebuild TOC so active deck counters & highlights stay in sync
+  const searchVal = document.getElementById('toc-search-input') ? document.getElementById('toc-search-input').value : '';
+  buildSidebarTOC(searchVal);
+
+  const sidebarEl = document.getElementById('sidebar');
+  const tocListEl = document.getElementById('toc-list');
+  const activeItem = document.querySelector('#toc-list .toc-item.active, #toc-list .toc-deck-item.active');
+  if (activeItem && tocListEl && sidebarEl && !sidebarEl.classList.contains('collapsed')) {
+    const itemTop = activeItem.offsetTop;
+    const itemBottom = itemTop + activeItem.offsetHeight;
+    const viewTop = tocListEl.scrollTop;
+    const viewBottom = viewTop + tocListEl.clientHeight;
+    if (itemTop < viewTop || itemBottom > viewBottom) {
+      tocListEl.scrollTop = Math.max(0, itemTop - tocListEl.clientHeight / 2);
+    }
+  }
+
+  document.getElementById('board-viewport').scrollTop = 0;
+  resizeBoardCanvases(true);
+  setTimeout(() => resizeBoardCanvases(true), 30);
+}
+
+function prevSlide() {
+  if (currentSlideIndex > 0) {
+    SoundFX.click();
+    goToSlide(currentSlideIndex - 1);
+  }
+}
+
+function nextSlide() {
+  if (currentSlideIndex < SLIDES.length - 1) {
+    SoundFX.click();
+    goToSlide(currentSlideIndex + 1);
+  }
+}
+
+function promptJumpPage() {
+  const input = prompt(`ระบุหมายเลขหน้าที่ต้องการไป (1 - ${SLIDES.length}):`, currentSlideIndex + 1);
+  if (input) {
+    const p = parseInt(input, 10);
+    if (!isNaN(p) && p >= 1 && p <= SLIDES.length) {
+      goToSlide(p - 1);
+    }
+  }
+}
+
+function toggleSidebar() {
+  SoundFX.click();
+  document.getElementById('sidebar').classList.toggle('collapsed');
+  setTimeout(resizeBoardCanvases, 300);
+}
+
+function toggleTheme() {
+  SoundFX.click();
+  document.body.classList.toggle('light-board');
+  const isLight = document.body.classList.contains('light-board');
+  document.getElementById('btn-theme').textContent = isLight ? '☀️ กระดานขาว' : '🌙 กระดานดำ';
+  if (isLight && currentPenColor === '#ffffff') {
+    currentPenColor = '#0f172a';
+  } else if (!isLight && currentPenColor === '#0f172a') {
+    currentPenColor = '#ffffff';
+  }
+}
+
+function toggleFullScreen() {
+  SoundFX.click();
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') nextSlide();
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevSlide();
+  else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undoStroke(); }
+  else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redoStroke(); }
+});
+
+
+
+// Initialize Application on Load
+window.addEventListener('DOMContentLoaded', () => {
+  loadAnnotationsFromStorage();
+  buildSidebarTOC();
+  let startIdx = 0;
+  const initialHash = window.location.hash || '';
+  const initialSearch = window.location.search || '';
+  try {
+    const m = initialHash.match(/page=(\d+)/);
+    if (m) {
+      const p = parseInt(m[1], 10) - 1;
+      if (p >= 0 && p < SLIDES.length) startIdx = p;
+    }
+    const params = new URLSearchParams(initialSearch);
+    const qp = params.get('page');
+    if (qp) {
+      const p = parseInt(qp, 10) - 1;
+      if (p >= 0 && p < SLIDES.length) startIdx = p;
+    }
+  } catch(e) {}
+  goToSlide(startIdx);
+  initAccountAndSmartboardNotes();
+  pinFloatingUIOnZoom();
+});
+</script>
+</body>
+</html>
